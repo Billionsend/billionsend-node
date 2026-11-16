@@ -136,7 +136,8 @@ function queryString(query: object | undefined): string {
   for (const [key, value] of Object.entries(query)) {
     if (value === undefined || value === null) continue;
     if (Array.isArray(value)) {
-      for (const item of value) params.append(key, String(item));
+      // The document's list parameters are comma-separated in one key (style form, explode false).
+      params.append(key, value.map(String).join(","));
     } else {
       params.append(key, String(value));
     }

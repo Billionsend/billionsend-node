@@ -11,6 +11,12 @@
   ],
   "components": {
     "schemas": {
+      "SendInboxDraftRequest": {
+        "type": "object",
+        "properties": {
+          "headers": {}
+        }
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
@@ -534,7 +540,13 @@
       },
       "BatchContactsRequest": {
         "type": "array",
-        "items": {},
+        "items": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CreateContactRequest"
+            }
+          ]
+        },
         "minItems": 1,
         "maxItems": 1000
       },
@@ -5436,45 +5448,6 @@
           "actions"
         ]
       },
-      "UpdateInboxAgentRequest": {
-        "type": "object",
-        "properties": {
-          "instructions": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "tone": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "enum": [
-              "concise_professional",
-              "concise_casual",
-              "expanded_professional",
-              "expanded_casual",
-              null
-            ]
-          },
-          "actions": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "draft_reply",
-                "forward_thread",
-                "add_labels",
-                "assign_thread",
-                "mark_as_spam",
-                "archive",
-                "move_to_trash"
-              ]
-            }
-          }
-        }
-      },
       "InboxSafety": {
         "type": "object",
         "properties": {
@@ -8387,7 +8360,13 @@
       },
       "BatchEmailRequest": {
         "type": "array",
-        "items": {},
+        "items": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SendEmailRequest"
+            }
+          ]
+        },
         "minItems": 1,
         "maxItems": 100
       },
@@ -9707,6 +9686,7 @@
   "paths": {
     "/emails/metrics": {
       "get": {
+        "operationId": "emails.metrics",
         "summary": "Get email metrics",
         "parameters": [
           {
@@ -9779,6 +9759,8 @@
               }
             },
             "required": false,
+            "style": "form",
+            "explode": false,
             "name": "metrics",
             "in": "query"
           },
@@ -9796,6 +9778,8 @@
               }
             },
             "required": false,
+            "style": "form",
+            "explode": false,
             "name": "dimensions",
             "in": "query"
           },
@@ -9809,6 +9793,8 @@
               "maxItems": 100
             },
             "required": false,
+            "style": "form",
+            "explode": false,
             "name": "domain_id",
             "in": "query"
           },
@@ -9822,6 +9808,8 @@
               "maxItems": 100
             },
             "required": false,
+            "style": "form",
+            "explode": false,
             "name": "email_id",
             "in": "query"
           },
@@ -9835,6 +9823,8 @@
               "maxItems": 100
             },
             "required": false,
+            "style": "form",
+            "explode": false,
             "name": "broadcast_id",
             "in": "query"
           }
@@ -9919,6 +9909,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -9931,6 +9931,23 @@
           },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -9957,8 +9974,10 @@
     },
     "/contacts": {
       "post": {
+        "operationId": "contacts.create",
         "summary": "Create a contact",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -9974,6 +9993,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -10017,6 +10046,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -10024,6 +10070,7 @@
         ]
       },
       "get": {
+        "operationId": "contacts.list",
         "summary": "List contacts",
         "parameters": [
           {
@@ -10074,8 +10121,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -10092,8 +10166,10 @@
     },
     "/contacts/batch/get": {
       "post": {
+        "operationId": "contacts.batch.get",
         "summary": "Read contacts in bulk",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -10113,8 +10189,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -10131,8 +10234,10 @@
     },
     "/contacts/batch/remove": {
       "post": {
+        "operationId": "contacts.batch.remove",
         "summary": "Delete in bulk",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -10152,8 +10257,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -10170,6 +10302,7 @@
     },
     "/contacts/batch": {
       "post": {
+        "operationId": "contacts.batch.create",
         "summary": "Create in bulk",
         "parameters": [
           {
@@ -10200,6 +10333,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -10215,6 +10349,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BatchContactsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -10258,6 +10402,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -10267,6 +10428,7 @@
     },
     "/contacts/{id}": {
       "get": {
+        "operationId": "contacts.get",
         "summary": "Retrieve a contact",
         "parameters": [
           {
@@ -10290,8 +10452,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -10306,6 +10495,7 @@
         ]
       },
       "patch": {
+        "operationId": "contacts.update",
         "summary": "Update a contact",
         "parameters": [
           {
@@ -10319,6 +10509,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -10334,6 +10525,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -10367,6 +10568,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -10374,6 +10592,7 @@
         ]
       },
       "delete": {
+        "operationId": "contacts.delete",
         "summary": "Delete a contact",
         "parameters": [
           {
@@ -10409,8 +10628,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -10427,6 +10673,7 @@
     },
     "/contacts/{id}/preferences-link": {
       "post": {
+        "operationId": "contacts.preferencesLink",
         "summary": "Get a preferences link",
         "parameters": [
           {
@@ -10450,6 +10697,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
             "content": {
@@ -10469,6 +10726,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -10478,6 +10752,7 @@
     },
     "/contacts/{id}/topics": {
       "get": {
+        "operationId": "contacts.topics.list",
         "summary": "List contact topics",
         "parameters": [
           {
@@ -10501,8 +10776,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -10517,6 +10819,7 @@
         ]
       },
       "patch": {
+        "operationId": "contacts.topics.update",
         "summary": "Update contact topics",
         "parameters": [
           {
@@ -10530,6 +10833,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -10545,6 +10849,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UpdateContactTopicsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -10568,6 +10882,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -10577,6 +10908,7 @@
     },
     "/contacts/{id}/segments/{segmentId}": {
       "post": {
+        "operationId": "contacts.segments.add",
         "summary": "Add to a segment",
         "parameters": [
           {
@@ -10609,8 +10941,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -10625,6 +10984,7 @@
         ]
       },
       "delete": {
+        "operationId": "contacts.segments.remove",
         "summary": "Leave a segment",
         "parameters": [
           {
@@ -10657,8 +11017,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -10675,6 +11062,7 @@
     },
     "/audiences/{audienceId}/contacts": {
       "post": {
+        "operationId": "audiences.contacts.create",
         "summary": "Create a contact",
         "parameters": [
           {
@@ -10688,6 +11076,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -10703,6 +11092,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -10746,6 +11145,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -10755,6 +11171,7 @@
     },
     "/audiences/{audienceId}/contacts/{id}": {
       "get": {
+        "operationId": "audiences.contacts.get",
         "summary": "Retrieve a contact",
         "parameters": [
           {
@@ -10787,8 +11204,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -10803,6 +11247,7 @@
         ]
       },
       "patch": {
+        "operationId": "audiences.contacts.update",
         "summary": "Update a contact",
         "parameters": [
           {
@@ -10825,6 +11270,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -10840,6 +11286,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -10873,6 +11329,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -10880,6 +11353,7 @@
         ]
       },
       "delete": {
+        "operationId": "audiences.contacts.delete",
         "summary": "Delete a contact",
         "parameters": [
           {
@@ -10924,8 +11398,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -10942,8 +11443,10 @@
     },
     "/contact-properties": {
       "post": {
+        "operationId": "contactProperties.create",
         "summary": "Create a property",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -10959,6 +11462,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetContactPropertyResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -10982,6 +11495,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -10989,6 +11519,7 @@
         ]
       },
       "get": {
+        "operationId": "contactProperties.list",
         "summary": "List properties",
         "parameters": [
           {
@@ -11031,8 +11562,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -11049,6 +11607,7 @@
     },
     "/contact-properties/{id}": {
       "get": {
+        "operationId": "contactProperties.get",
         "summary": "Retrieve a property",
         "parameters": [
           {
@@ -11072,8 +11631,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -11088,6 +11674,7 @@
         ]
       },
       "patch": {
+        "operationId": "contactProperties.update",
         "summary": "Update a property",
         "parameters": [
           {
@@ -11101,6 +11688,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -11116,6 +11704,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactPropertyIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -11139,6 +11737,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -11146,6 +11761,7 @@
         ]
       },
       "delete": {
+        "operationId": "contactProperties.delete",
         "summary": "Delete a property",
         "parameters": [
           {
@@ -11169,8 +11785,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -11187,8 +11830,10 @@
     },
     "/segments": {
       "post": {
+        "operationId": "segments.create",
         "summary": "Create a segment",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -11204,6 +11849,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SegmentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -11227,6 +11882,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -11234,6 +11906,7 @@
         ]
       },
       "get": {
+        "operationId": "segments.list",
         "summary": "List segments",
         "parameters": [
           {
@@ -11276,8 +11949,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -11294,6 +11994,7 @@
     },
     "/segments/{id}": {
       "get": {
+        "operationId": "segments.get",
         "summary": "Retrieve a segment",
         "parameters": [
           {
@@ -11317,8 +12018,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -11333,6 +12061,7 @@
         ]
       },
       "patch": {
+        "operationId": "segments.update",
         "summary": "Update a segment",
         "parameters": [
           {
@@ -11346,6 +12075,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -11361,6 +12091,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SegmentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -11394,6 +12134,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -11401,6 +12158,7 @@
         ]
       },
       "delete": {
+        "operationId": "segments.delete",
         "summary": "Delete a segment",
         "parameters": [
           {
@@ -11424,6 +12182,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
             "content": {
@@ -11443,6 +12211,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -11452,6 +12237,7 @@
     },
     "/segments/{id}/contacts": {
       "get": {
+        "operationId": "segments.contacts.list",
         "summary": "List segment contacts",
         "parameters": [
           {
@@ -11511,6 +12297,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
             "content": {
@@ -11530,6 +12326,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -11539,8 +12352,10 @@
     },
     "/broadcasts": {
       "post": {
+        "operationId": "broadcasts.create",
         "summary": "Create a broadcast",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -11561,6 +12376,16 @@
             }
           },
           "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
             "description": "",
             "content": {
               "application/json": {
@@ -11599,6 +12424,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -11606,6 +12448,7 @@
         ]
       },
       "get": {
+        "operationId": "broadcasts.list",
         "summary": "List broadcasts",
         "parameters": [
           {
@@ -11648,8 +12491,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -11666,6 +12536,7 @@
     },
     "/broadcasts/{id}": {
       "get": {
+        "operationId": "broadcasts.get",
         "summary": "Retrieve a broadcast",
         "parameters": [
           {
@@ -11689,8 +12560,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -11705,6 +12603,7 @@
         ]
       },
       "patch": {
+        "operationId": "broadcasts.update",
         "summary": "Update a broadcast",
         "parameters": [
           {
@@ -11718,6 +12617,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -11747,6 +12647,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
             "content": {
@@ -11766,6 +12676,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -11773,6 +12700,7 @@
         ]
       },
       "delete": {
+        "operationId": "broadcasts.delete",
         "summary": "Delete a broadcast",
         "parameters": [
           {
@@ -11806,8 +12734,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -11824,6 +12779,7 @@
     },
     "/broadcasts/{id}/send": {
       "post": {
+        "operationId": "broadcasts.send",
         "summary": "Send a broadcast",
         "parameters": [
           {
@@ -11837,6 +12793,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -11857,6 +12814,16 @@
             }
           },
           "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
             "description": "",
             "content": {
               "application/json": {
@@ -11895,6 +12862,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -11904,6 +12888,7 @@
     },
     "/broadcasts/{id}/duplicate": {
       "post": {
+        "operationId": "broadcasts.duplicate",
         "summary": "Duplicate a broadcast",
         "parameters": [
           {
@@ -11927,6 +12912,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -11946,6 +12941,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -11955,6 +12967,7 @@
     },
     "/broadcasts/{id}/cancel": {
       "post": {
+        "operationId": "broadcasts.cancel",
         "summary": "Cancel a broadcast",
         "parameters": [
           {
@@ -11988,8 +13001,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -12006,8 +13046,10 @@
     },
     "/topics": {
       "post": {
+        "operationId": "topics.create",
         "summary": "Create a topic",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -12023,6 +13065,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TopicResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -12046,6 +13098,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -12053,6 +13122,7 @@
         ]
       },
       "get": {
+        "operationId": "topics.list",
         "summary": "List topics",
         "responses": {
           "200": {
@@ -12061,6 +13131,33 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListTopicsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -12073,6 +13170,7 @@
     },
     "/topics/{id}": {
       "get": {
+        "operationId": "topics.get",
         "summary": "Retrieve a topic",
         "parameters": [
           {
@@ -12096,8 +13194,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -12112,6 +13237,7 @@
         ]
       },
       "patch": {
+        "operationId": "topics.update",
         "summary": "Update a topic",
         "parameters": [
           {
@@ -12125,6 +13251,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -12140,6 +13267,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TopicIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -12173,6 +13310,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -12180,6 +13334,7 @@
         ]
       },
       "delete": {
+        "operationId": "topics.delete",
         "summary": "Delete a topic",
         "parameters": [
           {
@@ -12203,6 +13358,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
             "content": {
@@ -12222,6 +13387,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -12231,8 +13413,10 @@
     },
     "/domains": {
       "post": {
+        "operationId": "domains.create",
         "summary": "Create a domain",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -12248,6 +13432,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreateDomainResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -12290,6 +13484,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -12298,6 +13499,7 @@
         ]
       },
       "get": {
+        "operationId": "domains.list",
         "summary": "List domains",
         "parameters": [
           {
@@ -12340,8 +13542,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -12358,6 +13587,7 @@
     },
     "/domains/{id}": {
       "get": {
+        "operationId": "domains.get",
         "summary": "Retrieve a domain",
         "parameters": [
           {
@@ -12381,8 +13611,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -12397,6 +13654,7 @@
         ]
       },
       "patch": {
+        "operationId": "domains.update",
         "summary": "Update a domain",
         "parameters": [
           {
@@ -12410,6 +13668,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -12425,6 +13684,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetDomainResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -12468,6 +13737,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -12475,6 +13761,7 @@
         ]
       },
       "delete": {
+        "operationId": "domains.delete",
         "summary": "Delete a domain",
         "parameters": [
           {
@@ -12498,6 +13785,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -12527,6 +13824,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -12536,6 +13850,7 @@
     },
     "/domains/{id}/verify": {
       "post": {
+        "operationId": "domains.verify",
         "summary": "Verify a domain",
         "parameters": [
           {
@@ -12559,6 +13874,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -12578,6 +13903,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -12587,8 +13929,10 @@
     },
     "/api-keys": {
       "post": {
+        "operationId": "apiKeys.create",
         "summary": "Create an API key",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -12604,6 +13948,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreateApiKeyResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -12627,6 +13981,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -12634,6 +14005,7 @@
         ]
       },
       "get": {
+        "operationId": "apiKeys.list",
         "summary": "List API keys",
         "parameters": [
           {
@@ -12676,8 +14048,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -12694,6 +14093,7 @@
     },
     "/api-keys/{id}": {
       "delete": {
+        "operationId": "apiKeys.delete",
         "summary": "Delete an API key",
         "parameters": [
           {
@@ -12717,8 +14117,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -12735,8 +14162,10 @@
     },
     "/webhooks": {
       "post": {
+        "operationId": "webhooks.create",
         "summary": "Create a webhook",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -12752,6 +14181,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreateWebhookResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -12775,6 +14214,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -12782,6 +14238,7 @@
         ]
       },
       "get": {
+        "operationId": "webhooks.list",
         "summary": "List webhooks",
         "parameters": [
           {
@@ -12824,8 +14281,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -12842,6 +14326,7 @@
     },
     "/webhooks/{id}": {
       "get": {
+        "operationId": "webhooks.get",
         "summary": "Retrieve a webhook",
         "parameters": [
           {
@@ -12865,8 +14350,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -12881,6 +14393,7 @@
         ]
       },
       "patch": {
+        "operationId": "webhooks.update",
         "summary": "Update a webhook",
         "parameters": [
           {
@@ -12894,6 +14407,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -12909,6 +14423,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/WebhookIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -12932,6 +14456,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -12939,6 +14480,7 @@
         ]
       },
       "delete": {
+        "operationId": "webhooks.delete",
         "summary": "Delete a webhook",
         "parameters": [
           {
@@ -12962,8 +14504,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -12980,6 +14549,7 @@
     },
     "/webhooks/{id}/rotate": {
       "post": {
+        "operationId": "webhooks.rotate",
         "summary": "Rotate signing secret",
         "parameters": [
           {
@@ -12993,6 +14563,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -13012,6 +14583,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
             "content": {
@@ -13031,6 +14612,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -13040,8 +14638,10 @@
     },
     "/suppressions/batch/add": {
       "post": {
+        "operationId": "suppressions.batch.add",
         "summary": "Add in bulk",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -13061,8 +14661,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13079,8 +14706,10 @@
     },
     "/suppressions/batch/remove": {
       "post": {
+        "operationId": "suppressions.batch.remove",
         "summary": "Remove in bulk",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -13100,8 +14729,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13118,8 +14774,10 @@
     },
     "/suppressions": {
       "post": {
+        "operationId": "suppressions.create",
         "summary": "Add a suppression",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -13139,8 +14797,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13155,6 +14840,7 @@
         ]
       },
       "get": {
+        "operationId": "suppressions.list",
         "summary": "List suppressions",
         "parameters": [
           {
@@ -13210,8 +14896,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13228,6 +14941,7 @@
     },
     "/suppressions/{id}": {
       "get": {
+        "operationId": "suppressions.get",
         "summary": "Retrieve a suppression",
         "parameters": [
           {
@@ -13251,8 +14965,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13267,6 +15008,7 @@
         ]
       },
       "delete": {
+        "operationId": "suppressions.delete",
         "summary": "Remove a suppression",
         "parameters": [
           {
@@ -13290,8 +15032,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13308,6 +15077,7 @@
     },
     "/unsubscribes": {
       "get": {
+        "operationId": "unsubscribes.list",
         "summary": "List unsubscribes",
         "parameters": [
           {
@@ -13359,6 +15129,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -13378,6 +15158,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -13385,8 +15182,10 @@
         ]
       },
       "post": {
+        "operationId": "unsubscribes.create",
         "summary": "Record an unsubscribe",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -13406,6 +15205,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -13425,6 +15234,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -13434,6 +15260,7 @@
     },
     "/unsubscribes/{id}": {
       "delete": {
+        "operationId": "unsubscribes.delete",
         "summary": "Delete an unsubscribe",
         "parameters": [
           {
@@ -13457,8 +15284,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13475,8 +15329,10 @@
     },
     "/templates": {
       "post": {
+        "operationId": "templates.create",
         "summary": "Create a template",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -13492,6 +15348,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TemplateIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -13515,6 +15381,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -13522,6 +15405,7 @@
         ]
       },
       "get": {
+        "operationId": "templates.list",
         "summary": "List templates",
         "parameters": [
           {
@@ -13564,8 +15448,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13582,6 +15493,7 @@
     },
     "/templates/{id}": {
       "get": {
+        "operationId": "templates.get",
         "summary": "Retrieve a template",
         "parameters": [
           {
@@ -13605,8 +15517,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13621,6 +15560,7 @@
         ]
       },
       "patch": {
+        "operationId": "templates.update",
         "summary": "Update a template",
         "parameters": [
           {
@@ -13634,6 +15574,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -13649,6 +15590,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TemplateIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -13682,6 +15633,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -13689,6 +15657,7 @@
         ]
       },
       "delete": {
+        "operationId": "templates.delete",
         "summary": "Delete a template",
         "parameters": [
           {
@@ -13712,8 +15681,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13730,6 +15726,7 @@
     },
     "/templates/{id}/publish": {
       "post": {
+        "operationId": "templates.publish",
         "summary": "Publish a template",
         "parameters": [
           {
@@ -13753,8 +15750,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13771,6 +15795,7 @@
     },
     "/templates/{id}/duplicate": {
       "post": {
+        "operationId": "templates.duplicate",
         "summary": "Duplicate a template",
         "parameters": [
           {
@@ -13794,8 +15819,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -13812,6 +15864,7 @@
     },
     "/verifications/availability": {
       "get": {
+        "operationId": "verifications.availability",
         "summary": "Check verification availability",
         "responses": {
           "200": {
@@ -13820,6 +15873,33 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/VerificationAvailabilityResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -13832,8 +15912,10 @@
     },
     "/verifications/estimate": {
       "post": {
+        "operationId": "verifications.estimate",
         "summary": "Estimate a verification",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -13849,6 +15931,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/EstimateVerificationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -13872,6 +15964,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -13881,8 +15990,10 @@
     },
     "/verifications": {
       "post": {
+        "operationId": "verifications.create",
         "summary": "Start a verification",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -13898,6 +16009,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/StartVerificationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -13932,6 +16053,23 @@
               }
             }
           },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "503": {
             "description": "",
             "content": {
@@ -13948,6 +16086,7 @@
         ]
       },
       "get": {
+        "operationId": "verifications.list",
         "summary": "List verifications",
         "parameters": [
           {
@@ -13990,8 +16129,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "422": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -14008,6 +16174,7 @@
     },
     "/verifications/{id}": {
       "get": {
+        "operationId": "verifications.get",
         "summary": "Retrieve a verification",
         "parameters": [
           {
@@ -14031,6 +16198,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
             "content": {
@@ -14050,6 +16227,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -14059,6 +16253,7 @@
     },
     "/usage": {
       "get": {
+        "operationId": "usage.get",
         "summary": "Get usage",
         "responses": {
           "200": {
@@ -14071,8 +16266,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -14089,6 +16311,7 @@
     },
     "/inboxes/events": {
       "get": {
+        "operationId": "inboxes.events.stream",
         "summary": "Stream inbox events",
         "parameters": [
           {
@@ -14115,6 +16338,16 @@
               "text/event-stream": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -14147,6 +16380,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -14157,6 +16397,7 @@
     },
     "/inboxes/{inbox_id}/events": {
       "get": {
+        "operationId": "inboxes.events.streamInbox",
         "summary": "Stream one inbox's events",
         "parameters": [
           {
@@ -14195,6 +16436,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -14233,6 +16484,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -14243,8 +16501,10 @@
     },
     "/inboxes": {
       "post": {
+        "operationId": "inboxes.create",
         "summary": "Create an inbox",
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -14260,6 +16520,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Inbox"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -14302,6 +16572,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           },
           "503": {
@@ -14320,11 +16597,14 @@
         ]
       },
       "get": {
+        "operationId": "inboxes.list",
         "summary": "List inboxes",
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
             },
             "required": false,
             "name": "limit",
@@ -14332,7 +16612,8 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "required": false,
             "name": "after",
@@ -14340,7 +16621,8 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "required": false,
             "name": "before",
@@ -14370,6 +16652,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
             "content": {
@@ -14389,6 +16681,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -14398,6 +16707,7 @@
     },
     "/inboxes/{inbox_id}": {
       "get": {
+        "operationId": "inboxes.get",
         "summary": "Retrieve an inbox",
         "parameters": [
           {
@@ -14420,6 +16730,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
             "content": {
@@ -14439,6 +16759,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -14446,6 +16783,7 @@
         ]
       },
       "patch": {
+        "operationId": "inboxes.update",
         "summary": "Update an inbox",
         "parameters": [
           {
@@ -14458,6 +16796,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -14473,6 +16812,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Inbox"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -14505,6 +16854,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           },
           "503": {
@@ -14523,6 +16879,7 @@
         ]
       },
       "delete": {
+        "operationId": "inboxes.delete",
         "summary": "Delete an inbox",
         "parameters": [
           {
@@ -14545,6 +16902,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -14564,6 +16931,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -14573,6 +16957,7 @@
     },
     "/inboxes/{inbox_id}/agent": {
       "get": {
+        "operationId": "inboxes.agent.get",
         "summary": "Get agent settings",
         "parameters": [
           {
@@ -14595,7 +16980,7 @@
               }
             }
           },
-          "404": {
+          "401": {
             "description": "",
             "content": {
               "application/json": {
@@ -14604,34 +16989,7 @@
                 }
               }
             }
-          }
-        },
-        "tags": [
-          "Inboxes"
-        ]
-      },
-      "patch": {
-        "summary": "Update agent settings",
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "name": "inbox_id",
-            "in": "path"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateInboxAgentRequest"
-              }
-            }
-          }
-        },
-        "responses": {
+          },
           "404": {
             "description": "",
             "content": {
@@ -14642,8 +17000,15 @@
               }
             }
           },
-          "422": {
+          "429": {
             "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -14660,6 +17025,7 @@
     },
     "/inboxes/{inbox_id}/safety": {
       "get": {
+        "operationId": "inboxes.safety.get",
         "summary": "Get safety rules",
         "parameters": [
           {
@@ -14682,8 +17048,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -14698,6 +17091,7 @@
         ]
       },
       "patch": {
+        "operationId": "inboxes.safety.update",
         "summary": "Update safety rules",
         "parameters": [
           {
@@ -14710,6 +17104,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -14725,6 +17120,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/InboxSafety"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -14758,6 +17163,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -14767,6 +17189,7 @@
     },
     "/inboxes/{inbox_id}/labels": {
       "get": {
+        "operationId": "inboxes.labels.list",
         "summary": "List an inbox's labels",
         "parameters": [
           {
@@ -14789,8 +17212,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -14805,6 +17255,7 @@
         ]
       },
       "post": {
+        "operationId": "inboxes.labels.create",
         "summary": "Create a label",
         "parameters": [
           {
@@ -14817,6 +17268,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -14832,6 +17284,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/InboxLabel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -14855,6 +17317,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -14864,6 +17343,7 @@
     },
     "/inboxes/{inbox_id}/labels/{label_id}": {
       "patch": {
+        "operationId": "inboxes.labels.update",
         "summary": "Update a label",
         "parameters": [
           {
@@ -14885,6 +17365,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -14900,6 +17381,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/InboxLabel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -14923,6 +17414,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -14930,6 +17438,7 @@
         ]
       },
       "delete": {
+        "operationId": "inboxes.labels.delete",
         "summary": "Delete a label",
         "parameters": [
           {
@@ -14961,8 +17470,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -14979,6 +17515,7 @@
     },
     "/inboxes/{inbox_id}/threads/search": {
       "get": {
+        "operationId": "inboxes.threads.search",
         "summary": "Search threads",
         "parameters": [
           {
@@ -14991,7 +17528,9 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
             },
             "required": false,
             "name": "limit",
@@ -14999,7 +17538,8 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "required": false,
             "name": "after",
@@ -15007,7 +17547,8 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "required": false,
             "name": "before",
@@ -15031,7 +17572,7 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "boolean"
             },
             "required": false,
             "name": "read",
@@ -15039,7 +17580,7 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "boolean"
             },
             "required": false,
             "name": "include_quarantined",
@@ -15087,7 +17628,7 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "boolean"
             },
             "required": false,
             "name": "has_attachment",
@@ -15121,6 +17662,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -15150,6 +17701,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -15159,6 +17727,7 @@
     },
     "/inboxes/{inbox_id}/threads": {
       "get": {
+        "operationId": "inboxes.threads.list",
         "summary": "List threads",
         "parameters": [
           {
@@ -15171,7 +17740,9 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
             },
             "required": false,
             "name": "limit",
@@ -15179,7 +17750,8 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "required": false,
             "name": "after",
@@ -15187,7 +17759,8 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "required": false,
             "name": "before",
@@ -15211,7 +17784,7 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "boolean"
             },
             "required": false,
             "name": "read",
@@ -15219,7 +17792,7 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "boolean"
             },
             "required": false,
             "name": "include_quarantined",
@@ -15233,6 +17806,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListInboxThreadsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -15266,6 +17849,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -15275,6 +17875,7 @@
     },
     "/inboxes/{inbox_id}/threads/{thread_id}": {
       "get": {
+        "operationId": "inboxes.threads.get",
         "summary": "Retrieve a thread",
         "parameters": [
           {
@@ -15306,8 +17907,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -15322,6 +17950,7 @@
         ]
       },
       "patch": {
+        "operationId": "inboxes.threads.update",
         "summary": "Update a thread",
         "parameters": [
           {
@@ -15343,6 +17972,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -15358,6 +17988,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/InboxThread"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -15381,6 +18021,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -15388,6 +18045,7 @@
         ]
       },
       "delete": {
+        "operationId": "inboxes.threads.delete",
         "summary": "Delete a thread",
         "parameters": [
           {
@@ -15419,8 +18077,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -15437,6 +18122,7 @@
     },
     "/inboxes/{inbox_id}/threads/{thread_id}/labels": {
       "post": {
+        "operationId": "inboxes.threads.labels.add",
         "summary": "Add labels to a thread",
         "parameters": [
           {
@@ -15458,6 +18144,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -15473,6 +18160,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/InboxThreadLabels"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -15496,6 +18193,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -15503,6 +18217,7 @@
         ]
       },
       "put": {
+        "operationId": "inboxes.threads.labels.set",
         "summary": "Set a thread's labels",
         "parameters": [
           {
@@ -15524,6 +18239,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -15539,6 +18255,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/InboxThreadLabels"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -15562,6 +18288,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -15571,6 +18314,7 @@
     },
     "/inboxes/{inbox_id}/threads/{thread_id}/labels/{label_id}": {
       "delete": {
+        "operationId": "inboxes.threads.labels.remove",
         "summary": "Remove a thread label",
         "parameters": [
           {
@@ -15611,8 +18355,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -15629,6 +18400,7 @@
     },
     "/inboxes/{inbox_id}/threads/{thread_id}/emails": {
       "get": {
+        "operationId": "inboxes.threads.emails.list",
         "summary": "List a thread's emails",
         "parameters": [
           {
@@ -15650,7 +18422,9 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
             },
             "required": false,
             "name": "limit",
@@ -15658,7 +18432,8 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "required": false,
             "name": "after",
@@ -15666,7 +18441,8 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "required": false,
             "name": "before",
@@ -15674,7 +18450,7 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "boolean"
             },
             "required": false,
             "name": "include_quarantined",
@@ -15688,6 +18464,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListInboxThreadEmailsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -15721,6 +18507,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -15730,6 +18533,7 @@
     },
     "/inboxes/{inbox_id}/threads/{thread_id}/emails/{email_id}": {
       "get": {
+        "operationId": "inboxes.threads.emails.get",
         "summary": "Get a thread email",
         "parameters": [
           {
@@ -15760,7 +18564,7 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "boolean"
             },
             "required": false,
             "name": "include_quarantined",
@@ -15774,6 +18578,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/InboxThreadEmail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -15797,6 +18611,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -15806,6 +18637,7 @@
     },
     "/inboxes/{inbox_id}/quarantine": {
       "get": {
+        "operationId": "inboxes.quarantine.list",
         "summary": "List quarantine",
         "parameters": [
           {
@@ -15818,7 +18650,9 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
             },
             "required": false,
             "name": "limit",
@@ -15826,7 +18660,8 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "required": false,
             "name": "after",
@@ -15834,7 +18669,8 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
             "required": false,
             "name": "before",
@@ -15848,6 +18684,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListQuarantinedEmailsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -15881,6 +18727,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -15890,6 +18753,7 @@
     },
     "/inboxes/{inbox_id}/quarantine/{email_id}/release": {
       "post": {
+        "operationId": "inboxes.quarantine.release",
         "summary": "Release an email",
         "parameters": [
           {
@@ -15931,6 +18795,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -15971,6 +18845,23 @@
               }
             }
           },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "503": {
             "description": "",
             "content": {
@@ -15989,6 +18880,7 @@
     },
     "/inboxes/{inbox_id}/codes/latest": {
       "get": {
+        "operationId": "inboxes.codes.latest",
         "summary": "Get latest code",
         "parameters": [
           {
@@ -16009,7 +18901,9 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 50
             },
             "required": false,
             "name": "wait",
@@ -16017,7 +18911,9 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 60,
+              "maximum": 86400
             },
             "required": false,
             "name": "max_age",
@@ -16040,6 +18936,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/VerificationCode"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -16072,6 +18978,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -16082,6 +18995,7 @@
     },
     "/inboxes/{inbox_id}/threads/{thread_id}/emails/{email_id}/reply": {
       "post": {
+        "operationId": "inboxes.threads.emails.reply",
         "summary": "Reply in a thread",
         "parameters": [
           {
@@ -16109,9 +19023,20 @@
             "required": true,
             "name": "email_id",
             "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "required": false,
+            "name": "Idempotency-Key",
+            "in": "header"
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -16141,6 +19066,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -16189,6 +19124,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -16199,6 +19141,7 @@
     },
     "/inboxes/{inbox_id}/threads/{thread_id}/emails/{email_id}/forward": {
       "post": {
+        "operationId": "inboxes.threads.emails.forward",
         "summary": "Forward a thread email",
         "parameters": [
           {
@@ -16226,9 +19169,20 @@
             "required": true,
             "name": "email_id",
             "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "required": false,
+            "name": "Idempotency-Key",
+            "in": "header"
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -16258,6 +19212,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -16306,6 +19270,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -16316,6 +19287,7 @@
     },
     "/inboxes/{inbox_id}/emails": {
       "post": {
+        "operationId": "inboxes.send",
         "summary": "Send an email from an inbox",
         "parameters": [
           {
@@ -16325,9 +19297,20 @@
             "required": true,
             "name": "inbox_id",
             "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "required": false,
+            "name": "Idempotency-Key",
+            "in": "header"
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -16357,6 +19340,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -16405,6 +19398,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -16415,6 +19415,7 @@
     },
     "/inboxes/{inbox_id}/drafts": {
       "post": {
+        "operationId": "inboxes.drafts.create",
         "summary": "Create a draft",
         "parameters": [
           {
@@ -16427,6 +19428,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -16456,6 +19458,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -16504,6 +19516,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -16512,6 +19531,7 @@
         ]
       },
       "get": {
+        "operationId": "inboxes.drafts.list",
         "summary": "List drafts",
         "parameters": [
           {
@@ -16562,6 +19582,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -16610,6 +19640,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -16620,6 +19657,7 @@
     },
     "/inboxes/{inbox_id}/drafts/{draft_id}": {
       "get": {
+        "operationId": "inboxes.drafts.get",
         "summary": "Retrieve a draft",
         "parameters": [
           {
@@ -16651,6 +19689,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -16699,6 +19747,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -16707,6 +19762,7 @@
         ]
       },
       "patch": {
+        "operationId": "inboxes.drafts.update",
         "summary": "Update a draft",
         "parameters": [
           {
@@ -16728,6 +19784,7 @@
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -16743,6 +19800,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/InboxDraft"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -16795,6 +19862,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -16803,6 +19877,7 @@
         ]
       },
       "delete": {
+        "operationId": "inboxes.drafts.delete",
         "summary": "Delete a draft",
         "parameters": [
           {
@@ -16834,6 +19909,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -16882,6 +19967,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -16892,6 +19984,7 @@
     },
     "/inboxes/{inbox_id}/drafts/{draft_id}/send": {
       "post": {
+        "operationId": "inboxes.drafts.send",
         "summary": "Send a draft",
         "parameters": [
           {
@@ -16910,8 +20003,28 @@
             "required": true,
             "name": "draft_id",
             "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "required": false,
+            "name": "Idempotency-Key",
+            "in": "header"
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendInboxDraftRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
@@ -16943,6 +20056,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -16991,6 +20114,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -17001,6 +20131,7 @@
     },
     "/inboxes/{inbox_id}/drafts/{draft_id}/reject": {
       "post": {
+        "operationId": "inboxes.drafts.reject",
         "summary": "Reject a draft",
         "parameters": [
           {
@@ -17032,6 +20163,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -17080,6 +20221,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -17090,6 +20238,7 @@
     },
     "/emails/receiving/{id}/reply": {
       "post": {
+        "operationId": "emails.receiving.reply",
         "summary": "Reply to an email",
         "parameters": [
           {
@@ -17100,9 +20249,20 @@
             "required": true,
             "name": "id",
             "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "required": false,
+            "name": "Idempotency-Key",
+            "in": "header"
           }
         ],
         "requestBody": {
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -17132,6 +20292,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -17180,6 +20350,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -17190,6 +20367,7 @@
     },
     "/emails/receiving/{id}/forward": {
       "post": {
+        "operationId": "emails.receiving.forward",
         "summary": "Forward an email",
         "parameters": [
           {
@@ -17200,9 +20378,20 @@
             "required": true,
             "name": "id",
             "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "required": false,
+            "name": "Idempotency-Key",
+            "in": "header"
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -17232,6 +20421,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -17280,6 +20479,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -17290,9 +20496,11 @@
     },
     "/agent/signup": {
       "post": {
+        "operationId": "agent.signup",
         "summary": "Sign up as an agent",
         "security": [],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -17360,6 +20568,7 @@
     },
     "/agent/status": {
       "get": {
+        "operationId": "agent.status",
         "summary": "Get the account's claim status",
         "responses": {
           "200": {
@@ -17368,6 +20577,33 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AgentAccountStatus"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -17380,6 +20616,7 @@
     },
     "/agent/claim-email": {
       "post": {
+        "operationId": "agent.claimEmail",
         "summary": "Send the claim link again",
         "responses": {
           "202": {
@@ -17388,6 +20625,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AgentClaimEmail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -17410,6 +20657,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -17420,8 +20674,22 @@
     },
     "/emails": {
       "post": {
+        "operationId": "emails.send",
         "summary": "Send an email",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "required": false,
+            "name": "Idempotency-Key",
+            "in": "header"
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -17442,6 +20710,16 @@
             }
           },
           "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
             "description": "",
             "content": {
               "application/json": {
@@ -17499,6 +20777,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -17507,6 +20792,7 @@
         ]
       },
       "get": {
+        "operationId": "emails.list",
         "summary": "List emails",
         "parameters": [
           {
@@ -17549,6 +20835,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -17568,6 +20864,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -17577,8 +20890,34 @@
     },
     "/emails/batch": {
       "post": {
+        "operationId": "emails.batch",
         "summary": "Send a batch of emails",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "required": false,
+            "name": "Idempotency-Key",
+            "in": "header"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "strict",
+                "permissive"
+              ]
+            },
+            "required": false,
+            "name": "x-batch-validation",
+            "in": "header"
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -17599,6 +20938,16 @@
             }
           },
           "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
             "description": "",
             "content": {
               "application/json": {
@@ -17656,6 +21005,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -17666,6 +21022,7 @@
     },
     "/emails/{id}/cancel": {
       "post": {
+        "operationId": "emails.cancel",
         "summary": "Cancel an email",
         "parameters": [
           {
@@ -17689,6 +21046,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
             "content": {
@@ -17708,6 +21075,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -17717,6 +21101,7 @@
     },
     "/emails/{id}": {
       "patch": {
+        "operationId": "emails.update",
         "summary": "Update an email",
         "parameters": [
           {
@@ -17730,6 +21115,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -17749,6 +21135,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "",
             "content": {
@@ -17768,6 +21164,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -17775,6 +21188,7 @@
         ]
       },
       "get": {
+        "operationId": "emails.get",
         "summary": "Retrieve an email",
         "parameters": [
           {
@@ -17798,6 +21212,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -17817,6 +21241,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -17824,6 +21265,7 @@
         ]
       },
       "delete": {
+        "operationId": "emails.delete",
         "summary": "Delete an email",
         "parameters": [
           {
@@ -17847,6 +21289,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -17866,6 +21318,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -17875,6 +21344,7 @@
     },
     "/emails/receiving": {
       "get": {
+        "operationId": "emails.receiving.list",
         "summary": "List received emails",
         "parameters": [
           {
@@ -17907,12 +21377,7 @@
           },
           {
             "schema": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "minimum": 0,
-              "maximum": 50
+              "type": "integer"
             },
             "required": false,
             "name": "wait",
@@ -18011,6 +21476,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -18049,6 +21524,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
@@ -18059,6 +21541,7 @@
     },
     "/emails/receiving/{id}": {
       "get": {
+        "operationId": "emails.receiving.get",
         "summary": "Get a received email",
         "parameters": [
           {
@@ -18094,6 +21577,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -18123,6 +21616,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -18130,6 +21640,7 @@
         ]
       },
       "delete": {
+        "operationId": "emails.receiving.delete",
         "summary": "Delete a received email",
         "parameters": [
           {
@@ -18153,6 +21664,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -18172,6 +21693,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -18181,6 +21719,7 @@
     },
     "/emails/receiving/{email_id}/attachments": {
       "get": {
+        "operationId": "emails.receiving.attachments.list",
         "summary": "List attachments",
         "parameters": [
           {
@@ -18232,6 +21771,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -18261,6 +21810,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -18270,6 +21836,7 @@
     },
     "/emails/receiving/{email_id}/attachments/{id}": {
       "get": {
+        "operationId": "emails.receiving.attachments.get",
         "summary": "Get an attachment",
         "parameters": [
           {
@@ -18302,6 +21869,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -18321,6 +21898,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -18330,6 +21924,7 @@
     },
     "/emails/{id}/insights": {
       "get": {
+        "operationId": "emails.insights",
         "summary": "Get email insights",
         "parameters": [
           {
@@ -18353,6 +21948,16 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
             "content": {
@@ -18372,6 +21977,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -18381,6 +22003,7 @@
     },
     "/deliverability": {
       "get": {
+        "operationId": "deliverability.get",
         "summary": "Get deliverability",
         "responses": {
           "200": {
@@ -18393,8 +22016,35 @@
               }
             }
           },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {

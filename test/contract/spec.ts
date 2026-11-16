@@ -16,11 +16,15 @@ export interface Parameter {
   in: "path" | "query" | "header" | "cookie";
   required?: boolean;
   schema: JsonSchema;
+  style?: string;
+  explode?: boolean;
 }
 
 export interface Operation {
   /** `"GET /emails/{id}"` */
   key: string;
+  /** The SDK method's path, dotted camelCase: `emails.receiving.attachments.list`. */
+  operationId?: string;
   method: string;
   path: string;
   /** JSON pointer (inside the document) to the operation object. */

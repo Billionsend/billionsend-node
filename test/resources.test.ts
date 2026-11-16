@@ -53,15 +53,15 @@ describe("emails", () => {
     expect(last("GET /emails/{id}/insights").url.pathname).toBe(`/emails/${ID}/insights`);
   });
 
-  it("sends array query parameters as repeated keys", async () => {
+  it("sends array query parameters comma-separated in one key", async () => {
     await bs().emails.metrics({
       metrics: ["delivered", "open_rate"],
       domain_id: [ID, ID2],
       timezone: "Europe/Berlin",
     });
     const query = last("GET /emails/metrics").url.searchParams;
-    expect(query.getAll("metrics")).toEqual(["delivered", "open_rate"]);
-    expect(query.getAll("domain_id")).toEqual([ID, ID2]);
+    expect(query.getAll("metrics")).toEqual(["delivered,open_rate"]);
+    expect(query.getAll("domain_id")).toEqual([`${ID},${ID2}`]);
     expect(query.get("timezone")).toBe("Europe/Berlin");
   });
 
@@ -294,12 +294,12 @@ describe("inboxes", () => {
     );
   });
 
-  it("searches threads with string filters", async () => {
+  it("searches threads with filters", async () => {
     await bs().inboxes.threads.search(inbox, {
       query: "invoice",
       from: "billing@example.com",
       start_date: "2026-11-01",
-      limit: "50",
+      limit: 50,
     });
     expect(Object.fromEntries(last("GET /inboxes/{inbox_id}/threads/search").url.searchParams)).toEqual({
       query: "invoice",
@@ -343,7 +343,7 @@ describe("inboxes", () => {
   });
 
   it("waits for the latest verification code", async () => {
-    await bs().inboxes.codes.latest(inbox, { from: "example.com", wait: "30", max_age: "600" });
+    await bs().inboxes.codes.latest(inbox, { from: "example.com", wait: 30, max_age: 600 });
     expect(Object.fromEntries(last("GET /inboxes/{inbox_id}/codes/latest").url.searchParams)).toEqual({
       from: "example.com",
       wait: "30",
@@ -371,12 +371,6 @@ describe("inboxes", () => {
     expect(last("POST /inboxes/{inbox_id}/drafts/{draft_id}/reject").url.pathname).toBe(
       `/inboxes/support%40example.com/drafts/${ID2}/reject`,
     );
-  });
-
-  it("reports the agent-settings update as the error the API declares", async () => {
-    const result = await bs().inboxes.agent.update(inbox, { instructions: "Be brief" });
-    expect(result.data).toBeNull();
-    expect(result.error?.statusCode).toBe(404);
   });
 });
 

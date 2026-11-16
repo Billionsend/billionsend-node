@@ -195,7 +195,11 @@ export class ContractMock {
       const isArray =
         schema.type === "array" || (Array.isArray(schema.type) && schema.type.includes("array"));
       const items = (schema.items ?? {}) as JsonSchema;
-      const value = isArray ? values.map((v) => coerce(v, items)) : coerce(values[0] ?? "", param.schema);
+      // A list without explode is one comma-separated value; with it (the default), repeated keys.
+      const exploded = param.explode ?? (param.style ?? "form") === "form";
+      if (isArray && !exploded && values.length > 1) problems.push(`query parameter ${name} repeated`);
+      const listed = isArray && !exploded ? (values[0] ?? "").split(",") : values;
+      const value = isArray ? listed.map((v) => coerce(v, items)) : coerce(values[0] ?? "", param.schema);
       if (!isArray && values.length > 1) problems.push(`query parameter ${name} repeated`);
       const error = schemaErrors(
         pointerOf(op, "parameters", String(op.parameters.indexOf(param)), "schema"),
@@ -230,8 +234,7 @@ export class ContractMock {
       problems.push("missing or malformed Authorization: Bearer header");
     }
 
-    // Request body. Stricter than the document, which never sets requestBody.required:
-    // a declared body must be sent unless the document says `required: false`.
+    // Request body: a declared body must be sent unless the document says `required: false`.
     let body: unknown;
     if (op.requestBody) {
       if (rawBody === "") {

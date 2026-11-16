@@ -27,7 +27,7 @@ export async function readmeExamples(
 
   const { data: code } = await bs.inboxes.codes.latest("support@acme.dev", {
     from: "example.com",
-    wait: "30",
+    wait: 30,
   });
   console.log(code?.code);
 

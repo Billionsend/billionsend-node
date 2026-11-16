@@ -66,7 +66,7 @@ for await (const event of opened.data) {
 Waiting for a sign-in code sent to the inbox:
 
 ```ts
-const { data: code } = await bs.inboxes.codes.latest("support@acme.dev", { from: "example.com", wait: "30" });
+const { data: code } = await bs.inboxes.codes.latest("support@acme.dev", { from: "example.com", wait: 30 });
 ```
 
 ## Agent sign-up

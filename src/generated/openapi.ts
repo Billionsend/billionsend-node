@@ -12,97 +12,7 @@ export interface paths {
       cookie?: never;
     };
     /** Get email metrics */
-    get: {
-      parameters: {
-        query?: {
-          start_date?: string;
-          end_date?: string;
-          timezone?: string;
-          granularity?: "hourly" | "daily" | "weekly" | "monthly";
-          metrics?: (
-            | "received"
-            | "delivered"
-            | "complained"
-            | "suppressed"
-            | "bounced"
-            | "bounced_transient"
-            | "bounced_permanent"
-            | "bounced_undetermined"
-            | "opened"
-            | "clicked"
-            | "unsubscribed"
-            | "delivery_delayed"
-            | "failed"
-            | "sent"
-            | "unique_opened"
-            | "unique_clicked"
-            | "delivery_rate"
-            | "open_rate"
-            | "click_rate"
-            | "bounce_rate"
-            | "complaint_rate"
-            | "unsubscribe_rate"
-          )[];
-          dimensions?: ("period" | "domain" | "email" | "broadcast")[];
-          domain_id?: string[];
-          email_id?: string[];
-          broadcast_id?: string[];
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /** @enum {string} */
-              object: "metrics";
-              start_date: string;
-              end_date: string;
-              metrics: string[];
-              dimensions: string[];
-              /** @enum {string} */
-              granularity: "hourly" | "daily" | "weekly" | "monthly";
-              totals: {
-                [key: string]: number;
-              };
-              data?: {
-                [key: string]: string | number | null;
-              }[];
-            };
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        503: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["emails.metrics"];
     put?: never;
     post?: never;
     delete?: never;
@@ -119,95 +29,10 @@ export interface paths {
       cookie?: never;
     };
     /** List contacts */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-          include?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListContactsResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["contacts.list"];
     put?: never;
     /** Create a contact */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateContactRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ContactIdResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["contacts.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -224,37 +49,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Read contacts in bulk */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["BatchGetContactsRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BatchGetContactsResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["contacts.batch.get"];
     delete?: never;
     options?: never;
     head?: never;
@@ -271,37 +66,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Delete in bulk */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["BatchRemoveContactsRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BatchRemoveContactsResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["contacts.batch.remove"];
     delete?: never;
     options?: never;
     head?: never;
@@ -318,65 +83,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Create in bulk */
-    post: {
-      parameters: {
-        query?: {
-          on_conflict?: "error" | "skip" | "upsert";
-        };
-        header?: {
-          "x-batch-validation"?: "strict" | "permissive";
-        };
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["BatchContactsRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BatchContactsResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["contacts.batch.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -391,121 +98,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a contact */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetContactResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["contacts.get"];
     put?: never;
     post?: never;
     /** Delete a contact */
-    delete: {
-      parameters: {
-        query?: {
-          erase?: "true" | "false";
-        };
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveContactResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["contacts.delete"];
     options?: never;
     head?: never;
     /** Update a contact */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateContactRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ContactIdResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["contacts.update"];
     trace?: never;
   };
   "/contacts/{id}/preferences-link": {
@@ -518,43 +119,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Get a preferences link */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ContactPreferencesLinkResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["contacts.preferencesLink"];
     delete?: never;
     options?: never;
     head?: never;
@@ -569,82 +134,14 @@ export interface paths {
       cookie?: never;
     };
     /** List contact topics */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListContactTopicsResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["contacts.topics.list"];
     put?: never;
     post?: never;
     delete?: never;
     options?: never;
     head?: never;
     /** Update contact topics */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateContactTopicsRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["UpdateContactTopicsResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["contacts.topics.update"];
     trace?: never;
   };
   "/contacts/{id}/segments/{segmentId}": {
@@ -657,67 +154,9 @@ export interface paths {
     get?: never;
     put?: never;
     /** Add to a segment */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-          segmentId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["AddContactSegmentResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["contacts.segments.add"];
     /** Leave a segment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-          segmentId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveContactSegmentResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["contacts.segments.remove"];
     options?: never;
     head?: never;
     patch?: never;
@@ -733,63 +172,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Create a contact */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          audienceId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateContactRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ContactIdResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["audiences.contacts.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -804,124 +187,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a contact */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          audienceId: string;
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetContactResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["audiences.contacts.get"];
     put?: never;
     post?: never;
     /** Delete a contact */
-    delete: {
-      parameters: {
-        query?: {
-          erase?: "true" | "false";
-        };
-        header?: never;
-        path: {
-          audienceId: string;
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveContactResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["audiences.contacts.delete"];
     options?: never;
     head?: never;
     /** Update a contact */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          audienceId: string;
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateContactRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ContactIdResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["audiences.contacts.update"];
     trace?: never;
   };
   "/contact-properties": {
@@ -932,78 +206,10 @@ export interface paths {
       cookie?: never;
     };
     /** List properties */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListContactPropertiesResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["contactProperties.list"];
     put?: never;
     /** Create a property */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateContactPropertyRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetContactPropertyResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["contactProperties.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1018,111 +224,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a property */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetContactPropertyResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["contactProperties.get"];
     put?: never;
     post?: never;
     /** Delete a property */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveContactPropertyResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["contactProperties.delete"];
     options?: never;
     head?: never;
     /** Update a property */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateContactPropertyRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ContactPropertyIdResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["contactProperties.update"];
     trace?: never;
   };
   "/segments": {
@@ -1133,78 +243,10 @@ export interface paths {
       cookie?: never;
     };
     /** List segments */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListSegmentsResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["segments.list"];
     put?: never;
     /** Create a segment */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateSegmentRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SegmentResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["segments.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1219,127 +261,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a segment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetSegmentResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["segments.get"];
     put?: never;
     post?: never;
     /** Delete a segment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveSegmentResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["segments.delete"];
     options?: never;
     head?: never;
     /** Update a segment */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateSegmentRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SegmentResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["segments.update"];
     trace?: never;
   };
   "/segments/{id}/contacts": {
@@ -1350,48 +280,7 @@ export interface paths {
       cookie?: never;
     };
     /** List segment contacts */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-          include?: string;
-        };
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListContactsResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["segments.contacts.list"];
     put?: never;
     post?: never;
     delete?: never;
@@ -1408,94 +297,10 @@ export interface paths {
       cookie?: never;
     };
     /** List broadcasts */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListBroadcastsResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["broadcasts.list"];
     put?: never;
     /** Create a broadcast */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateBroadcastRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SendBroadcastResponse"];
-          };
-        };
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["broadcasts.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1510,127 +315,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a broadcast */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetBroadcastResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["broadcasts.get"];
     put?: never;
     post?: never;
     /** Delete a broadcast */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveBroadcastResponse"];
-          };
-        };
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["broadcasts.delete"];
     options?: never;
     head?: never;
     /** Update a broadcast */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateBroadcastRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BroadcastIdResponse"];
-          };
-        };
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["broadcasts.update"];
     trace?: never;
   };
   "/broadcasts/{id}/send": {
@@ -1643,63 +336,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Send a broadcast */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["SendBroadcastRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SendBroadcastResponse"];
-          };
-        };
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["broadcasts.send"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1716,43 +353,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Duplicate a broadcast */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["DuplicateBroadcastResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["broadcasts.duplicate"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1769,43 +370,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Cancel a broadcast */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CancelBroadcastResponse"];
-          };
-        };
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["broadcasts.cancel"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1820,66 +385,10 @@ export interface paths {
       cookie?: never;
     };
     /** List topics */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListTopicsResponse"];
-          };
-        };
-      };
-    };
+    get: operations["topics.list"];
     put?: never;
     /** Create a topic */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateTopicRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TopicResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["topics.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -1894,127 +403,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a topic */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TopicResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["topics.get"];
     put?: never;
     post?: never;
     /** Delete a topic */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveTopicResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["topics.delete"];
     options?: never;
     head?: never;
     /** Update a topic */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateTopicRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TopicIdResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["topics.update"];
     trace?: never;
   };
   "/domains": {
@@ -2025,94 +422,10 @@ export interface paths {
       cookie?: never;
     };
     /** List domains */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListDomainsResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["domains.list"];
     put?: never;
     /** Create a domain */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateDomainRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CreateDomainResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["domains.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2127,143 +440,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a domain */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetDomainResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["domains.get"];
     put?: never;
     post?: never;
     /** Delete a domain */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveDomainResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["domains.delete"];
     options?: never;
     head?: never;
     /** Update a domain */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateDomainRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetDomainResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["domains.update"];
     trace?: never;
   };
   "/domains/{id}/verify": {
@@ -2276,43 +461,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Verify a domain */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetDomainResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["domains.verify"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2327,78 +476,10 @@ export interface paths {
       cookie?: never;
     };
     /** List API keys */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListApiKeysResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["apiKeys.list"];
     put?: never;
     /** Create an API key */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateApiKeyRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CreateApiKeyResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["apiKeys.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2416,35 +497,7 @@ export interface paths {
     put?: never;
     post?: never;
     /** Delete an API key */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveApiKeyResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["apiKeys.delete"];
     options?: never;
     head?: never;
     patch?: never;
@@ -2458,78 +511,10 @@ export interface paths {
       cookie?: never;
     };
     /** List webhooks */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListWebhooksResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["webhooks.list"];
     put?: never;
     /** Create a webhook */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateWebhookRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CreateWebhookResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["webhooks.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2544,111 +529,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a webhook */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetWebhookResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["webhooks.get"];
     put?: never;
     post?: never;
     /** Delete a webhook */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveWebhookResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["webhooks.delete"];
     options?: never;
     head?: never;
     /** Update a webhook */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateWebhookRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["WebhookIdResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["webhooks.update"];
     trace?: never;
   };
   "/webhooks/{id}/rotate": {
@@ -2661,47 +550,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Rotate signing secret */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["RotateWebhookSecretRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RotateWebhookSecretResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["webhooks.rotate"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2718,37 +567,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Add in bulk */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["BatchAddSuppressionsRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BatchAddSuppressionsResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["suppressions.batch.add"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2765,37 +584,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Remove in bulk */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["BatchRemoveSuppressionsRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BatchRemoveSuppressionsResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["suppressions.batch.remove"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2810,71 +599,10 @@ export interface paths {
       cookie?: never;
     };
     /** List suppressions */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-          origin?: "bounce" | "complaint" | "manual";
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListSuppressionsResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["suppressions.list"];
     put?: never;
     /** Add a suppression */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateSuppressionRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SuppressionIdResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["suppressions.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -2889,67 +617,11 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a suppression */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetSuppressionResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["suppressions.get"];
     put?: never;
     post?: never;
     /** Remove a suppression */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveSuppressionResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["suppressions.delete"];
     options?: never;
     head?: never;
     patch?: never;
@@ -2963,87 +635,10 @@ export interface paths {
       cookie?: never;
     };
     /** List unsubscribes */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-          domain_id?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListUnsubscribesResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["unsubscribes.list"];
     put?: never;
     /** Record an unsubscribe */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateUnsubscribeRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["UnsubscribeResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["unsubscribes.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -3061,35 +656,7 @@ export interface paths {
     put?: never;
     post?: never;
     /** Delete an unsubscribe */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveUnsubscribeResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["unsubscribes.delete"];
     options?: never;
     head?: never;
     patch?: never;
@@ -3103,78 +670,10 @@ export interface paths {
       cookie?: never;
     };
     /** List templates */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListTemplatesResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["templates.list"];
     put?: never;
     /** Create a template */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateTemplateRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TemplateIdResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["templates.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -3189,119 +688,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a template */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetTemplateResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["templates.get"];
     put?: never;
     post?: never;
     /** Delete a template */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveTemplateResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["templates.delete"];
     options?: never;
     head?: never;
     /** Update a template */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateTemplateRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TemplateIdResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["templates.update"];
     trace?: never;
   };
   "/templates/{id}/publish": {
@@ -3314,35 +709,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Publish a template */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TemplateIdResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["templates.publish"];
     delete?: never;
     options?: never;
     head?: never;
@@ -3359,35 +726,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Duplicate a template */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TemplateIdResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["templates.duplicate"];
     delete?: never;
     options?: never;
     head?: never;
@@ -3402,25 +741,7 @@ export interface paths {
       cookie?: never;
     };
     /** Check verification availability */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["VerificationAvailabilityResponse"];
-          };
-        };
-      };
-    };
+    get: operations["verifications.availability"];
     put?: never;
     post?: never;
     delete?: never;
@@ -3439,45 +760,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Estimate a verification */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["EstimateVerificationRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["EstimateVerificationResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["verifications.estimate"];
     delete?: never;
     options?: never;
     head?: never;
@@ -3492,94 +775,10 @@ export interface paths {
       cookie?: never;
     };
     /** List verifications */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListVerificationsResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["verifications.list"];
     put?: never;
     /** Start a verification */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["StartVerificationRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["StartVerificationResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        503: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["verifications.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -3594,43 +793,7 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a verification */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["VerificationRun"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["verifications.get"];
     put?: never;
     post?: never;
     delete?: never;
@@ -3647,33 +810,7 @@ export interface paths {
       cookie?: never;
     };
     /** Get usage */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["UsageResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["usage.get"];
     put?: never;
     post?: never;
     delete?: never;
@@ -3690,52 +827,7 @@ export interface paths {
       cookie?: never;
     };
     /** Stream inbox events */
-    get: {
-      parameters: {
-        query?: {
-          types?: string;
-          last_event_id?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/event-stream": string;
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.events.stream"];
     put?: never;
     post?: never;
     delete?: never;
@@ -3752,62 +844,7 @@ export interface paths {
       cookie?: never;
     };
     /** Stream one inbox's events */
-    get: {
-      parameters: {
-        query?: {
-          types?: string;
-          last_event_id?: string;
-        };
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/event-stream": string;
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.events.streamInbox"];
     put?: never;
     post?: never;
     delete?: never;
@@ -3824,111 +861,10 @@ export interface paths {
       cookie?: never;
     };
     /** List inboxes */
-    get: {
-      parameters: {
-        query?: {
-          limit?: string;
-          after?: string;
-          before?: string;
-          kind?: "agent" | "human";
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListInboxesResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.list"];
     put?: never;
     /** Create an inbox */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateInboxRequest"];
-        };
-      };
-      responses: {
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["Inbox"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        503: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["inboxes.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -3943,143 +879,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve an inbox */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["Inbox"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.get"];
     put?: never;
     post?: never;
     /** Delete an inbox */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveInboxResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["inboxes.delete"];
     options?: never;
     head?: never;
     /** Update an inbox */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateInboxRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["Inbox"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        503: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["inboxes.update"];
     trace?: never;
   };
   "/inboxes/{inbox_id}/agent": {
@@ -4090,74 +898,13 @@ export interface paths {
       cookie?: never;
     };
     /** Get agent settings */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxAgent"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.agent.get"];
     put?: never;
     post?: never;
     delete?: never;
     options?: never;
     head?: never;
-    /** Update agent settings */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateInboxAgentRequest"];
-        };
-      };
-      responses: {
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch?: never;
     trace?: never;
   };
   "/inboxes/{inbox_id}/safety": {
@@ -4168,90 +915,14 @@ export interface paths {
       cookie?: never;
     };
     /** Get safety rules */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxSafety"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.safety.get"];
     put?: never;
     post?: never;
     delete?: never;
     options?: never;
     head?: never;
     /** Update safety rules */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["InboxSafetyPatch"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxSafety"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["inboxes.safety.update"];
     trace?: never;
   };
   "/inboxes/{inbox_id}/labels": {
@@ -4262,78 +933,10 @@ export interface paths {
       cookie?: never;
     };
     /** List an inbox's labels */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListInboxLabelsResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.labels.list"];
     put?: never;
     /** Create a label */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateInboxLabelRequest"];
-        };
-      };
-      responses: {
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxLabel"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["inboxes.labels.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -4351,81 +954,11 @@ export interface paths {
     put?: never;
     post?: never;
     /** Delete a label */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          label_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveInboxLabelResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["inboxes.labels.delete"];
     options?: never;
     head?: never;
     /** Update a label */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          label_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateInboxLabelRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxLabel"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["inboxes.labels.update"];
     trace?: never;
   };
   "/inboxes/{inbox_id}/threads/search": {
@@ -4436,67 +969,7 @@ export interface paths {
       cookie?: never;
     };
     /** Search threads */
-    get: {
-      parameters: {
-        query?: {
-          limit?: string;
-          after?: string;
-          before?: string;
-          folders?: string;
-          labels?: string;
-          read?: string;
-          include_quarantined?: string;
-          query?: string;
-          from?: string;
-          to?: string;
-          cc?: string;
-          bcc?: string;
-          has_attachment?: string;
-          start_date?: string;
-          end_date?: string;
-        };
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SearchInboxThreadsResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.threads.search"];
     put?: never;
     post?: never;
     delete?: never;
@@ -4513,59 +986,7 @@ export interface paths {
       cookie?: never;
     };
     /** List threads */
-    get: {
-      parameters: {
-        query?: {
-          limit?: string;
-          after?: string;
-          before?: string;
-          folders?: string;
-          labels?: string;
-          read?: string;
-          include_quarantined?: string;
-        };
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListInboxThreadsResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.threads.list"];
     put?: never;
     post?: never;
     delete?: never;
@@ -4582,114 +1003,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a thread */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          thread_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxThread"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.threads.get"];
     put?: never;
     post?: never;
     /** Delete a thread */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          thread_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveInboxThreadResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["inboxes.threads.delete"];
     options?: never;
     head?: never;
     /** Update a thread */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          thread_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateInboxThreadRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxThread"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["inboxes.threads.update"];
     trace?: never;
   };
   "/inboxes/{inbox_id}/threads/{thread_id}/labels": {
@@ -4701,91 +1023,9 @@ export interface paths {
     };
     get?: never;
     /** Set a thread's labels */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          thread_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["SetInboxThreadLabelsRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxThreadLabels"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    put: operations["inboxes.threads.labels.set"];
     /** Add labels to a thread */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          thread_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["AddInboxThreadLabelsRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxThreadLabels"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["inboxes.threads.labels.add"];
     delete?: never;
     options?: never;
     head?: never;
@@ -4803,37 +1043,7 @@ export interface paths {
     put?: never;
     post?: never;
     /** Remove a thread label */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          thread_id: string;
-          label_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxThreadLabels"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["inboxes.threads.labels.remove"];
     options?: never;
     head?: never;
     patch?: never;
@@ -4847,57 +1057,7 @@ export interface paths {
       cookie?: never;
     };
     /** List a thread's emails */
-    get: {
-      parameters: {
-        query?: {
-          limit?: string;
-          after?: string;
-          before?: string;
-          include_quarantined?: string;
-        };
-        header?: never;
-        path: {
-          inbox_id: string;
-          thread_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListInboxThreadEmailsResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.threads.emails.list"];
     put?: never;
     post?: never;
     delete?: never;
@@ -4914,47 +1074,7 @@ export interface paths {
       cookie?: never;
     };
     /** Get a thread email */
-    get: {
-      parameters: {
-        query?: {
-          include_quarantined?: string;
-        };
-        header?: never;
-        path: {
-          inbox_id: string;
-          thread_id: string;
-          email_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxThreadEmail"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.threads.emails.get"];
     put?: never;
     post?: never;
     delete?: never;
@@ -4971,55 +1091,7 @@ export interface paths {
       cookie?: never;
     };
     /** List quarantine */
-    get: {
-      parameters: {
-        query?: {
-          limit?: string;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListQuarantinedEmailsResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.quarantine.list"];
     put?: never;
     post?: never;
     delete?: never;
@@ -5038,72 +1110,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Release an email */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          email_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["ReleaseQuarantinedRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxRelease"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        503: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["inboxes.quarantine.release"];
     delete?: never;
     options?: never;
     head?: never;
@@ -5118,56 +1125,7 @@ export interface paths {
       cookie?: never;
     };
     /** Get latest code */
-    get: {
-      parameters: {
-        query?: {
-          from?: string;
-          wait?: string;
-          max_age?: string;
-          since?: string;
-        };
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["VerificationCode"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.codes.latest"];
     put?: never;
     post?: never;
     delete?: never;
@@ -5186,81 +1144,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Reply in a thread */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          thread_id: string;
-          email_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["InboxReplyRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxSentEmail"];
-          };
-        };
-        202: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxDraft"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["inboxes.threads.emails.reply"];
     delete?: never;
     options?: never;
     head?: never;
@@ -5277,81 +1161,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Forward a thread email */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          thread_id: string;
-          email_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["InboxForwardRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxSentEmail"];
-          };
-        };
-        202: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxDraft"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["inboxes.threads.emails.forward"];
     delete?: never;
     options?: never;
     head?: never;
@@ -5368,79 +1178,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Send an email from an inbox */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["InboxSendRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxSentEmail"];
-          };
-        };
-        202: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxDraft"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["inboxes.send"];
     delete?: never;
     options?: never;
     head?: never;
@@ -5455,146 +1193,10 @@ export interface paths {
       cookie?: never;
     };
     /** List drafts */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListInboxDraftsResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.drafts.list"];
     put?: never;
     /** Create a draft */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateInboxDraftRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxDraft"];
-          };
-        };
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxDraft"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["inboxes.drafts.create"];
     delete?: never;
     options?: never;
     head?: never;
@@ -5609,202 +1211,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve a draft */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          draft_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxDraft"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["inboxes.drafts.get"];
     put?: never;
     post?: never;
     /** Delete a draft */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          draft_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["DeleteInboxDraftResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["inboxes.drafts.delete"];
     options?: never;
     head?: never;
     /** Update a draft */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          draft_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateInboxDraftRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxDraft"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["inboxes.drafts.update"];
     trace?: never;
   };
   "/inboxes/{inbox_id}/drafts/{draft_id}/send": {
@@ -5817,84 +1232,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Send a draft */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          draft_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxSentEmail"];
-          };
-        };
-        202: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxDraft"];
-          };
-        };
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["inboxes.drafts.send"];
     delete?: never;
     options?: never;
     head?: never;
@@ -5911,68 +1249,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Reject a draft */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          inbox_id: string;
-          draft_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxDraft"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["inboxes.drafts.reject"];
     delete?: never;
     options?: never;
     head?: never;
@@ -5989,79 +1266,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Reply to an email */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["ReceivedEmailReplyRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ReceivedEmailSendResponse"];
-          };
-        };
-        202: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxDraft"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["emails.receiving.reply"];
     delete?: never;
     options?: never;
     head?: never;
@@ -6078,79 +1283,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Forward an email */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["ReceivedEmailForwardRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ReceivedEmailSendResponse"];
-          };
-        };
-        202: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxDraft"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["emails.receiving.forward"];
     delete?: never;
     options?: never;
     head?: never;
@@ -6167,61 +1300,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Sign up as an agent */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["AgentSignupRequest"];
-        };
-      };
-      responses: {
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["AgentSignupResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        503: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["agent.signup"];
     delete?: never;
     options?: never;
     head?: never;
@@ -6236,25 +1315,7 @@ export interface paths {
       cookie?: never;
     };
     /** Get the account's claim status */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["AgentAccountStatus"];
-          };
-        };
-      };
-    };
+    get: operations["agent.status"];
     put?: never;
     post?: never;
     delete?: never;
@@ -6273,41 +1334,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Send the claim link again */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        202: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["AgentClaimEmail"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["agent.claimEmail"];
     delete?: never;
     options?: never;
     head?: never;
@@ -6322,118 +1349,10 @@ export interface paths {
       cookie?: never;
     };
     /** List emails */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListEmailsResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["emails.list"];
     put?: never;
     /** Send an email */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["SendEmailRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SendEmailResponse"];
-          };
-        };
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["emails.send"];
     delete?: never;
     options?: never;
     head?: never;
@@ -6450,77 +1369,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Send a batch of emails */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["BatchEmailRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BatchEmailResponse"];
-          };
-        };
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        409: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["emails.batch"];
     delete?: never;
     options?: never;
     head?: never;
@@ -6537,43 +1386,7 @@ export interface paths {
     get?: never;
     put?: never;
     /** Cancel an email */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CancelEmailResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    post: operations["emails.cancel"];
     delete?: never;
     options?: never;
     head?: never;
@@ -6588,127 +1401,15 @@ export interface paths {
       cookie?: never;
     };
     /** Retrieve an email */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetEmailResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["emails.get"];
     put?: never;
     post?: never;
     /** Delete an email */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RemoveEmailResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["emails.delete"];
     options?: never;
     head?: never;
     /** Update an email */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["UpdateEmailRequest"];
-        };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["UpdateEmailResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    patch: operations["emails.update"];
     trace?: never;
   };
   "/emails/receiving": {
@@ -6719,70 +1420,7 @@ export interface paths {
       cookie?: never;
     };
     /** List received emails */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-          wait?: number | null;
-          since?: string;
-          inbox_id?: string;
-          to?: string;
-          from?: string;
-          subject_contains?: string;
-          unread?: "true" | "false";
-          include_quarantined?: "true" | "false";
-          quarantined?: "true" | "false";
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListReceivedEmailsResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["emails.receiving.list"];
     put?: never;
     post?: never;
     delete?: never;
@@ -6799,93 +1437,11 @@ export interface paths {
       cookie?: never;
     };
     /** Get a received email */
-    get: {
-      parameters: {
-        query?: {
-          html_format?: "data_uri" | "cid";
-        };
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetReceivedEmailResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["emails.receiving.get"];
     put?: never;
     post?: never;
     /** Delete a received email */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["DeleteReceivedEmailResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    delete: operations["emails.receiving.delete"];
     options?: never;
     head?: never;
     patch?: never;
@@ -6899,55 +1455,7 @@ export interface paths {
       cookie?: never;
     };
     /** List attachments */
-    get: {
-      parameters: {
-        query?: {
-          limit?: number;
-          after?: string;
-          before?: string;
-        };
-        header?: never;
-        path: {
-          email_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ListReceivedAttachmentsResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["emails.receiving.attachments.list"];
     put?: never;
     post?: never;
     delete?: never;
@@ -6964,44 +1472,7 @@ export interface paths {
       cookie?: never;
     };
     /** Get an attachment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          email_id: string;
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["GetReceivedAttachmentResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["emails.receiving.attachments.get"];
     put?: never;
     post?: never;
     delete?: never;
@@ -7018,43 +1489,7 @@ export interface paths {
       cookie?: never;
     };
     /** Get email insights */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["EmailInsightsResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["emails.insights"];
     put?: never;
     post?: never;
     delete?: never;
@@ -7071,33 +1506,7 @@ export interface paths {
       cookie?: never;
     };
     /** Get deliverability */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["DeliverabilityResponse"];
-          };
-        };
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ErrorResponse"];
-          };
-        };
-      };
-    };
+    get: operations["deliverability.get"];
     put?: never;
     post?: never;
     delete?: never;
@@ -7110,6 +1519,9 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    SendInboxDraftRequest: {
+      headers?: unknown;
+    };
     ErrorResponse: {
       statusCode: number;
       name: string;
@@ -7251,7 +1663,7 @@ export interface components {
         message: string;
       }[];
     };
-    BatchContactsRequest: unknown[];
+    BatchContactsRequest: components["schemas"]["CreateContactRequest"][];
     ListContactsResponse: {
       /** @enum {string} */
       object: "list";
@@ -8539,20 +2951,6 @@ export interface components {
         | "move_to_trash"
       )[];
     };
-    UpdateInboxAgentRequest: {
-      instructions?: string | null;
-      /** @enum {string|null} */
-      tone?: "concise_professional" | "concise_casual" | "expanded_professional" | "expanded_casual" | null;
-      actions?: (
-        | "draft_reply"
-        | "forward_thread"
-        | "add_labels"
-        | "assign_thread"
-        | "mark_as_spam"
-        | "archive"
-        | "move_to_trash"
-      )[];
-    };
     InboxSafety: {
       /** @enum {string} */
       object: "inbox_safety";
@@ -9196,7 +3594,7 @@ export interface components {
         message: string;
       }[];
     };
-    BatchEmailRequest: unknown[];
+    BatchEmailRequest: components["schemas"]["SendEmailRequest"][];
     CancelEmailResponse: {
       /** @enum {string} */
       object: "email";
@@ -9506,6 +3904,7 @@ export interface components {
   headers: never;
   pathItems: never;
 }
+export type SendInboxDraftRequest = components["schemas"]["SendInboxDraftRequest"];
 export type ErrorResponse = components["schemas"]["ErrorResponse"];
 export type ContactIdResponse = components["schemas"]["ContactIdResponse"];
 export type CreateContactRequest = components["schemas"]["CreateContactRequest"];
@@ -9608,7 +4007,6 @@ export type ListInboxesResponse = components["schemas"]["ListInboxesResponse"];
 export type UpdateInboxRequest = components["schemas"]["UpdateInboxRequest"];
 export type RemoveInboxResponse = components["schemas"]["RemoveInboxResponse"];
 export type InboxAgent = components["schemas"]["InboxAgent"];
-export type UpdateInboxAgentRequest = components["schemas"]["UpdateInboxAgentRequest"];
 export type InboxSafety = components["schemas"]["InboxSafety"];
 export type ListInboxLabelsResponse = components["schemas"]["ListInboxLabelsResponse"];
 export type InboxLabel = components["schemas"]["InboxLabel"];
@@ -9663,4 +4061,7821 @@ export type DeliverabilityResponse = components["schemas"]["DeliverabilityRespon
 export type ListEmailsResponse = components["schemas"]["ListEmailsResponse"];
 export type RemoveEmailResponse = components["schemas"]["RemoveEmailResponse"];
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+  "emails.metrics": {
+    parameters: {
+      query?: {
+        start_date?: string;
+        end_date?: string;
+        timezone?: string;
+        granularity?: "hourly" | "daily" | "weekly" | "monthly";
+        metrics?: (
+          | "received"
+          | "delivered"
+          | "complained"
+          | "suppressed"
+          | "bounced"
+          | "bounced_transient"
+          | "bounced_permanent"
+          | "bounced_undetermined"
+          | "opened"
+          | "clicked"
+          | "unsubscribed"
+          | "delivery_delayed"
+          | "failed"
+          | "sent"
+          | "unique_opened"
+          | "unique_clicked"
+          | "delivery_rate"
+          | "open_rate"
+          | "click_rate"
+          | "bounce_rate"
+          | "complaint_rate"
+          | "unsubscribe_rate"
+        )[];
+        dimensions?: ("period" | "domain" | "email" | "broadcast")[];
+        domain_id?: string[];
+        email_id?: string[];
+        broadcast_id?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @enum {string} */
+            object: "metrics";
+            start_date: string;
+            end_date: string;
+            metrics: string[];
+            dimensions: string[];
+            /** @enum {string} */
+            granularity: "hourly" | "daily" | "weekly" | "monthly";
+            totals: {
+              [key: string]: number;
+            };
+            data?: {
+              [key: string]: string | number | null;
+            }[];
+          };
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+        include?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListContactsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateContactRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContactIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.batch.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BatchGetContactsRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BatchGetContactsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.batch.remove": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BatchRemoveContactsRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BatchRemoveContactsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.batch.create": {
+    parameters: {
+      query?: {
+        on_conflict?: "error" | "skip" | "upsert";
+      };
+      header?: {
+        "x-batch-validation"?: "strict" | "permissive";
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BatchContactsRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BatchContactsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetContactResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.delete": {
+    parameters: {
+      query?: {
+        erase?: "true" | "false";
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveContactResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateContactRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContactIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.preferencesLink": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContactPreferencesLinkResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.topics.list": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListContactTopicsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.topics.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateContactTopicsRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UpdateContactTopicsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.segments.add": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        segmentId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AddContactSegmentResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.segments.remove": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        segmentId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveContactSegmentResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "audiences.contacts.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        audienceId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateContactRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContactIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "audiences.contacts.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        audienceId: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetContactResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "audiences.contacts.delete": {
+    parameters: {
+      query?: {
+        erase?: "true" | "false";
+      };
+      header?: never;
+      path: {
+        audienceId: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveContactResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "audiences.contacts.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        audienceId: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateContactRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContactIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contactProperties.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListContactPropertiesResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contactProperties.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateContactPropertyRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetContactPropertyResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contactProperties.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetContactPropertyResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contactProperties.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveContactPropertyResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contactProperties.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateContactPropertyRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContactPropertyIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "segments.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListSegmentsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "segments.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateSegmentRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SegmentResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "segments.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetSegmentResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "segments.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveSegmentResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "segments.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateSegmentRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SegmentResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "segments.contacts.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+        include?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListContactsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "broadcasts.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListBroadcastsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "broadcasts.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateBroadcastRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SendBroadcastResponse"];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "broadcasts.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetBroadcastResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "broadcasts.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveBroadcastResponse"];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "broadcasts.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateBroadcastRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BroadcastIdResponse"];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "broadcasts.send": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["SendBroadcastRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SendBroadcastResponse"];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "broadcasts.duplicate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DuplicateBroadcastResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "broadcasts.cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CancelBroadcastResponse"];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "topics.list": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListTopicsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "topics.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateTopicRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TopicResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "topics.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TopicResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "topics.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveTopicResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "topics.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateTopicRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TopicIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "domains.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListDomainsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "domains.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateDomainRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CreateDomainResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "domains.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetDomainResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "domains.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveDomainResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "domains.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateDomainRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetDomainResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "domains.verify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetDomainResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "apiKeys.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListApiKeysResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "apiKeys.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateApiKeyRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CreateApiKeyResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "apiKeys.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveApiKeyResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "webhooks.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListWebhooksResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "webhooks.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateWebhookRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CreateWebhookResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "webhooks.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetWebhookResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "webhooks.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveWebhookResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "webhooks.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateWebhookRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WebhookIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "webhooks.rotate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["RotateWebhookSecretRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RotateWebhookSecretResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "suppressions.batch.add": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BatchAddSuppressionsRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BatchAddSuppressionsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "suppressions.batch.remove": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BatchRemoveSuppressionsRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BatchRemoveSuppressionsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "suppressions.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+        origin?: "bounce" | "complaint" | "manual";
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListSuppressionsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "suppressions.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateSuppressionRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SuppressionIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "suppressions.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetSuppressionResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "suppressions.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveSuppressionResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "unsubscribes.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+        domain_id?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListUnsubscribesResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "unsubscribes.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateUnsubscribeRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnsubscribeResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "unsubscribes.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveUnsubscribeResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "templates.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListTemplatesResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "templates.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateTemplateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TemplateIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "templates.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetTemplateResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "templates.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveTemplateResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "templates.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateTemplateRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TemplateIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "templates.publish": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TemplateIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "templates.duplicate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TemplateIdResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "verifications.availability": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["VerificationAvailabilityResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "verifications.estimate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EstimateVerificationRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["EstimateVerificationResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "verifications.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListVerificationsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "verifications.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StartVerificationRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StartVerificationResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "verifications.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["VerificationRun"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "usage.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UsageResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.events.stream": {
+    parameters: {
+      query?: {
+        types?: string;
+        last_event_id?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "text/event-stream": string;
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.events.streamInbox": {
+    parameters: {
+      query?: {
+        types?: string;
+        last_event_id?: string;
+      };
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "text/event-stream": string;
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+        kind?: "agent" | "human";
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListInboxesResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["CreateInboxRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Inbox"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Inbox"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveInboxResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateInboxRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Inbox"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.agent.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxAgent"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.safety.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxSafety"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.safety.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["InboxSafetyPatch"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxSafety"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.labels.list": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListInboxLabelsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.labels.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateInboxLabelRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxLabel"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.labels.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        label_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveInboxLabelResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.labels.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        label_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateInboxLabelRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxLabel"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.search": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+        folders?: string;
+        labels?: string;
+        read?: boolean;
+        include_quarantined?: boolean;
+        query?: string;
+        from?: string;
+        to?: string;
+        cc?: string;
+        bcc?: string;
+        has_attachment?: boolean;
+        start_date?: string;
+        end_date?: string;
+      };
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SearchInboxThreadsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+        folders?: string;
+        labels?: string;
+        read?: boolean;
+        include_quarantined?: boolean;
+      };
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListInboxThreadsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        thread_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxThread"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        thread_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveInboxThreadResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        thread_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateInboxThreadRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxThread"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.labels.set": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        thread_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SetInboxThreadLabelsRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxThreadLabels"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.labels.add": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        thread_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AddInboxThreadLabelsRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxThreadLabels"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.labels.remove": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        thread_id: string;
+        label_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxThreadLabels"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.emails.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+        include_quarantined?: boolean;
+      };
+      header?: never;
+      path: {
+        inbox_id: string;
+        thread_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListInboxThreadEmailsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.emails.get": {
+    parameters: {
+      query?: {
+        include_quarantined?: boolean;
+      };
+      header?: never;
+      path: {
+        inbox_id: string;
+        thread_id: string;
+        email_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxThreadEmail"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.quarantine.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListQuarantinedEmailsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.quarantine.release": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        email_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ReleaseQuarantinedRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxRelease"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.codes.latest": {
+    parameters: {
+      query?: {
+        from?: string;
+        wait?: number;
+        max_age?: number;
+        since?: string;
+      };
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["VerificationCode"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.emails.reply": {
+    parameters: {
+      query?: never;
+      header?: {
+        "Idempotency-Key"?: string;
+      };
+      path: {
+        inbox_id: string;
+        thread_id: string;
+        email_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["InboxReplyRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxSentEmail"];
+        };
+      };
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxDraft"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.threads.emails.forward": {
+    parameters: {
+      query?: never;
+      header?: {
+        "Idempotency-Key"?: string;
+      };
+      path: {
+        inbox_id: string;
+        thread_id: string;
+        email_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["InboxForwardRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxSentEmail"];
+        };
+      };
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxDraft"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.send": {
+    parameters: {
+      query?: never;
+      header?: {
+        "Idempotency-Key"?: string;
+      };
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["InboxSendRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxSentEmail"];
+        };
+      };
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxDraft"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.drafts.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListInboxDraftsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.drafts.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["CreateInboxDraftRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxDraft"];
+        };
+      };
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxDraft"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.drafts.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        draft_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxDraft"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.drafts.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        draft_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DeleteInboxDraftResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.drafts.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        draft_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UpdateInboxDraftRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxDraft"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.drafts.send": {
+    parameters: {
+      query?: never;
+      header?: {
+        "Idempotency-Key"?: string;
+      };
+      path: {
+        inbox_id: string;
+        draft_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["SendInboxDraftRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxSentEmail"];
+        };
+      };
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxDraft"];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.drafts.reject": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inbox_id: string;
+        draft_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxDraft"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.receiving.reply": {
+    parameters: {
+      query?: never;
+      header?: {
+        "Idempotency-Key"?: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ReceivedEmailReplyRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReceivedEmailSendResponse"];
+        };
+      };
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxDraft"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.receiving.forward": {
+    parameters: {
+      query?: never;
+      header?: {
+        "Idempotency-Key"?: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReceivedEmailForwardRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReceivedEmailSendResponse"];
+        };
+      };
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InboxDraft"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "agent.signup": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AgentSignupRequest"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AgentSignupResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "agent.status": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AgentAccountStatus"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "agent.claimEmail": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AgentClaimEmail"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListEmailsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.send": {
+    parameters: {
+      query?: never;
+      header?: {
+        "Idempotency-Key"?: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SendEmailRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SendEmailResponse"];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.batch": {
+    parameters: {
+      query?: never;
+      header?: {
+        "Idempotency-Key"?: string;
+        "x-batch-validation"?: "strict" | "permissive";
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BatchEmailRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BatchEmailResponse"];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CancelEmailResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetEmailResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveEmailResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateEmailRequest"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UpdateEmailResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.receiving.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+        wait?: number;
+        since?: string;
+        inbox_id?: string;
+        to?: string;
+        from?: string;
+        subject_contains?: string;
+        unread?: "true" | "false";
+        include_quarantined?: "true" | "false";
+        quarantined?: "true" | "false";
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListReceivedEmailsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.receiving.get": {
+    parameters: {
+      query?: {
+        html_format?: "data_uri" | "cid";
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetReceivedEmailResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.receiving.delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DeleteReceivedEmailResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.receiving.attachments.list": {
+    parameters: {
+      query?: {
+        limit?: number;
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path: {
+        email_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListReceivedAttachmentsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.receiving.attachments.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        email_id: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetReceivedAttachmentResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.insights": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["EmailInsightsResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "deliverability.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DeliverabilityResponse"];
+        };
+      };
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      429: {
+        headers: {
+          "Retry-After"?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+}

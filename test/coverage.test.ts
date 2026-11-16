@@ -144,15 +144,13 @@ const CALLS: Record<string, Call> = {
 
   // Inboxes
   "POST /inboxes": (bs) => bs.inboxes.create(sampleBody("POST /inboxes")),
-  "GET /inboxes": (bs) => bs.inboxes.list({ kind: "agent", limit: "10" }),
+  "GET /inboxes": (bs) => bs.inboxes.list({ kind: "agent", limit: 10 }),
   "GET /inboxes/{inbox_id}": (bs) => bs.inboxes.get(INBOX),
   "PATCH /inboxes/{inbox_id}": (bs) => bs.inboxes.update(ID, sampleBody("PATCH /inboxes/{inbox_id}")),
   "DELETE /inboxes/{inbox_id}": (bs) => bs.inboxes.delete(ID),
   "POST /inboxes/{inbox_id}/emails": (bs) =>
     bs.inboxes.send(ID, sampleBody("POST /inboxes/{inbox_id}/emails"), { idempotencyKey: "s-1" }),
   "GET /inboxes/{inbox_id}/agent": (bs) => bs.inboxes.agent.get(ID),
-  "PATCH /inboxes/{inbox_id}/agent": (bs) =>
-    bs.inboxes.agent.update(ID, sampleBody("PATCH /inboxes/{inbox_id}/agent")),
   "GET /inboxes/{inbox_id}/safety": (bs) => bs.inboxes.safety.get(ID),
   "PATCH /inboxes/{inbox_id}/safety": (bs) =>
     bs.inboxes.safety.update(ID, sampleBody("PATCH /inboxes/{inbox_id}/safety")),
@@ -162,9 +160,9 @@ const CALLS: Record<string, Call> = {
   "PATCH /inboxes/{inbox_id}/labels/{label_id}": (bs) =>
     bs.inboxes.labels.update(ID, ID2, sampleBody("PATCH /inboxes/{inbox_id}/labels/{label_id}")),
   "DELETE /inboxes/{inbox_id}/labels/{label_id}": (bs) => bs.inboxes.labels.delete(ID, ID2),
-  "GET /inboxes/{inbox_id}/threads": (bs) => bs.inboxes.threads.list(ID, { folders: "inbox", read: "false" }),
+  "GET /inboxes/{inbox_id}/threads": (bs) => bs.inboxes.threads.list(ID, { folders: "inbox", read: false }),
   "GET /inboxes/{inbox_id}/threads/search": (bs) =>
-    bs.inboxes.threads.search(ID, { query: "invoice", has_attachment: "true" }),
+    bs.inboxes.threads.search(ID, { query: "invoice", has_attachment: true }),
   "GET /inboxes/{inbox_id}/threads/{thread_id}": (bs) => bs.inboxes.threads.get(ID, ID2),
   "PATCH /inboxes/{inbox_id}/threads/{thread_id}": (bs) =>
     bs.inboxes.threads.update(ID, ID2, sampleBody("PATCH /inboxes/{inbox_id}/threads/{thread_id}")),
@@ -177,7 +175,7 @@ const CALLS: Record<string, Call> = {
     bs.inboxes.threads.labels.remove(ID, ID2, ID),
   "GET /inboxes/{inbox_id}/threads/{thread_id}/emails": (bs) => bs.inboxes.threads.emails.list(ID, ID2),
   "GET /inboxes/{inbox_id}/threads/{thread_id}/emails/{email_id}": (bs) =>
-    bs.inboxes.threads.emails.get(ID, ID2, ID, { include_quarantined: "true" }),
+    bs.inboxes.threads.emails.get(ID, ID2, ID, { include_quarantined: true }),
   "POST /inboxes/{inbox_id}/threads/{thread_id}/emails/{email_id}/reply": (bs) =>
     bs.inboxes.threads.emails.reply(
       ID,
@@ -196,7 +194,7 @@ const CALLS: Record<string, Call> = {
   "POST /inboxes/{inbox_id}/quarantine/{email_id}/release": (bs) =>
     bs.inboxes.quarantine.release(ID, ID2, { trust_sender: true }),
   "GET /inboxes/{inbox_id}/codes/latest": (bs) =>
-    bs.inboxes.codes.latest(ID, { wait: "10", from: "example.com" }),
+    bs.inboxes.codes.latest(ID, { wait: 10, from: "example.com" }),
   "POST /inboxes/{inbox_id}/drafts": (bs) =>
     bs.inboxes.drafts.create(ID, sampleBody("POST /inboxes/{inbox_id}/drafts")),
   "GET /inboxes/{inbox_id}/drafts": (bs) => bs.inboxes.drafts.list(ID, { limit: 20 }),
@@ -228,6 +226,17 @@ describe("operation coverage", () => {
       "SDK calls for unknown operations",
     ).toEqual([]);
     expect(table.size).toBe(OPERATION_KEYS.size);
+  });
+
+  it("names each method after its operation's operationId", () => {
+    const bs = client() as unknown as Record<string, unknown>;
+    const missing = [...OPERATION_KEYS].filter((key) => {
+      const id = operation(key).operationId;
+      if (!id) return true;
+      const target = id.split(".").reduce<unknown>((at, name) => (at as Record<string, unknown>)?.[name], bs);
+      return typeof target !== "function";
+    });
+    expect(missing, "operations whose operationId is not an SDK method").toEqual([]);
   });
 
   describe.each(Object.entries(CALLS))("%s", (key, call) => {
