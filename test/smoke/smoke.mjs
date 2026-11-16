@@ -47,5 +47,17 @@ assert.deepEqual(
   [["1", "inbox.email.received", { ok: true }]],
 );
 
+const verified = await sdk.verifyWebhook(
+  '{"test": 2432232314}',
+  {
+    "webhook-id": "msg_p5jXN8AQM9LWM0D4loKWxJek",
+    "webhook-timestamp": "1614265330",
+    "webhook-signature": "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=",
+  },
+  "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw",
+  { now: new Date(1614265330 * 1000) },
+);
+assert.deepEqual(verified, { test: 2432232314 });
+
 server.close();
 console.log(`esm ok (node ${process.version})`);

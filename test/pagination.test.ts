@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type BillionSend, BillionSendRequestError, paginate } from "../src/index.js";
+import { type BillionSend, PermissionDeniedError, paginate } from "../src/index.js";
 import { operation, sampleResponse } from "./contract/spec.js";
 import { ID, useContractMock } from "./helpers.js";
 
@@ -89,7 +89,7 @@ describe("listAll", () => {
     expect(last?.url.searchParams.get("after")).toBe(ids[0]);
   });
 
-  it("throws the page error as BillionSendRequestError", async () => {
+  it("throws the page error as its error class", async () => {
     mock.reply("GET /segments", {
       status: 403,
       body: { statusCode: 403, name: "restricted_api_key", message: "No" },
@@ -99,7 +99,7 @@ describe("listAll", () => {
         // drain
       }
     };
-    await expect(iterate()).rejects.toBeInstanceOf(BillionSendRequestError);
+    await expect(iterate()).rejects.toBeInstanceOf(PermissionDeniedError);
     mock.reply("GET /segments", {
       status: 403,
       body: { statusCode: 403, name: "restricted_api_key", message: "No" },

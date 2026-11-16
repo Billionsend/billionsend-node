@@ -1,5 +1,18 @@
-import { applicationError, type BillionSendError, errorFromResponse } from "./errors.js";
-import { IDEMPOTENT_METHODS, retryDelayMs, sleep } from "./retry.js";
+import {
+  APIConnectionError,
+  APITimeoutError,
+  AuthenticationError,
+  applicationError,
+  BillionSendError,
+  errorFromResponse,
+} from "./errors.js";
+import {
+  IDEMPOTENT_METHODS,
+  newIdempotencyKey,
+  retryable as retryableError,
+  retryDelayMs,
+  sleep,
+} from "./retry.js";
 import type {
   ApiPath,
   HttpMethod,
@@ -32,7 +45,11 @@ export interface BillionSendOptions {
   fetch?: typeof fetch;
   /** Per-attempt timeout in milliseconds (default 60000). Event streams are timed only until they connect. */
   timeoutMs?: number;
-  /** Retries for 429, 5xx and network failures on idempotent requests (default 2). */
+  /**
+   * Retries for 429, 5xx, timeouts and network failures (default 2). Only
+   * requests safe to repeat are retried: `GET`, `PUT` and `DELETE`, and the
+   * sending operations, which always carry an `Idempotency-Key`.
+   */
   maxRetries?: number;
   /** Extra headers sent with every request. */
   headers?: Record<string, string>;
@@ -51,9 +68,11 @@ export interface RequestOptions {
 
 export interface IdempotentRequestOptions extends RequestOptions {
   /**
-   * Sent as the `Idempotency-Key` header (1 to 256 characters). A repeat with
-   * the same key and payload answers the first result, and it makes the
-   * request safe to retry.
+   * Sent as the `Idempotency-Key` header (1 to 256 characters): a repeat with
+   * the same key and payload answers the first result instead of sending
+   * again. Without one the client makes a new key for each call (a UUID), and
+   * that call's retries reuse it; pass your own to make the send safe across
+   * calls and processes too, such as `welcome/${user.id}`.
    */
   idempotencyKey?: string;
 }
@@ -69,6 +88,8 @@ export interface CallInit<P extends ApiPath, M extends HttpMethod> {
   query?: QueryParams<P, M>;
   body?: RequestBody<P, M>;
   headers?: Record<string, string | undefined>;
+  /** The operation honours `Idempotency-Key`: one is always sent, `idempotencyKey` or a new one. */
+  idempotent?: boolean;
   idempotencyKey?: string;
   options?: RequestOptions;
   /** `false` for the few operations that take no API key. */
@@ -77,7 +98,6 @@ export interface CallInit<P extends ApiPath, M extends HttpMethod> {
 
 interface Attempt {
   result: Result<unknown>;
-  retry: boolean;
   retryAfter?: string | null;
 }
 
@@ -208,11 +228,12 @@ export class Core {
     const options = init.options ?? {};
     const auth = init.auth !== false;
     if (auth && this.#apiKey === undefined) {
-      return failure({
-        statusCode: null,
-        name: "missing_api_key",
-        message: "No API key: pass one to new BillionSend() or set BILLIONSEND_API_KEY",
-      });
+      return failure(
+        new AuthenticationError({
+          name: "missing_api_key",
+          message: "No API key: pass one to new BillionSend() or set BILLIONSEND_API_KEY",
+        }),
+      );
     }
     const path = fillPath(template, init.path as Record<string, unknown> | undefined);
     if (typeof path !== "string") return failure(path);
@@ -231,16 +252,21 @@ export class Core {
       headers["content-type"] = "application/json";
     }
     if (init.idempotencyKey !== undefined) headers["idempotency-key"] = init.idempotencyKey;
+    else if (init.idempotent && headers["idempotency-key"] === undefined) {
+      headers["idempotency-key"] = newIdempotencyKey();
+    }
     if (auth) headers.authorization = `Bearer ${this.#apiKey}`;
     else delete headers.authorization;
 
-    const retryable = IDEMPOTENT_METHODS.has(method) || init.idempotencyKey !== undefined;
+    const keyed = headers["idempotency-key"] !== undefined;
+    const retryable = IDEMPOTENT_METHODS.has(method) || keyed;
     const maxRetries = options.maxRetries ?? this.maxRetries;
     const timeoutMs = options.timeoutMs ?? this.timeoutMs;
 
     for (let attempt = 0; ; attempt++) {
       const outcome = await this.#attempt(method, url, headers, body, timeoutMs, options.signal, stream);
-      if (outcome.result.error === null || !outcome.retry || !retryable || attempt >= maxRetries) {
+      const error = outcome.result.error;
+      if (error === null || !retryable || attempt >= maxRetries || !retryableError(error, keyed)) {
         return outcome.result;
       }
       const delay = retryDelayMs(attempt, outcome.retryAfter);
@@ -284,13 +310,13 @@ export class Core {
           controller.abort();
           return {
             result: failure(
-              applicationError(
-                `Expected an event stream, got ${contentType || "no content type"}`,
-                response.status,
-              ),
+              new BillionSendError({
+                message: `Expected an event stream, got ${contentType || "no content type"}`,
+                statusCode: response.status,
+                requestId: responseHeaders["x-request-id"] ?? null,
+              }),
               responseHeaders,
             ),
-            retry: false,
           };
         }
         let closed = false;
@@ -303,36 +329,40 @@ export class Core {
             controller.abort();
           },
         };
-        return { result: { data: connection, error: null, headers: responseHeaders }, retry: false };
+        return { result: { data: connection, error: null, headers: responseHeaders } };
       }
 
       const text = await response.text();
       release();
       if (response.ok) {
         try {
-          return { result: { data: JSON.parse(text), error: null, headers: responseHeaders }, retry: false };
+          return { result: { data: JSON.parse(text), error: null, headers: responseHeaders } };
         } catch {
           return {
             result: failure(
-              applicationError("The response body is not valid JSON", response.status),
+              new BillionSendError({
+                message: "The response body is not valid JSON",
+                statusCode: response.status,
+                requestId: responseHeaders["x-request-id"] ?? null,
+              }),
               responseHeaders,
             ),
-            retry: false,
           };
         }
       }
       return {
-        result: failure(errorFromResponse(response.status, response.statusText, text), responseHeaders),
-        retry: response.status === 429 || response.status >= 500,
+        result: failure(
+          errorFromResponse(response.status, response.statusText, text, responseHeaders),
+          responseHeaders,
+        ),
         retryAfter: response.headers.get("retry-after"),
       };
     } catch (cause) {
       release();
-      if (signal?.aborted) return { result: failure(applicationError("Request was aborted")), retry: false };
-      if (timedOut) {
-        return { result: failure(applicationError(`Request timed out after ${timeoutMs} ms`)), retry: true };
-      }
-      return { result: failure(applicationError(`Network error: ${describe(cause)}`)), retry: true };
+      if (signal?.aborted) return { result: failure(applicationError("Request was aborted")) };
+      if (timedOut)
+        return { result: failure(new APITimeoutError(`Request timed out after ${timeoutMs} ms`)) };
+      return { result: failure(new APIConnectionError(`Network error: ${describe(cause)}`)) };
     }
   }
 }

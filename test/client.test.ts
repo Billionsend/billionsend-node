@@ -1,5 +1,19 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { BillionSend, DEFAULT_BASE_URL, VERSION } from "../src/index.js";
+import {
+  APIConnectionError,
+  APIError,
+  APITimeoutError,
+  AuthenticationError,
+  BillionSend,
+  BillionSendError,
+  ConflictError,
+  DEFAULT_BASE_URL,
+  NotFoundError,
+  PermissionDeniedError,
+  RateLimitError,
+  ValidationError,
+  VERSION,
+} from "../src/index.js";
 import { API_KEY, ID, useContractMock } from "./helpers.js";
 
 const { mock, client } = useContractMock();
@@ -31,14 +45,13 @@ describe("configuration", () => {
     vi.stubEnv("BILLIONSEND_API_KEY", "");
     const bs = new BillionSend({ baseUrl: mock.url });
     const result = await bs.emails.send(send);
-    expect(result).toEqual({
-      data: null,
-      error: {
-        statusCode: null,
-        name: "missing_api_key",
-        message: expect.stringContaining("BILLIONSEND_API_KEY"),
-      },
-      headers: null,
+    expect(result).toMatchObject({ data: null, headers: null });
+    expect(result.error).toBeInstanceOf(AuthenticationError);
+    expect(result.error).toMatchObject({
+      statusCode: null,
+      name: "missing_api_key",
+      message: expect.stringContaining("BILLIONSEND_API_KEY"),
+      requestId: null,
     });
     expect(mock.hits).toEqual([]);
   });
@@ -61,7 +74,22 @@ describe("configuration", () => {
     expect(headers.accept).toBe("application/json");
     expect(headers["x-trace"]).toBe("client");
     expect(headers["x-request-tag"]).toBe("one");
-    expect(headers["idempotency-key"]).toBeUndefined();
+  });
+
+  it("sends a new Idempotency-Key with every call of a sending operation, and none elsewhere", async () => {
+    const bs = client();
+    await bs.emails.send(send);
+    await bs.emails.send(send);
+    await bs.emails.send(send, { idempotencyKey: "welcome/42" });
+    await bs.emails.send(send, { headers: { "Idempotency-Key": "from-headers" } });
+    await bs.domains.create({ name: "example.com" });
+    const keys = mock.hitsFor("POST /emails").map((hit) => hit.headers["idempotency-key"]);
+    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+    expect(keys[0]).toMatch(uuid);
+    expect(keys[1]).toMatch(uuid);
+    expect(keys[1]).not.toBe(keys[0]);
+    expect(keys.slice(2)).toEqual(["welcome/42", "from-headers"]);
+    expect(mock.hitsFor("POST /domains")[0]?.headers["idempotency-key"]).toBeUndefined();
   });
 
   it("uses an injected fetch", async () => {
@@ -87,7 +115,7 @@ describe("configuration", () => {
     await bs.inboxes.get("support+team@example.com");
     expect(mock.hits[0]?.url.pathname).toBe("/inboxes/support%2Bteam%40example.com");
     const empty = await bs.emails.get("");
-    expect(empty.error).toEqual({
+    expect(empty.error).toMatchObject({
       statusCode: null,
       name: "application_error",
       message: 'Missing path parameter "id"',
@@ -97,7 +125,7 @@ describe("configuration", () => {
 });
 
 describe("errors", () => {
-  it("passes the API's ErrorResponse through", async () => {
+  it("passes the API's ErrorResponse through, with the request id", async () => {
     mock.reply("GET /emails/{id}", {
       status: 404,
       body: { statusCode: 404, name: "not_found", message: "Email not found" },
@@ -105,8 +133,51 @@ describe("errors", () => {
     });
     const result = await client().emails.get(ID);
     expect(result.data).toBeNull();
-    expect(result.error).toEqual({ statusCode: 404, name: "not_found", message: "Email not found" });
+    expect(result.error).toBeInstanceOf(NotFoundError);
+    expect(result.error).toBeInstanceOf(BillionSendError);
+    expect(result.error).toBeInstanceOf(Error);
+    expect(result.error?.toJSON()).toEqual({
+      statusCode: 404,
+      name: "not_found",
+      message: "Email not found",
+      requestId: "req_1",
+    });
+    expect(result.error?.message).toBe("Email not found");
     expect(result.headers?.["x-request-id"]).toBe("req_1");
+  });
+
+  it("gives each status its error class", async () => {
+    const cases = [
+      [400, "invalid_parameter", ValidationError],
+      [401, "invalid_api_key", AuthenticationError],
+      [403, "restricted_api_key", PermissionDeniedError],
+      [404, "not_found", NotFoundError],
+      [409, "invalid_idempotent_request", ConflictError],
+      [422, "validation_error", ValidationError],
+      [429, "rate_limit_exceeded", RateLimitError],
+      [500, "internal_server_error", APIError],
+    ] as const;
+    for (const [status, name, kind] of cases) {
+      mock.reply("POST /domains", {
+        status,
+        body: { statusCode: status, name, message: "m" },
+        headers: { "retry-after": "7" },
+      });
+      const result = await client({ maxRetries: 0 }).domains.create({ name: "example.com" });
+      expect(result.error, name).toBeInstanceOf(kind);
+      expect(result.error, name).toMatchObject({ statusCode: status, name });
+    }
+  });
+
+  it("carries retry-after on a RateLimitError", async () => {
+    mock.reply("GET /usage", {
+      status: 429,
+      body: { statusCode: 429, name: "rate_limit_exceeded", message: "Slow down" },
+      headers: { "retry-after": "120" },
+    });
+    const result = await client().usage.get();
+    expect(result.error).toBeInstanceOf(RateLimitError);
+    expect((result.error as RateLimitError).retryAfter).toBe(120);
   });
 
   it("maps a non-JSON error body to application_error", async () => {
@@ -116,7 +187,8 @@ describe("errors", () => {
       headers: { "content-type": "text/html" },
     });
     const result = await client({ maxRetries: 0 }).emails.get(ID);
-    expect(result.error).toEqual({
+    expect(result.error).toBeInstanceOf(APIError);
+    expect(result.error).toMatchObject({
       statusCode: 502,
       name: "application_error",
       message: expect.stringContaining("Bad gateway"),
@@ -126,18 +198,19 @@ describe("errors", () => {
   it("maps an unreadable success body to application_error", async () => {
     mock.reply("GET /usage", { status: 200, raw: "not json" });
     const result = await client().usage.get();
-    expect(result.error).toEqual({
+    expect(result.error).toMatchObject({
       statusCode: 200,
       name: "application_error",
       message: "The response body is not valid JSON",
     });
   });
 
-  it("maps a network failure to application_error with no status", async () => {
+  it("maps a network failure to APIConnectionError with no status", async () => {
     const bs = new BillionSend({ apiKey: API_KEY, baseUrl: "http://127.0.0.1:1", maxRetries: 0 });
     const result = await bs.usage.get();
     expect(result.data).toBeNull();
     expect(result.headers).toBeNull();
+    expect(result.error).toBeInstanceOf(APIConnectionError);
     expect(result.error).toMatchObject({ statusCode: null, name: "application_error" });
     expect(result.error?.message).toMatch(/^Network error/);
   });
@@ -145,7 +218,9 @@ describe("errors", () => {
   it("times out", async () => {
     mock.reply("GET /usage", { status: 200, body: {}, delayMs: 300 });
     const result = await client({ timeoutMs: 50, maxRetries: 0 }).usage.get();
-    expect(result.error).toEqual({
+    expect(result.error).toBeInstanceOf(APITimeoutError);
+    expect(result.error).toBeInstanceOf(APIConnectionError);
+    expect(result.error).toMatchObject({
       statusCode: null,
       name: "application_error",
       message: "Request timed out after 50 ms",
@@ -157,7 +232,8 @@ describe("errors", () => {
     const controller = new AbortController();
     setTimeout(() => controller.abort(), 30);
     const result = await client().usage.get({ signal: controller.signal });
-    expect(result.error).toEqual({
+    expect(result.error).not.toBeInstanceOf(APIConnectionError);
+    expect(result.error).toMatchObject({
       statusCode: null,
       name: "application_error",
       message: "Request was aborted",
@@ -188,19 +264,61 @@ describe("retries", () => {
     expect(mock.hitsFor("DELETE /emails/{id}")).toHaveLength(3);
   });
 
-  it("never retries a POST without an Idempotency-Key", async () => {
-    mock.reply("POST /emails", { ...busy, headers: { "retry-after": "0" } });
-    const result = await client().emails.send(send);
+  it("never retries a POST that does not honour Idempotency-Key", async () => {
+    mock.reply("POST /domains", { ...busy, headers: { "retry-after": "0" } });
+    const result = await client().domains.create({ name: "example.com" });
     expect(result.error?.statusCode).toBe(503);
-    expect(mock.hitsFor("POST /emails")).toHaveLength(1);
+    expect(mock.hitsFor("POST /domains")).toHaveLength(1);
   });
 
-  it("retries a POST that carries an Idempotency-Key, with the same key", async () => {
+  it("retries a send with the key it made for the call, or the caller's", async () => {
+    mock.reply("POST /emails", { ...busy, headers: { "retry-after": "0" } });
+    expect((await client().emails.send(send)).error).toBeNull();
+    const made = mock.hitsFor("POST /emails").map((hit) => hit.headers["idempotency-key"]);
+    expect(made).toHaveLength(2);
+    expect(made[1]).toBe(made[0]);
+
+    mock.reset();
     mock.reply("POST /emails", { ...busy, headers: { "retry-after": "0" } });
     const result = await client().emails.send(send, { idempotencyKey: "order-42" });
     expect(result.error).toBeNull();
     const hits = mock.hitsFor("POST /emails");
     expect(hits.map((hit) => hit.headers["idempotency-key"])).toEqual(["order-42", "order-42"]);
+  });
+
+  it("retries a send whose first attempt is still running (409 concurrent_idempotent_requests) only", async () => {
+    mock.reply("POST /emails/receiving/{id}/reply", {
+      status: 409,
+      body: { statusCode: 409, name: "concurrent_idempotent_requests", message: "Still processing" },
+      headers: { "retry-after": "0" },
+    });
+    const reply = { from: "a@example.com", text: "Thanks" };
+    expect((await client().emails.receiving.reply(ID, reply)).error).toBeNull();
+    expect(mock.hitsFor("POST /emails/receiving/{id}/reply")).toHaveLength(2);
+
+    mock.reset();
+    mock.reply("POST /emails/receiving/{id}/reply", {
+      status: 409,
+      body: { statusCode: 409, name: "invalid_idempotent_request", message: "Different payload" },
+    });
+    const refused = await client().emails.receiving.reply(ID, reply);
+    expect(refused.error).toBeInstanceOf(ConflictError);
+    expect(mock.hitsFor("POST /emails/receiving/{id}/reply")).toHaveLength(1);
+  });
+
+  it("retries a send after a network failure with the same key", async () => {
+    const keys: (string | null)[] = [];
+    let calls = 0;
+    const bs = client({
+      fetch: async (input, init) => {
+        keys.push(new Headers(init?.headers).get("idempotency-key"));
+        if (calls++ === 0) throw new TypeError("fetch failed");
+        return fetch(input, init);
+      },
+    });
+    expect((await bs.inboxes.send(ID, { to: "x@example.com", subject: "s", text: "t" })).error).toBeNull();
+    expect(keys).toHaveLength(2);
+    expect(keys[1]).toBe(keys[0]);
   });
 
   it("does not retry 4xx answers other than 429", async () => {

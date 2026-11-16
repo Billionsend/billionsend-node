@@ -1,5 +1,4 @@
 import type { Result } from "./core.js";
-import { BillionSendRequestError } from "./errors.js";
 
 /** A cursor-paginated list page: `data` items carry an `id`, `has_more` says whether another page exists. */
 export interface CursorPage<Item extends { id: string }> {
@@ -17,7 +16,7 @@ export interface Cursor {
  * Walks a cursor-paginated list one item at a time, fetching pages on demand.
  * Starting with `before` set walks backward (using the first id of each page);
  * otherwise it walks forward from `after` (using the last id). A failed page is
- * thrown as a {@link BillionSendRequestError}.
+ * thrown as its `BillionSendError` (the same classes the methods return).
  */
 export async function* paginate<Item extends { id: string }>(
   fetchPage: (cursor: Cursor) => Promise<Result<CursorPage<Item>>>,
@@ -27,7 +26,7 @@ export async function* paginate<Item extends { id: string }>(
   let cursor: Cursor = backward ? { before: start.before } : start.after ? { after: start.after } : {};
   while (true) {
     const page = await fetchPage(cursor);
-    if (page.error !== null) throw new BillionSendRequestError(page.error);
+    if (page.error !== null) throw page.error;
     const items = page.data.data;
     for (const item of items) yield item;
     if (!page.data.has_more || items.length === 0) return;

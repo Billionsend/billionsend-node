@@ -1,3 +1,5 @@
+import { APIConnectionError, type BillionSendError } from "./errors.js";
+
 /** A `retry-after` longer than this is not waited for: the error is returned instead. */
 export const MAX_RETRY_AFTER_MS = 60_000;
 
@@ -32,6 +34,33 @@ export function retryDelayMs(
   }
   const backoff = Math.min(BASE_DELAY_MS * 2 ** attempt, MAX_BACKOFF_MS);
   return Math.round(backoff * (1 - random() * 0.25));
+}
+
+/**
+ * Whether a failed attempt may be retried: a 429, a 5xx, a timeout or a
+ * network failure; and, for a request that carries an `Idempotency-Key`, the
+ * `409 concurrent_idempotent_requests` the API answers while the first attempt
+ * with that key is still being processed (other 409s are final).
+ */
+export function retryable(error: BillionSendError, idempotencyKey: boolean): boolean {
+  if (error instanceof APIConnectionError) return true;
+  const status = error.statusCode;
+  if (status === null) return false;
+  if (status === 429 || status >= 500) return true;
+  return idempotencyKey && status === 409 && error.name === "concurrent_idempotent_requests";
+}
+
+/** A new idempotency key: a random UUID (version 4). */
+export function newIdempotencyKey(): string {
+  const webCrypto = (globalThis as { crypto?: Crypto }).crypto;
+  if (typeof webCrypto?.randomUUID === "function") return webCrypto.randomUUID();
+  const bytes = new Uint8Array(16);
+  if (typeof webCrypto?.getRandomValues === "function") webCrypto.getRandomValues(bytes);
+  else for (let i = 0; i < 16; i++) bytes[i] = Math.floor(Math.random() * 256);
+  bytes[6] = ((bytes[6] ?? 0) & 0x0f) | 0x40;
+  bytes[8] = ((bytes[8] ?? 0) & 0x3f) | 0x80;
+  const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
 /** Resolves `true` after `ms`, or `false` as soon as `signal` aborts. */

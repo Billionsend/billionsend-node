@@ -408,13 +408,17 @@ function connectOptions(options: EventStreamOptions, retries: number | undefined
   };
 }
 
+/** The events after which one inbox's stream is over. */
+const INBOX_GONE_EVENTS = ["inbox.deleted", "inbox.expired"];
+
 function wrap(
   first: Result<StreamConnection>,
   connect: Connect,
   options: EventStreamOptions,
+  endsOn: readonly string[] = [],
 ): Result<EventStream> {
   if (first.error !== null) return first;
-  return { data: new EventStream(first.data, connect, options), error: null, headers: first.headers };
+  return { data: new EventStream(first.data, connect, options, endsOn), error: null, headers: first.headers };
 }
 
 export class InboxEvents extends Resource {
@@ -440,7 +444,10 @@ export class InboxEvents extends Resource {
     return wrap(first, connect, options);
   }
 
-  /** `GET /inboxes/{inbox_id}/events`: one inbox's events as a live stream. */
+  /**
+   * `GET /inboxes/{inbox_id}/events`: one inbox's events as a live stream. It ends
+   * (the loop finishes) after that inbox's `inbox.deleted` or `inbox.expired`.
+   */
   async streamInbox(
     inboxId: string,
     params?: QueryParams<"/inboxes/{inbox_id}/events", "get">,
@@ -459,7 +466,7 @@ export class InboxEvents extends Resource {
       headers: lastEventIdHeader(options.lastEventId),
       options: connectOptions(options, options.maxRetries),
     });
-    return wrap(first, connect, options);
+    return wrap(first, connect, options, INBOX_GONE_EVENTS);
   }
 }
 

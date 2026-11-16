@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { BillionSendRequestError, type ServerSentEvent } from "../src/index.js";
-import { parseEventStream } from "../src/sse.js";
+import { APIConnectionError, type InboxStreamItem, PermissionDeniedError } from "../src/index.js";
+import { parseEventStream, type ServerSentEvent } from "../src/sse.js";
 import { ID, useContractMock } from "./helpers.js";
 
 const { mock, client } = useContractMock();
@@ -149,7 +149,9 @@ describe("inbox event streams", () => {
     const run = async () => {
       for await (const event of stream) data.push(event.data);
     };
-    await expect(run()).rejects.toThrow("gave up after 1 reconnects");
+    const error = await run().catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(APIConnectionError);
+    expect(error).toMatchObject({ message: expect.stringContaining("gave up after 1 reconnects") });
     expect(data).toEqual([{ n: 41 }, { n: 42 }]);
     const hits = mock.hitsFor("GET /inboxes/{inbox_id}/events");
     expect(hits.map((hit) => hit.headers["last-event-id"])).toEqual(["40", "41", "42"]);
@@ -176,7 +178,7 @@ describe("inbox event streams", () => {
       }
     };
     const error = await run().catch((e: unknown) => e);
-    expect(error).toBeInstanceOf(BillionSendRequestError);
+    expect(error).toBeInstanceOf(PermissionDeniedError);
     expect(error).toMatchObject({ statusCode: 403, name: "restricted_api_key" });
     expect(mock.hitsFor("GET /inboxes/events").map((hit) => hit.headers["last-event-id"])).toEqual([
       undefined,
@@ -198,6 +200,81 @@ describe("inbox event streams", () => {
     mock.reply("GET /inboxes/events", { status: 200, body: { hello: "world" } });
     const opened = await client().inboxes.events.stream();
     expect(opened.error).toMatchObject({ statusCode: 200, name: "application_error" });
+  });
+
+  it("hands out stream.gap once per position, typed, without moving the position", async () => {
+    const gap = 'event: stream.gap\ndata: {"reason":"retention"}\n\n';
+    // The server repeats the gap on each reconnect from the same old position.
+    mock.stream("GET /inboxes/events", (res) => {
+      res.write(`retry: 1\n\n${gap}`);
+      res.end();
+    });
+    mock.stream("GET /inboxes/events", (res) => {
+      res.write(gap);
+      res.write(
+        'id: 9.1.1790000000\nevent: inbox.email.received\ndata: {"type":"inbox.email.received","created_at":"2026-11-16T00:00:00.000Z","inbox_id":"i","data":{"inbox_id":"i","thread_id":"t","email_id":"e"}}\n\n',
+      );
+      res.end();
+    });
+    // A gap after a newer position is a new gap.
+    mock.stream("GET /inboxes/events", (res) => {
+      res.write(gap);
+      res.end();
+    });
+    mock.reply("GET /inboxes/events", {
+      status: 403,
+      body: { statusCode: 403, name: "restricted_api_key", message: "stop" },
+    });
+    const opened = await client().inboxes.events.stream(undefined, { lastEventId: "1.1.1" });
+    const items: InboxStreamItem[] = [];
+    const run = async () => {
+      for await (const item of opened.data ?? []) items.push(item);
+    };
+    await run().catch(() => {});
+    expect(items.map((item) => [item.event, item.id])).toEqual([
+      ["stream.gap", null],
+      ["inbox.email.received", "9.1.1790000000"],
+      ["stream.gap", null],
+    ]);
+    const [gapItem, email] = items;
+    if (gapItem?.event === "stream.gap") expect(gapItem.data.reason).toBe("retention");
+    if (email?.event === "inbox.email.received") expect(email.data.data.email_id).toBe("e");
+    expect(mock.hitsFor("GET /inboxes/events").map((hit) => hit.headers["last-event-id"])).toEqual([
+      "1.1.1",
+      "1.1.1",
+      "9.1.1790000000",
+      "9.1.1790000000",
+    ]);
+  });
+
+  it("ends one inbox's stream after inbox.deleted, without reconnecting; the team stream goes on", async () => {
+    mock.stream("GET /inboxes/{inbox_id}/events", (res) => {
+      res.write(
+        'id: 1\nevent: inbox.deleted\ndata: {"type":"inbox.deleted","created_at":"x","inbox_id":"i","data":{}}\n\n',
+      );
+      res.end();
+    });
+    const one = await client().inboxes.events.streamInbox(ID, undefined, { reconnectDelayMs: 1 });
+    const seen: string[] = [];
+    for await (const item of one.data ?? []) seen.push(item.event);
+    expect(seen).toEqual(["inbox.deleted"]);
+    expect(mock.hitsFor("GET /inboxes/{inbox_id}/events")).toHaveLength(1);
+
+    mock.stream("GET /inboxes/events", (res) => {
+      res.write(
+        'id: 1\nevent: inbox.expired\ndata: {"type":"inbox.expired","created_at":"x","inbox_id":"i","data":{}}\n\n',
+      );
+      res.write(
+        'id: 2\nevent: inbox.created\ndata: {"type":"inbox.created","created_at":"x","inbox_id":"j","data":{}}\n\n',
+      );
+    });
+    const team = await client().inboxes.events.stream();
+    const names: string[] = [];
+    for await (const item of team.data ?? []) {
+      names.push(item.event);
+      if (names.length === 2) break;
+    }
+    expect(names).toEqual(["inbox.expired", "inbox.created"]);
   });
 
   it("ends quietly on close() and on the caller's abort signal", async () => {

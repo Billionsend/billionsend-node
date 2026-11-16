@@ -1,8 +1,76 @@
 import type { Result, StreamConnection } from "./core.js";
-import { applicationError, BillionSendRequestError } from "./errors.js";
-import { sleep } from "./retry.js";
+import { APIConnectionError } from "./errors.js";
+import { retryable, sleep } from "./retry.js";
 
-/** One server-sent event. */
+/** The event names an inbox stream carries: the inbox webhook events, and `email.received`. */
+export type InboxEventType =
+  | "inbox.created"
+  | "inbox.updated"
+  | "inbox.deleted"
+  | "inbox.expired"
+  | "inbox.thread.created"
+  | "inbox.thread.folder.updated"
+  | "inbox.thread.labels.updated"
+  | "inbox.email.received"
+  | "inbox.email.sent"
+  | "inbox.email.quarantined"
+  | "inbox.draft.created"
+  | "inbox.draft.updated"
+  | "inbox.draft.sent"
+  | "inbox.draft.deleted"
+  | "inbox.draft.send_failed"
+  | "email.received";
+
+/**
+ * The webhook payload's `data`: metadata only (never a body, code or link).
+ * The ids say what to read next with the REST methods; `thread`, `email`,
+ * `draft` and the rest ride along as the matching webhook event has them.
+ */
+export interface InboxEventData {
+  /** Who caused it (absent on `email.received`, whose payload is the `email.received` webhook's). */
+  source?: "api" | "dashboard" | "system";
+  inbox_id?: string;
+  thread_id?: string;
+  email_id?: string;
+  draft_id?: string;
+  [field: string]: unknown;
+}
+
+/** The JSON body of one inbox event. */
+export interface InboxEventPayload {
+  type: InboxEventType;
+  created_at: string;
+  inbox_id: string;
+  data: InboxEventData;
+}
+
+/** One inbox event. `id` is its stream position: keep the last one to resume with `lastEventId`. */
+export interface InboxStreamEvent {
+  id: string;
+  event: InboxEventType;
+  data: InboxEventPayload;
+}
+
+/**
+ * The stream resumed from a position older than the server keeps (24 hours):
+ * events may be missing, so read the REST lists again. It has no `id` and
+ * does not move the stream position. One stream object hands it out once
+ * per position: a later reconnect from the same position, which the server
+ * answers with another gap, does not repeat it.
+ */
+export interface StreamGapEvent {
+  id: null;
+  event: "stream.gap";
+  data: { reason: string };
+}
+
+/** What iterating an inbox {@link EventStream} gives. Narrow it on `event`. */
+export type InboxStreamItem = InboxStreamEvent | StreamGapEvent;
+
+/** The event name of a {@link StreamGapEvent}. */
+export const STREAM_GAP_EVENT = "stream.gap";
+
+/** One server-sent event, as the parser reads it. */
 export interface ServerSentEvent {
   /** The stream position after this event (the last `id` field seen), used to resume. */
   id: string | null;
@@ -141,13 +209,15 @@ export async function* parseEventStream(
 }
 
 /**
- * A live event stream. Iterate it with `for await`; leaving the loop, or
- * calling {@link EventStream.close}, closes the connection. When the
- * connection drops it reconnects with `Last-Event-ID` (unless `reconnect` is
- * false); after `maxReconnects` failures in a row, or on an error a retry
- * cannot fix, the loop throws a {@link BillionSendRequestError}.
+ * A live inbox event stream. Iterate it with `for await`; leaving the loop,
+ * or calling {@link EventStream.close}, closes the connection. When the
+ * connection drops (the server also closes every stream about every ten
+ * minutes) it reconnects with `Last-Event-ID` and the events in between are
+ * replayed first, unless `reconnect` is false. After `maxReconnects` failures
+ * in a row it throws an {@link APIConnectionError}; an error a retry cannot fix
+ * (a revoked key, say) is thrown as its own `BillionSendError` class.
  */
-export class EventStream implements AsyncIterable<ServerSentEvent> {
+export class EventStream implements AsyncIterable<InboxStreamItem> {
   #connection: StreamConnection | null;
   #connect: Connect;
   #options: EventStreamOptions;
@@ -156,8 +226,20 @@ export class EventStream implements AsyncIterable<ServerSentEvent> {
   #closed = false;
   #started = false;
   #onAbort = () => this.close();
+  #endsOn: ReadonlySet<string>;
 
-  constructor(connection: StreamConnection, connect: Connect, options: EventStreamOptions = {}) {
+  /**
+   * @param endsOn event names after which the stream is over: one inbox's
+   *   stream ends with that inbox's `inbox.deleted` or `inbox.expired` (the
+   *   server closes it, and a reconnect would answer 404).
+   */
+  constructor(
+    connection: StreamConnection,
+    connect: Connect,
+    options: EventStreamOptions = {},
+    endsOn: readonly string[] = [],
+  ) {
+    this.#endsOn = new Set(endsOn);
     this.#connection = connection;
     this.#connect = connect;
     this.#options = options;
@@ -185,16 +267,19 @@ export class EventStream implements AsyncIterable<ServerSentEvent> {
     this.#connection = null;
   }
 
-  [Symbol.asyncIterator](): AsyncIterator<ServerSentEvent> {
+  [Symbol.asyncIterator](): AsyncIterator<InboxStreamItem> {
     if (this.#started) throw new TypeError("An EventStream can be iterated only once");
     this.#started = true;
     return this.#events();
   }
 
-  async *#events(): AsyncGenerator<ServerSentEvent, void, undefined> {
+  async *#events(): AsyncGenerator<InboxStreamItem, void, undefined> {
     const reconnect = this.#options.reconnect !== false;
     const maxReconnects = this.#options.maxReconnects ?? 5;
     let failures = 0;
+    // The position a gap was last handed out for; the server repeats the gap
+    // on every reconnect from that position until a newer event moves it.
+    let gapAt: string | null | undefined;
     try {
       while (!this.#closed) {
         const connection = this.#connection;
@@ -207,8 +292,19 @@ export class EventStream implements AsyncIterable<ServerSentEvent> {
             );
             for await (const event of events) {
               failures = 0;
+              if (event.event === STREAM_GAP_EVENT) {
+                if (gapAt === this.#lastEventId) continue;
+                gapAt = this.#lastEventId;
+                yield { id: null, event: STREAM_GAP_EVENT, data: event.data as StreamGapEvent["data"] };
+                continue;
+              }
               this.#lastEventId = event.id;
-              yield event;
+              yield {
+                id: event.id ?? "",
+                event: event.event as InboxEventType,
+                data: event.data as InboxEventPayload,
+              };
+              if (this.#endsOn.has(event.event)) return;
             }
           } catch {
             // The connection dropped; fall through to reconnect.
@@ -220,8 +316,8 @@ export class EventStream implements AsyncIterable<ServerSentEvent> {
 
         failures++;
         if (failures > maxReconnects) {
-          throw new BillionSendRequestError(
-            applicationError(`The event stream disconnected; gave up after ${maxReconnects} reconnects`),
+          throw new APIConnectionError(
+            `The event stream disconnected; gave up after ${maxReconnects} reconnects`,
           );
         }
         if (!(await sleep(this.#delayMs, this.#options.signal)) || this.#closed) return;
@@ -231,11 +327,7 @@ export class EventStream implements AsyncIterable<ServerSentEvent> {
           return;
         }
         if (next.error !== null) {
-          const status = next.error.statusCode;
-          const retryable = status === null || status === 429 || status >= 500;
-          if (!retryable || next.error.name === "missing_api_key") {
-            throw new BillionSendRequestError(next.error);
-          }
+          if (!retryable(next.error, false)) throw next.error;
           continue;
         }
         this.#connection = next.data;

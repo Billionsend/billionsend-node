@@ -41,20 +41,28 @@ describe("sleep", () => {
   });
 });
 
-describe("BillionSendRequestError", () => {
-  it("carries the error fields and serialises to them", async () => {
-    const { BillionSendRequestError } = await import("../src/index.js");
-    const error = new BillionSendRequestError({
-      statusCode: 429,
-      name: "rate_limit_exceeded",
-      message: "Slow down",
-    });
-    expect(error).toBeInstanceOf(Error);
-    expect(error.message).toBe("Slow down");
-    expect(JSON.parse(JSON.stringify(error))).toEqual({
-      statusCode: 429,
-      name: "rate_limit_exceeded",
-      message: "Slow down",
-    });
+describe("retryable", () => {
+  it("retries 429, 5xx, timeouts and network failures; 409 only while an idempotent first attempt runs", async () => {
+    const { retryable } = await import("../src/retry.js");
+    const errors = await import("../src/errors.js");
+    const conflict = (name: string) => new errors.ConflictError({ statusCode: 409, name, message: "m" });
+    expect(retryable(new errors.RateLimitError({ statusCode: 429, message: "m" }), false)).toBe(true);
+    expect(retryable(new errors.APIError({ statusCode: 502, message: "m" }), false)).toBe(true);
+    expect(retryable(new errors.APITimeoutError(), false)).toBe(true);
+    expect(retryable(new errors.APIConnectionError(), false)).toBe(true);
+    expect(retryable(conflict("concurrent_idempotent_requests"), true)).toBe(true);
+    expect(retryable(conflict("concurrent_idempotent_requests"), false)).toBe(false);
+    expect(retryable(conflict("invalid_idempotent_request"), true)).toBe(false);
+    expect(retryable(new errors.ValidationError({ statusCode: 422, message: "m" }), true)).toBe(false);
+    expect(retryable(errors.applicationError("Request was aborted"), true)).toBe(false);
+  });
+});
+
+describe("newIdempotencyKey", () => {
+  it("makes a version 4 UUID, new each time", async () => {
+    const { newIdempotencyKey } = await import("../src/retry.js");
+    const a = newIdempotencyKey();
+    expect(a).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+    expect(newIdempotencyKey()).not.toBe(a);
   });
 });

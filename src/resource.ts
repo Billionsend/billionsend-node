@@ -25,6 +25,7 @@ export interface BatchSendOptions extends IdempotentRequestOptions {
   batchValidation?: BatchValidation;
 }
 
+/** The call options of an operation that honours `Idempotency-Key` (see {@link IdempotentRequestOptions}). */
 export function idempotent(options: IdempotentRequestOptions | undefined) {
-  return { idempotencyKey: options?.idempotencyKey, options };
+  return { idempotent: true, idempotencyKey: options?.idempotencyKey, options };
 }

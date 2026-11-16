@@ -8,10 +8,10 @@ import type {
   Inbox,
   InboxDraft,
   InboxSentEmail,
+  InboxStreamItem,
   Result,
   SendEmailRequest,
   SendEmailResponse,
-  ServerSentEvent,
 } from "../src/index.js";
 
 type Data<T> = T extends Promise<Result<infer D>> ? D : never;
@@ -28,6 +28,12 @@ describe("types", () => {
     expectTypeOf<Data<ReturnType<BillionSend["inboxes"]["send"]>>>().toEqualTypeOf<
       InboxSentEmail | InboxDraft
     >();
+  });
+
+  it("narrows errors by class", () => {
+    type E = Extract<Awaited<ReturnType<BillionSend["usage"]["get"]>>, { data: null }>["error"];
+    expectTypeOf<E["requestId"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<E["statusCode"]>().toEqualTypeOf<number | null>();
   });
 
   it("types the result as a data/error union", () => {
@@ -52,6 +58,10 @@ describe("types", () => {
       : never;
     expectTypeOf<Item["id"]>().toEqualTypeOf<string>();
     expectTypeOf<Data<ReturnType<BillionSend["inboxes"]["events"]["stream"]>>>().toEqualTypeOf<EventStream>();
-    expectTypeOf<EventStream>().toMatchTypeOf<AsyncIterable<ServerSentEvent>>();
+    expectTypeOf<EventStream>().toMatchTypeOf<AsyncIterable<InboxStreamItem>>();
+    // Narrowing on `event` gives the gap its own data and every other event the payload.
+    const narrow = (item: InboxStreamItem) =>
+      item.event === "stream.gap" ? item.data.reason : item.data.data.email_id;
+    expectTypeOf(narrow).returns.toEqualTypeOf<string | undefined>();
   });
 });

@@ -1,10 +1,22 @@
 // The README's examples, kept here so `pnpm typecheck` fails when they drift from the SDK.
 // Never executed.
-import { BillionSend } from "../src/index.js";
+import {
+  BillionSend,
+  NotFoundError,
+  RateLimitError,
+  verifyWebhook,
+  WebhookVerificationError,
+} from "../src/index.js";
+
+declare function draftAnswer(subject: string | null, text: string | null): Promise<string>;
 
 export async function readmeExamples(
   customFetch: typeof fetch,
   message: Parameters<BillionSend["emails"]["send"]>[0],
+  user: { id: string },
+  id: string,
+  request: Request,
+  saved: string | undefined,
 ) {
   const bs = new BillionSend("bs_...");
 
@@ -14,8 +26,50 @@ export async function readmeExamples(
     subject: "Welcome to Acme",
     html: "<p>Glad you are here.</p>",
   });
-  if (error) console.error(error.statusCode, error.name, error.message);
+  if (error) console.error(error.statusCode, error.name, error.message, error.requestId);
   else console.log("queued", data.id);
+
+  await bs.emails.send(message, { idempotencyKey: `welcome/${user.id}` });
+  await bs.emails.send(message, { maxRetries: 0 });
+
+  const got = await bs.emails.get(id);
+  if (got.error instanceof NotFoundError) return null;
+  if (got.error instanceof RateLimitError) console.log("retry in", got.error.retryAfter, "s");
+  else if (got.error) throw got.error;
+
+  const inboxId = "support@acme.dev";
+  const agentStream = await bs.inboxes.events.streamInbox(inboxId, { types: "inbox.email.received" });
+  if (agentStream.error) throw agentStream.error;
+  for await (const item of agentStream.data) {
+    if (item.event === "stream.gap") continue;
+    const { thread_id, email_id } = item.data.data;
+    if (!thread_id || !email_id) continue;
+    const email = await bs.inboxes.threads.emails.get(inboxId, thread_id, email_id);
+    if (email.error) throw email.error;
+    const answer = await draftAnswer(email.data.subject, email.data.text);
+    const sent = await bs.inboxes.threads.emails.reply(
+      inboxId,
+      thread_id,
+      email_id,
+      { text: answer },
+      { idempotencyKey: `reply/${email_id}` },
+    );
+    if (sent.error) throw sent.error;
+  }
+
+  const team = await bs.inboxes.events.stream(
+    { types: "inbox.email.received,inbox.thread.created" },
+    { lastEventId: saved },
+  );
+  if (team.error) throw team.error;
+  for await (const _ of team.data) saved = team.data.lastEventId ?? undefined;
+
+  try {
+    const event = await verifyWebhook(await request.text(), request.headers, "whsec_...");
+    if (event.type === "email.bounced") console.log(event.data);
+  } catch (e) {
+    if (!(e instanceof WebhookVerificationError)) throw e;
+  }
 
   const inbox = await bs.inboxes.create({ username: "support", kind: "agent" });
   if (inbox.error) throw new Error(inbox.error.message);

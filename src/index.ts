@@ -9,12 +9,35 @@ export {
   type ResponseHeaders,
   type Result,
 } from "./core.js";
-export { type BillionSendError, BillionSendRequestError } from "./errors.js";
+export {
+  APIConnectionError,
+  APIError,
+  APITimeoutError,
+  AuthenticationError,
+  BillionSendError,
+  ConflictError,
+  type ErrorShape,
+  NotFoundError,
+  PermissionDeniedError,
+  RateLimitError,
+  ValidationError,
+  WebhookVerificationError,
+} from "./errors.js";
 export type * from "./generated/openapi.js";
 export { type Cursor, type CursorPage, paginate } from "./pagination.js";
 export type { BatchRequestOptions, BatchSendOptions, BatchValidation } from "./resource.js";
 export type { SendEmailParams } from "./resources/emails.js";
-export { EventStream, type EventStreamOptions, type ServerSentEvent } from "./sse.js";
+export {
+  EventStream,
+  type EventStreamOptions,
+  type InboxEventData,
+  type InboxEventPayload,
+  type InboxEventType,
+  type InboxStreamEvent,
+  type InboxStreamItem,
+  STREAM_GAP_EVENT,
+  type StreamGapEvent,
+} from "./sse.js";
 export type {
   ApiPath,
   HttpMethod,
@@ -25,3 +48,11 @@ export type {
   ResponseBody,
 } from "./types.js";
 export { VERSION } from "./version.js";
+export {
+  type VerifyWebhookOptions,
+  verifyWebhook,
+  WEBHOOK_TOLERANCE_SECONDS,
+  type WebhookEvent,
+  type WebhookEventType,
+  type WebhookHeaders,
+} from "./webhooks.js";
