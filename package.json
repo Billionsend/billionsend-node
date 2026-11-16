@@ -1,5 +1,5 @@
 {
-  "name": "billionsend",
+  "name": "@billionsend/node",
   "version": "0.1.0",
   "description": "Node.js and TypeScript SDK for the BillionSend email API",
   "keywords": [
@@ -46,9 +46,13 @@
   "engines": {
     "node": ">=18"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "packageManager": "pnpm@11.11.0",
   "scripts": {
     "build": "tsup",
+    "prepublishOnly": "pnpm build",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome check --write .",

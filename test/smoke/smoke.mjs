@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
 
-const sdk = await import("billionsend");
+const sdk = await import("@billionsend/node");
 const pkg = JSON.parse(await readFile(new URL("../../package.json", import.meta.url), "utf8"));
 
 assert.equal(typeof sdk.BillionSend, "function");

@@ -13,8 +13,8 @@ Documentation: [billionsend.com/docs](https://billionsend.com/docs) · SDK guide
 ## Install
 
 ```bash
-npm install billionsend
-# or: pnpm add billionsend / yarn add billionsend
+npm install @billionsend/node
+# or: pnpm add @billionsend/node / yarn add @billionsend/node
 ```
 
 ## Authentication
@@ -22,12 +22,12 @@ npm install billionsend
 Create an API key on the dashboard (it starts with `bs_`) and pass it to the client, or set `BILLIONSEND_API_KEY`:
 
 ```ts
-import { BillionSend } from "billionsend";
+import { BillionSend } from "@billionsend/node";
 
 const bs = new BillionSend("bs_..."); // or: new BillionSend() with BILLIONSEND_API_KEY set
 ```
 
-CommonJS works the same way: `const { BillionSend } = require("billionsend");`. A key restricted to one inbox is what an agent should hold; see [API keys](https://billionsend.com/docs/api-keys).
+CommonJS works the same way: `const { BillionSend } = require("@billionsend/node");`. A key restricted to one inbox is what an agent should hold; see [API keys](https://billionsend.com/docs/api-keys).
 
 ## Send an email
 
@@ -85,7 +85,7 @@ Every method resolves to one of:
 Each carries `statusCode`, `name` (the API's error name, such as `validation_error`; `application_error` when the API sent none), `message` and `requestId`, the answer's `x-request-id`: the same id the request has on the dashboard's Logs page, so quote it when you ask about a request.
 
 ```ts
-import { NotFoundError, RateLimitError } from "billionsend";
+import { NotFoundError, RateLimitError } from "@billionsend/node";
 
 const { data, error } = await bs.emails.get(id);
 if (error instanceof NotFoundError) return null;
@@ -172,7 +172,7 @@ Every webhook delivery is signed with the endpoint's `whsec_` secret (shown when
 
 ```ts
 import express from "express";
-import { verifyWebhook, WebhookVerificationError } from "billionsend";
+import { verifyWebhook, WebhookVerificationError } from "@billionsend/node";
 
 const app = express();
 
@@ -263,6 +263,15 @@ pnpm openapi:sync               # or: pnpm openapi:sync --from path/to/api.opena
 pnpm generate                   # regenerates src/generated/openapi.ts
 pnpm test                       # what fails is what the SDK has to follow
 ```
+
+## Releasing
+
+Publishing is manual; nothing is published on push.
+
+1. Set `version` in `package.json`, turn the changelog's `Unreleased` heading into that version, commit, then tag and push: `git tag v0.1.0 && git push origin main v0.1.0`.
+2. The first version only: a member of the `@billionsend` npm organization publishes from a clean checkout of the tag, with two-factor authentication: `pnpm install --frozen-lockfile && pnpm typecheck && pnpm lint && pnpm test && pnpm test:smoke && npm publish` (`prepublishOnly` builds; `publishConfig.access` is `public`).
+3. Once the package exists: on npmjs.com, `@billionsend/node` → Settings → Trusted Publisher → GitHub Actions, repository `billionsend/billionsend-node`, workflow `release.yml`.
+4. Every later version: Actions → `release` → Run workflow, on the version tag. The workflow refuses a branch or a tag that differs from `package.json`, runs every check, and publishes with npm Trusted Publishing (no token stored).
 
 ## License
 

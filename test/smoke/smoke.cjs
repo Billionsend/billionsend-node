@@ -1,6 +1,6 @@
 // Loads the built CommonJS entry through the package's own exports map.
 const assert = require("node:assert/strict");
-const sdk = require("billionsend");
+const sdk = require("@billionsend/node");
 
 assert.equal(typeof sdk.BillionSend, "function");
 const bs = new sdk.BillionSend({ apiKey: "bs_smoke", baseUrl: "https://api.example.com/" });
