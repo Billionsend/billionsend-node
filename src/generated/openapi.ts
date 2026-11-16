@@ -3901,7 +3901,9 @@ export interface components {
   responses: never;
   parameters: never;
   requestBodies: never;
-  headers: never;
+  headers: {
+    RequestId: string;
+  };
   pathItems: never;
 }
 export type SendInboxDraftRequest = components["schemas"]["SendInboxDraftRequest"];
@@ -4060,6 +4062,7 @@ export type EmailInsightsResponse = components["schemas"]["EmailInsightsResponse
 export type DeliverabilityResponse = components["schemas"]["DeliverabilityResponse"];
 export type ListEmailsResponse = components["schemas"]["ListEmailsResponse"];
 export type RemoveEmailResponse = components["schemas"]["RemoveEmailResponse"];
+export type HeaderRequestId = components["headers"]["RequestId"];
 export type $defs = Record<string, never>;
 export interface operations {
   "emails.metrics": {
@@ -4106,6 +4109,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4129,6 +4133,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4137,6 +4142,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4145,6 +4151,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4154,6 +4161,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4162,6 +4170,7 @@ export interface operations {
       };
       503: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4186,6 +4195,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4194,6 +4204,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4202,6 +4213,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4211,6 +4223,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4234,6 +4247,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4242,6 +4256,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4250,6 +4265,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4258,6 +4274,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4266,6 +4283,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4274,6 +4292,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4283,6 +4302,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4306,6 +4326,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4314,6 +4335,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4322,6 +4344,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4331,6 +4354,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4354,6 +4378,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4362,6 +4387,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4370,6 +4396,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4379,6 +4406,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4406,6 +4434,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4414,6 +4443,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4422,6 +4452,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4430,6 +4461,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4438,6 +4470,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4446,6 +4479,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4455,6 +4489,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4476,6 +4511,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4484,6 +4520,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4492,6 +4529,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4501,6 +4539,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4524,6 +4563,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4532,6 +4572,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4540,6 +4581,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4549,6 +4591,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4574,6 +4617,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4582,6 +4626,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4590,6 +4635,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4598,6 +4644,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4606,6 +4653,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4615,6 +4663,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4636,6 +4685,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4644,6 +4694,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4652,6 +4703,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4660,6 +4712,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4669,6 +4722,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4690,6 +4744,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4698,6 +4753,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4706,6 +4762,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4715,6 +4772,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4740,6 +4798,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4748,6 +4807,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4756,6 +4816,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4764,6 +4825,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4773,6 +4835,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4795,6 +4858,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4803,6 +4867,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4811,6 +4876,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4820,6 +4886,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4842,6 +4909,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4850,6 +4918,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4858,6 +4927,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4867,6 +4937,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4892,6 +4963,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4900,6 +4972,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4908,6 +4981,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4916,6 +4990,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4924,6 +4999,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4932,6 +5008,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4941,6 +5018,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4963,6 +5041,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4971,6 +5050,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4979,6 +5059,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -4988,6 +5069,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5012,6 +5094,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5020,6 +5103,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5028,6 +5112,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5037,6 +5122,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5063,6 +5149,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5071,6 +5158,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5079,6 +5167,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5087,6 +5176,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5095,6 +5185,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5104,6 +5195,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5127,6 +5219,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5135,6 +5228,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5143,6 +5237,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5152,6 +5247,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5175,6 +5271,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5183,6 +5280,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5191,6 +5289,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5199,6 +5298,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5208,6 +5308,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5229,6 +5330,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5237,6 +5339,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5245,6 +5348,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5254,6 +5358,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5275,6 +5380,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5283,6 +5389,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5291,6 +5398,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5300,6 +5408,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5325,6 +5434,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5333,6 +5443,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5341,6 +5452,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5349,6 +5461,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5358,6 +5471,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5381,6 +5495,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5389,6 +5504,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5397,6 +5513,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5406,6 +5523,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5429,6 +5547,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5437,6 +5556,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5445,6 +5565,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5453,6 +5574,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5462,6 +5584,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5483,6 +5606,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5491,6 +5615,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5499,6 +5624,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5508,6 +5634,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5529,6 +5656,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5537,6 +5665,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5545,6 +5674,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5553,6 +5683,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5562,6 +5693,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5587,6 +5719,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5595,6 +5728,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5603,6 +5737,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5611,6 +5746,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5619,6 +5755,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5628,6 +5765,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5654,6 +5792,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5662,6 +5801,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5670,6 +5810,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5678,6 +5819,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5687,6 +5829,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5710,6 +5853,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5718,6 +5862,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5726,6 +5871,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5735,6 +5881,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5758,6 +5905,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5766,6 +5914,7 @@ export interface operations {
       };
       400: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5774,6 +5923,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5782,6 +5932,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5790,6 +5941,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5798,6 +5950,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5807,6 +5960,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5828,6 +5982,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5836,6 +5991,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5844,6 +6000,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5853,6 +6010,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5874,6 +6032,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5882,6 +6041,7 @@ export interface operations {
       };
       400: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5890,6 +6050,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5898,6 +6059,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5907,6 +6069,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5932,6 +6095,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5940,6 +6104,7 @@ export interface operations {
       };
       400: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5948,6 +6113,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5956,6 +6122,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5964,6 +6131,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5973,6 +6141,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -5998,6 +6167,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6006,6 +6176,7 @@ export interface operations {
       };
       400: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6014,6 +6185,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6022,6 +6194,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6030,6 +6203,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6038,6 +6212,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6047,6 +6222,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6068,6 +6244,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6076,6 +6253,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6084,6 +6262,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6092,6 +6271,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6101,6 +6281,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6122,6 +6303,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6130,6 +6312,7 @@ export interface operations {
       };
       400: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6138,6 +6321,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6146,6 +6330,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6155,6 +6340,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6174,6 +6360,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6182,6 +6369,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6191,6 +6379,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6214,6 +6403,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6222,6 +6412,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6230,6 +6421,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6238,6 +6430,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6247,6 +6440,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6268,6 +6462,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6276,6 +6471,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6284,6 +6480,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6293,6 +6490,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6314,6 +6512,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6322,6 +6521,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6330,6 +6530,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6338,6 +6539,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6347,6 +6549,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6372,6 +6575,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6380,6 +6584,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6388,6 +6593,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6396,6 +6602,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6404,6 +6611,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6413,6 +6621,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6436,6 +6645,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6444,6 +6654,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6452,6 +6663,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6461,6 +6673,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6484,6 +6697,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6492,6 +6706,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6500,6 +6715,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6508,6 +6724,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6516,6 +6733,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6525,6 +6743,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6546,6 +6765,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6554,6 +6774,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6562,6 +6783,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6571,6 +6793,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6592,6 +6815,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6600,6 +6824,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6608,6 +6833,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6616,6 +6842,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6624,6 +6851,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6633,6 +6861,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6658,6 +6887,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6666,6 +6896,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6674,6 +6905,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6682,6 +6914,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6690,6 +6923,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6698,6 +6932,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6707,6 +6942,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6728,6 +6964,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6736,6 +6973,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6744,6 +6982,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6752,6 +6991,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6761,6 +7001,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6784,6 +7025,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6792,6 +7034,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6800,6 +7043,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6809,6 +7053,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6832,6 +7077,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6840,6 +7086,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6848,6 +7095,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6856,6 +7104,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6865,6 +7114,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6886,6 +7136,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6894,6 +7145,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6902,6 +7154,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6911,6 +7164,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6934,6 +7188,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6942,6 +7197,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6950,6 +7206,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6959,6 +7216,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6982,6 +7240,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6990,6 +7249,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -6998,6 +7258,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7006,6 +7267,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7015,6 +7277,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7036,6 +7299,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7044,6 +7308,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7052,6 +7317,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7061,6 +7327,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7082,6 +7349,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7090,6 +7358,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7098,6 +7367,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7107,6 +7377,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7132,6 +7403,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7140,6 +7412,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7148,6 +7421,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7156,6 +7430,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7165,6 +7440,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7190,6 +7466,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7198,6 +7475,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7206,6 +7484,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7214,6 +7493,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7223,6 +7503,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7246,6 +7527,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7254,6 +7536,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7262,6 +7545,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7271,6 +7555,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7294,6 +7579,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7302,6 +7588,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7310,6 +7597,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7319,6 +7607,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7343,6 +7632,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7351,6 +7641,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7359,6 +7650,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7368,6 +7660,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7391,6 +7684,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7399,6 +7693,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7407,6 +7702,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7416,6 +7712,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7437,6 +7734,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7445,6 +7743,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7453,6 +7752,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7462,6 +7762,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7483,6 +7784,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7491,6 +7793,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7499,6 +7802,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7508,6 +7812,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7532,6 +7837,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7540,6 +7846,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7548,6 +7855,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7556,6 +7864,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7565,6 +7874,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7588,6 +7898,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7596,6 +7907,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7604,6 +7916,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7612,6 +7925,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7621,6 +7935,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7642,6 +7957,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7650,6 +7966,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7658,6 +7975,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7667,6 +7985,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7690,6 +8009,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7698,6 +8018,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7706,6 +8027,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7715,6 +8037,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7738,6 +8061,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7746,6 +8070,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7754,6 +8079,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7762,6 +8088,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7771,6 +8098,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7792,6 +8120,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7800,6 +8129,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7808,6 +8138,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7817,6 +8148,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7838,6 +8170,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7846,6 +8179,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7854,6 +8188,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7863,6 +8198,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7888,6 +8224,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7896,6 +8233,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7904,6 +8242,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7912,6 +8251,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7920,6 +8260,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7929,6 +8270,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7950,6 +8292,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7958,6 +8301,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7966,6 +8310,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7975,6 +8320,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -7996,6 +8342,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8004,6 +8351,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8012,6 +8360,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8021,6 +8370,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8040,6 +8390,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8048,6 +8399,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8057,6 +8409,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8080,6 +8433,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8088,6 +8442,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8096,6 +8451,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8104,6 +8460,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8113,6 +8470,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8136,6 +8494,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8144,6 +8503,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8152,6 +8512,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8161,6 +8522,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8184,6 +8546,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8192,6 +8555,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8200,6 +8564,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8208,6 +8573,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8216,6 +8582,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8225,6 +8592,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8233,6 +8601,7 @@ export interface operations {
       };
       503: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8254,6 +8623,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8262,6 +8632,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8270,6 +8641,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8278,6 +8650,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8287,6 +8660,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8306,6 +8680,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8314,6 +8689,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8322,6 +8698,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8331,6 +8708,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8353,6 +8731,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8361,6 +8740,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8369,6 +8749,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8377,6 +8758,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8386,6 +8768,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8410,6 +8793,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8418,6 +8802,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8426,6 +8811,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8434,6 +8820,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8442,6 +8829,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8451,6 +8839,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8475,6 +8864,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8483,6 +8873,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8491,6 +8882,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8499,6 +8891,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8508,6 +8901,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8531,6 +8925,7 @@ export interface operations {
     responses: {
       201: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8539,6 +8934,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8547,6 +8943,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8555,6 +8952,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8563,6 +8961,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8572,6 +8971,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8580,6 +8980,7 @@ export interface operations {
       };
       503: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8601,6 +9002,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8609,6 +9011,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8617,6 +9020,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8625,6 +9029,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8634,6 +9039,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8655,6 +9061,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8663,6 +9070,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8671,6 +9079,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8679,6 +9088,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8688,6 +9098,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8713,6 +9124,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8721,6 +9133,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8729,6 +9142,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8737,6 +9151,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8746,6 +9161,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8754,6 +9170,7 @@ export interface operations {
       };
       503: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8775,6 +9192,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8783,6 +9201,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8791,6 +9210,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8800,6 +9220,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8821,6 +9242,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8829,6 +9251,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8837,6 +9260,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8846,6 +9270,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8871,6 +9296,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8879,6 +9305,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8887,6 +9314,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8895,6 +9323,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8903,6 +9332,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8912,6 +9342,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8933,6 +9364,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8941,6 +9373,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8949,6 +9382,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8958,6 +9392,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8983,6 +9418,7 @@ export interface operations {
     responses: {
       201: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8991,6 +9427,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -8999,6 +9436,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9007,6 +9445,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9016,6 +9455,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9038,6 +9478,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9046,6 +9487,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9054,6 +9496,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9063,6 +9506,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9089,6 +9533,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9097,6 +9542,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9105,6 +9551,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9113,6 +9560,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9122,6 +9570,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9159,6 +9608,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9167,6 +9617,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9175,6 +9626,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9183,6 +9635,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9191,6 +9644,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9200,6 +9654,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9229,6 +9684,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9237,6 +9693,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9245,6 +9702,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9253,6 +9711,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9261,6 +9720,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9270,6 +9730,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9292,6 +9753,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9300,6 +9762,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9308,6 +9771,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9317,6 +9781,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9339,6 +9804,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9347,6 +9813,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9355,6 +9822,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9364,6 +9832,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9390,6 +9859,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9398,6 +9868,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9406,6 +9877,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9414,6 +9886,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9423,6 +9896,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9449,6 +9923,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9457,6 +9932,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9465,6 +9941,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9473,6 +9950,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9482,6 +9960,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9508,6 +9987,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9516,6 +9996,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9524,6 +10005,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9532,6 +10014,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9541,6 +10024,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9564,6 +10048,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9572,6 +10057,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9580,6 +10066,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9589,6 +10076,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9616,6 +10104,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9624,6 +10113,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9632,6 +10122,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9640,6 +10131,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9648,6 +10140,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9657,6 +10150,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9682,6 +10176,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9690,6 +10185,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9698,6 +10194,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9706,6 +10203,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9715,6 +10213,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9740,6 +10239,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9748,6 +10248,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9756,6 +10257,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9764,6 +10266,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9772,6 +10275,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9781,6 +10285,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9807,6 +10312,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9815,6 +10321,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9823,6 +10330,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9831,6 +10339,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9839,6 +10348,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9847,6 +10357,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9856,6 +10367,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9864,6 +10376,7 @@ export interface operations {
       };
       503: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9890,6 +10403,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9898,6 +10412,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9906,6 +10421,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9914,6 +10430,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9923,6 +10440,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9952,6 +10470,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9960,6 +10479,7 @@ export interface operations {
       };
       202: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9968,6 +10488,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9976,6 +10497,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9984,6 +10506,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -9992,6 +10515,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10000,6 +10524,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10009,6 +10534,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10038,6 +10564,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10046,6 +10573,7 @@ export interface operations {
       };
       202: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10054,6 +10582,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10062,6 +10591,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10070,6 +10600,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10078,6 +10609,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10086,6 +10618,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10095,6 +10628,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10122,6 +10656,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10130,6 +10665,7 @@ export interface operations {
       };
       202: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10138,6 +10674,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10146,6 +10683,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10154,6 +10692,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10162,6 +10701,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10170,6 +10710,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10179,6 +10720,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10204,6 +10746,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10212,6 +10755,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10220,6 +10764,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10228,6 +10773,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10236,6 +10782,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10244,6 +10791,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10253,6 +10801,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10278,6 +10827,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10286,6 +10836,7 @@ export interface operations {
       };
       201: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10294,6 +10845,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10302,6 +10854,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10310,6 +10863,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10318,6 +10872,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10326,6 +10881,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10335,6 +10891,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10357,6 +10914,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10365,6 +10923,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10373,6 +10932,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10381,6 +10941,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10389,6 +10950,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10397,6 +10959,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10406,6 +10969,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10428,6 +10992,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10436,6 +11001,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10444,6 +11010,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10452,6 +11019,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10460,6 +11028,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10468,6 +11037,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10477,6 +11047,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10503,6 +11074,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10511,6 +11083,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10519,6 +11092,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10527,6 +11101,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10535,6 +11110,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10543,6 +11119,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10552,6 +11129,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10580,6 +11158,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10588,6 +11167,7 @@ export interface operations {
       };
       202: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10596,6 +11176,7 @@ export interface operations {
       };
       400: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10604,6 +11185,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10612,6 +11194,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10620,6 +11203,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10628,6 +11212,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10636,6 +11221,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10645,6 +11231,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10667,6 +11254,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10675,6 +11263,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10683,6 +11272,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10691,6 +11281,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10699,6 +11290,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10707,6 +11299,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10716,6 +11309,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10743,6 +11337,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10751,6 +11346,7 @@ export interface operations {
       };
       202: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10759,6 +11355,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10767,6 +11364,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10775,6 +11373,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10783,6 +11382,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10791,6 +11391,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10800,6 +11401,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10827,6 +11429,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10835,6 +11438,7 @@ export interface operations {
       };
       202: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10843,6 +11447,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10851,6 +11456,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10859,6 +11465,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10867,6 +11474,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10875,6 +11483,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10884,6 +11493,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10907,6 +11517,7 @@ export interface operations {
     responses: {
       201: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10915,6 +11526,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10923,6 +11535,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10931,6 +11544,7 @@ export interface operations {
       };
       429: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10939,6 +11553,7 @@ export interface operations {
       };
       503: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10958,6 +11573,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10966,6 +11582,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10975,6 +11592,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -10994,6 +11612,7 @@ export interface operations {
     responses: {
       202: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11002,6 +11621,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11010,6 +11630,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11019,6 +11640,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11042,6 +11664,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11050,6 +11673,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11058,6 +11682,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11066,6 +11691,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11075,6 +11701,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11100,6 +11727,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11108,6 +11736,7 @@ export interface operations {
       };
       400: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11116,6 +11745,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11124,6 +11754,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11132,6 +11763,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11140,6 +11772,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11148,6 +11781,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11157,6 +11791,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11183,6 +11818,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11191,6 +11827,7 @@ export interface operations {
       };
       400: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11199,6 +11836,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11207,6 +11845,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11215,6 +11854,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11223,6 +11863,7 @@ export interface operations {
       };
       409: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11231,6 +11872,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11240,6 +11882,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11261,6 +11904,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11269,6 +11913,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11277,6 +11922,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11285,6 +11931,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11294,6 +11941,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11315,6 +11963,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11323,6 +11972,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11331,6 +11981,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11339,6 +11990,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11348,6 +12000,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11369,6 +12022,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11377,6 +12031,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11385,6 +12040,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11393,6 +12049,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11402,6 +12059,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11427,6 +12085,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11435,6 +12094,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11443,6 +12103,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11451,6 +12112,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11460,6 +12122,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11492,6 +12155,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11500,6 +12164,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11508,6 +12173,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11516,6 +12182,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11524,6 +12191,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11533,6 +12201,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11556,6 +12225,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11564,6 +12234,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11572,6 +12243,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11580,6 +12252,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11588,6 +12261,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11597,6 +12271,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11618,6 +12293,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11626,6 +12302,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11634,6 +12311,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11642,6 +12320,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11651,6 +12330,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11676,6 +12356,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11684,6 +12365,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11692,6 +12374,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11700,6 +12383,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11708,6 +12392,7 @@ export interface operations {
       };
       422: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11717,6 +12402,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11739,6 +12425,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11747,6 +12434,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11755,6 +12443,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11763,6 +12452,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11772,6 +12462,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11793,6 +12484,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11801,6 +12493,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11809,6 +12502,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11817,6 +12511,7 @@ export interface operations {
       };
       404: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11826,6 +12521,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11845,6 +12541,7 @@ export interface operations {
     responses: {
       200: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11853,6 +12550,7 @@ export interface operations {
       };
       401: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11861,6 +12559,7 @@ export interface operations {
       };
       403: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
@@ -11870,6 +12569,7 @@ export interface operations {
       429: {
         headers: {
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
         content: {
