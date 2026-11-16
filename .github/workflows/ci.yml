@@ -59,5 +59,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
+          # No pnpm in this job: setup-node would otherwise cache for the
+          # packageManager field and fail looking for pnpm.
+          package-manager-cache: false
       - run: node test/smoke/smoke.cjs
       - run: node test/smoke/smoke.mjs
