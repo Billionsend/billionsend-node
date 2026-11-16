@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (Unreleased)
+## 0.1.0 (2026-11-17)
 
 - First version of the BillionSend SDK for Node.js and TypeScript: every operation of the BillionSend API, grouped by resource and named after each operation's `operationId`, with request and response types generated from the OpenAPI document.
 - Results as `{ data, error, headers }`; methods never throw.

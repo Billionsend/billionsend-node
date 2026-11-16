@@ -230,7 +230,7 @@ Every method takes a last `options` argument with `signal`, `headers`, `timeoutM
 | Property | Covers |
 | --- | --- |
 | `emails` | send, batch, list, get, update, cancel, delete, insights, metrics |
-| `emails.receiving` | received mail: list, get, delete, reply, forward, `attachments` |
+| `emails.receiving` | received mail: list, get, delete, reply, forward, `attachments` (list, get, text) |
 | `domains` | create, list, get, update, delete, verify |
 | `apiKeys` | create, list, delete |
 | `contacts` | create, list, get, update, delete, preferences link, `batch`, `topics`, `segments` |

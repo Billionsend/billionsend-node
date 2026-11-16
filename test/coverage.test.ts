@@ -39,6 +39,8 @@ const CALLS: Record<string, Call> = {
     bs.emails.receiving.forward(ID, sampleBody("POST /emails/receiving/{id}/forward")),
   "GET /emails/receiving/{email_id}/attachments": (bs) => bs.emails.receiving.attachments.list(ID),
   "GET /emails/receiving/{email_id}/attachments/{id}": (bs) => bs.emails.receiving.attachments.get(ID, ID2),
+  "GET /emails/receiving/{email_id}/attachments/{id}/text": (bs) =>
+    bs.emails.receiving.attachments.text(ID, ID2),
 
   // Domains, API keys, webhooks, account
   "POST /domains": (bs) => bs.domains.create(sampleBody("POST /domains")),

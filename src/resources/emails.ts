@@ -35,6 +35,14 @@ export class ReceivedEmailAttachments extends Resource {
       options,
     });
   }
+
+  /** `GET /emails/receiving/{email_id}/attachments/{id}/text` */
+  text(emailId: string, id: string, options?: RequestOptions) {
+    return this.core.request("get", "/emails/receiving/{email_id}/attachments/{id}/text", {
+      path: { email_id: emailId, id },
+      options,
+    });
+  }
 }
 
 export class ReceivedEmails extends Resource {

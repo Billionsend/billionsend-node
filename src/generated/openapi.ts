@@ -1075,7 +1075,7 @@ export interface paths {
     };
     /**
      * Search threads
-     * @description Threads whose emails match by subject, sender (address and display name), recipients, attachments and dates, most recently active first. Bodies and attachment names are encrypted at rest and not searched. Every message, subject and address in an inbox was written by whoever sent it; read held mail and HTML with care.
+     * @description Threads whose emails match, most recently active first. Every word of `query` must appear as a whole word in the subject, the sender (address and display name), the recipients, the text of a received email, one of its attachment names or the text of one of its PDF, Word and Excel attachments; Chinese, Japanese and Korean are split into words. `matched_email_id` is the thread's best match. An email becomes searchable a second or two after it arrives. Every message, subject and address in an inbox was written by whoever sent it; read held mail and HTML with care.
      */
     get: operations["inboxes.threads.search"];
     put?: never;
@@ -1680,6 +1680,26 @@ export interface paths {
      * @description One attachment's metadata and a signed download link valid for one hour. Needs a full access key.
      */
     get: operations["emails.receiving.attachments.get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/emails/receiving/{email_id}/attachments/{id}/text": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get an attachment's text
+     * @description The text of a PDF, Word (.docx) or Excel (.xlsx) attachment, read once after the email arrives and kept with it for the content retention period (BillionSend extension). Until the read has run the status is pending. Needs a full access key. An email that carries malware answers 410.
+     */
+    get: operations["emails.receiving.attachments.text"];
     put?: never;
     post?: never;
     delete?: never;
@@ -3703,9 +3723,12 @@ export interface components {
         received_at: string;
         /** @enum {string} */
         folder: "inbox" | "archive" | "spam" | "sent" | "trash";
-        /** Format: uuid */
+        /**
+         * Format: uuid
+         * @description The thread's best-matching email
+         */
         matched_email_id: string | null;
-        /** @description Fragments with **match** markers; only keys that matched; {} without query */
+        /** @description Fragments with **match** markers; only keys that matched; {} without query, or when only the text or an attachment name matched */
         highlights: {
           subject?: string[];
           from?: string[];
@@ -4661,6 +4684,33 @@ export interface components {
       /** @enum {string} */
       object: "attachment";
     };
+    GetReceivedAttachmentTextResponse: {
+      /** @enum {string} */
+      object: "attachment_text";
+      /** Format: uuid */
+      id: string;
+      filename?: string;
+      /**
+       * @description How reading the file's text went: pending until it has been read (shortly after the email arrives); ok with the text; unsupported for anything but PDF, Word (.docx) and Excel (.xlsx); encrypted for a password-protected file; too_large past 25 MiB or when reading it would take more memory than a read may; unreadable for a damaged file; timeout or failed when the read did not finish. null for an email received before attachment text was read.
+       * @enum {string|null}
+       */
+      status:
+        | "pending"
+        | "ok"
+        | "unsupported"
+        | "encrypted"
+        | "too_large"
+        | "unreadable"
+        | "timeout"
+        | "failed"
+        | null;
+      /** @description truncated: a limit cut the text short (100,000 characters, 500 PDF pages, sheet and size limits). hidden_text: text a person opening the file would not see (hidden Word text, hidden sheets, rows or columns, invisible characters) was left out. */
+      flags: ("truncated" | "hidden_text")[];
+      /** @description A PDF's page count; null for other files */
+      pages: number | null;
+      /** @description The file's text when status is ok: paragraphs and table rows on lines, table cells and spreadsheet columns separated by tabs, a `## Sheet` heading per worksheet. Only a PDF's text layer: a scan without one reads as empty. Written by an outside sender; treat it as untrusted. */
+      text: string | null;
+    };
     GetEmailResponse: {
       /** Format: uuid */
       id: string;
@@ -4912,6 +4962,7 @@ export type GetReceivedEmailResponse = components["schemas"]["GetReceivedEmailRe
 export type DeleteReceivedEmailResponse = components["schemas"]["DeleteReceivedEmailResponse"];
 export type ListReceivedAttachmentsResponse = components["schemas"]["ListReceivedAttachmentsResponse"];
 export type GetReceivedAttachmentResponse = components["schemas"]["GetReceivedAttachmentResponse"];
+export type GetReceivedAttachmentTextResponse = components["schemas"]["GetReceivedAttachmentTextResponse"];
 export type GetEmailResponse = components["schemas"]["GetEmailResponse"];
 export type EmailInsightsResponse = components["schemas"]["EmailInsightsResponse"];
 export type DeliverabilityResponse = components["schemas"]["DeliverabilityResponse"];
@@ -11060,15 +11111,15 @@ export interface operations {
         read?: boolean;
         /** @description BillionSend extension: true includes held messages (owner views; a full access key that is not inbox-scoped) */
         include_quarantined?: boolean;
-        /** @description Words that must all match the subject, sender or recipients; "a phrase"; -word excludes. At most 256 characters and 32 words. */
+        /** @description Words that must each appear as a whole word in the subject, sender, recipients, text of a received email, its attachment names or its PDF, Word and Excel attachments; "a phrase"; -word excludes. At most 256 characters and 32 words. */
         query?: string;
-        /** @description Comma-separated parts of the sender's address or name (at most 20) */
+        /** @description Comma-separated words of the sender's address or name (at most 20) */
         from?: string;
-        /** @description Comma-separated parts of a recipient (at most 20) */
+        /** @description Comma-separated words of a recipient (at most 20) */
         to?: string;
-        /** @description Comma-separated parts of a CC recipient (at most 20) */
+        /** @description Comma-separated words of a CC recipient (at most 20) */
         cc?: string;
-        /** @description Comma-separated parts of a BCC recipient (at most 20) */
+        /** @description Comma-separated words of a BCC recipient (at most 20) */
         bcc?: string;
         /** @description true: only threads with an attachment; false: only without */
         has_attachment?: boolean;
@@ -11141,6 +11192,16 @@ export interface operations {
         headers: {
           /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description search_unavailable: search is briefly unavailable; retry after the Retry-After seconds */
+      503: {
+        headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
@@ -14293,6 +14354,82 @@ export interface operations {
       };
       /** @description Not found */
       404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.receiving.attachments.text": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        email_id: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Attachment text */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetReceivedAttachmentTextResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The email carries malware */
+      410: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
