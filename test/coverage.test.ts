@@ -239,6 +239,21 @@ describe("operation coverage", () => {
     expect(missing, "operations whose operationId is not an SDK method").toEqual([]);
   });
 
+  it("gives every cursor-paginated list an iterator beside its method", () => {
+    const bs = client() as unknown as Record<string, unknown>;
+    const cursorLists = [...OPERATION_KEYS].filter((key) =>
+      (operation(key).parameters ?? []).some((p) => p.in === "query" && p.name === "after"),
+    );
+    expect(cursorLists.length).toBeGreaterThan(0);
+    const missing = cursorLists.filter((key) => {
+      const path = (operation(key).operationId ?? "").split(".");
+      const method = path.pop() ?? "";
+      const owner = path.reduce<unknown>((at, name) => (at as Record<string, unknown>)?.[name], bs);
+      return typeof (owner as Record<string, unknown> | undefined)?.[`${method}All`] !== "function";
+    });
+    expect(missing, "cursor lists without a listAll / searchAll").toEqual([]);
+  });
+
   describe.each(Object.entries(CALLS))("%s", (key, call) => {
     it("reaches the operation with a contract-valid request and returns its answer", async () => {
       const result = await call(client());
