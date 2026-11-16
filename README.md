@@ -256,7 +256,7 @@ pnpm typecheck && pnpm lint && pnpm test
 pnpm build && pnpm test:smoke
 ```
 
-The contract is `openapi/api.openapi.json`, a snapshot of the published OpenAPI document (prose descriptions removed). The tests run every SDK method against a local mock that validates each request and answers from that snapshot, and fail when an operation has no SDK method. When the API changes:
+The contract is `openapi/api.openapi.json`, a snapshot of the published OpenAPI document; its descriptions become the doc comments of the generated types. The tests run every SDK method against a local mock that validates each request and answers from that snapshot, and fail when an operation has no SDK method. When the API changes:
 
 ```bash
 pnpm openapi:sync               # or: pnpm openapi:sync --from path/to/api.openapi.json

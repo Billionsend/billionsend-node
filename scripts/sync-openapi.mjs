@@ -4,11 +4,10 @@
 //   pnpm openapi:sync                      # fetch the published document
 //   pnpm openapi:sync --from <path>        # copy a local document instead
 //
-// The snapshot keeps the machine-readable contract (paths, parameters, request
-// bodies, responses, schemas, summaries) and drops the prose: every string
-// `description` is removed, and a Response Object's required `description` is
-// emptied. The prose lives on https://billionsend.com/docs. After syncing, run
-// `pnpm generate` and `pnpm test`; whatever fails is what the SDK has to follow.
+// The snapshot is the document as published, descriptions included: `pnpm
+// generate` turns them into the doc comments of the generated types. After
+// syncing, run `pnpm generate` and `pnpm test`; whatever fails is what the SDK
+// has to follow.
 
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
@@ -37,33 +36,12 @@ async function load({ from, url }) {
   return res.json();
 }
 
-/** Removes prose annotations; a Response Object keeps an empty `description` because it is required. */
-function stripProse(node, isResponseObject = false) {
-  if (Array.isArray(node)) return node.map((item) => stripProse(item));
-  if (node === null || typeof node !== "object") return node;
-  const out = {};
-  for (const [key, value] of Object.entries(node)) {
-    if (key === "description" && typeof value === "string") {
-      if (isResponseObject) out.description = "";
-      continue;
-    }
-    if (key === "responses" && value !== null && typeof value === "object" && !Array.isArray(value)) {
-      out.responses = Object.fromEntries(
-        Object.entries(value).map(([status, response]) => [status, stripProse(response, true)]),
-      );
-      continue;
-    }
-    out[key] = stripProse(value);
-  }
-  return out;
-}
-
 const args = parseArgs(process.argv.slice(2));
 const doc = await load(args);
 if (typeof doc.openapi !== "string" || !doc.openapi.startsWith("3.1")) {
   throw new Error(`Expected an OpenAPI 3.1 document, got ${String(doc.openapi)}`);
 }
-await writeFile(target, `${JSON.stringify(stripProse(doc), null, 2)}\n`);
+await writeFile(target, `${JSON.stringify(doc, null, 2)}\n`);
 
 let operations = 0;
 for (const item of Object.values(doc.paths ?? {})) {

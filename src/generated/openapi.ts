@@ -28,7 +28,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List contacts */
+    /**
+     * List contacts
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
     get: operations["contacts.list"];
     put?: never;
     /** Create a contact */
@@ -48,7 +51,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Read contacts in bulk */
+    /**
+     * Read contacts in bulk
+     * @description BillionSend extension: returns up to 1000 contacts by id or by email address in one request, in request order, optionally with their properties and topic subscriptions. Entries that match no contact are listed under `missing` instead of failing the call. One call counts as one request against the rate limit.
+     */
     post: operations["contacts.batch.get"];
     delete?: never;
     options?: never;
@@ -65,7 +71,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Delete in bulk */
+    /**
+     * Delete in bulk
+     * @description Deletes up to 1000 contacts by id or by email address in one request and lists the rows actually deleted; unknown ids or addresses are skipped. Emails stay in the log; `erase: true` also scrubs each address from email history, event payloads and API logs, like DELETE /contacts/{id}?erase=true.
+     */
     post: operations["contacts.batch.remove"];
     delete?: never;
     options?: never;
@@ -82,7 +91,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Create in bulk */
+    /**
+     * Create in bulk
+     * @description Creates up to 1000 contacts in one request. Each item is a CreateContactRequest. `on_conflict` decides what happens to an email that already belongs to a contact — `error` (default), `skip`, or `upsert`. An upsert updates `first_name`/`last_name` only when provided, merges `properties` (provided keys overwrite), adds `segments` and upserts `topics`. `unsubscribed: true` opts the contact out; `unsubscribed: false` on an already unsubscribed contact is ignored — a batch never re-subscribes anyone, that stays an explicit PATCH /contacts/{id}. The `x-batch-validation` header picks strict (default, all-or-nothing) or permissive (valid subset written, failures listed in `errors`).
+     */
     post: operations["contacts.batch.create"];
     delete?: never;
     options?: never;
@@ -101,7 +113,10 @@ export interface paths {
     get: operations["contacts.get"];
     put?: never;
     post?: never;
-    /** Delete a contact */
+    /**
+     * Delete a contact
+     * @description Deletes the contact and its segment memberships. Its emails stay in the log; pass `erase=true` to also scrub the address from email history, event payloads and API logs.
+     */
     delete: operations["contacts.delete"];
     options?: never;
     head?: never;
@@ -118,7 +133,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Get a preferences link */
+    /**
+     * Get a preferences link
+     * @description BillionSend extension. Returns the contact's hosted preferences URL, so a product settings screen can deep-link into it. The page lists the team's unbound public topics and carries the team-wide unsubscribe, in the team's default look: the link belongs to no domain. The link is a signed, contact-scoped capability with no expiry: anyone holding it can change that contact's preferences, so hand it only to the contact.
+     */
     post: operations["contacts.preferencesLink"];
     delete?: never;
     options?: never;
@@ -205,7 +223,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List properties */
+    /**
+     * List properties
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
     get: operations["contactProperties.list"];
     put?: never;
     /** Create a property */
@@ -242,7 +263,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List segments */
+    /**
+     * List segments
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
     get: operations["segments.list"];
     put?: never;
     /** Create a segment */
@@ -279,7 +303,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List segment contacts */
+    /**
+     * List segment contacts
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
     get: operations["segments.contacts.list"];
     put?: never;
     post?: never;
@@ -296,7 +323,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List broadcasts */
+    /**
+     * List broadcasts
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
     get: operations["broadcasts.list"];
     put?: never;
     /** Create a broadcast */
@@ -352,7 +382,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Duplicate a broadcast */
+    /**
+     * Duplicate a broadcast
+     * @description Copy any broadcast, whatever its status, into a new draft named "<name> (copy)": audience, sender, subject, reply-to, preview text and content come along; schedule, send times and counts do not.
+     */
     post: operations["broadcasts.duplicate"];
     delete?: never;
     options?: never;
@@ -421,7 +454,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List domains */
+    /**
+     * List domains
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones. The team's subdomain of the shared domain, when it has one, is the last row (`shared: true`).
+     */
     get: operations["domains.list"];
     put?: never;
     /** Create a domain */
@@ -475,7 +511,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List API keys */
+    /**
+     * List API keys
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones. A key held to one domain lists only the keys held to that same domain.
+     */
     get: operations["apiKeys.list"];
     put?: never;
     /** Create an API key */
@@ -496,7 +535,10 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    /** Delete an API key */
+    /**
+     * Delete an API key
+     * @description A key held to one domain deletes only keys held to that same domain; any other key is not found.
+     */
     delete: operations["apiKeys.delete"];
     options?: never;
     head?: never;
@@ -510,7 +552,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List webhooks */
+    /**
+     * List webhooks
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
     get: operations["webhooks.list"];
     put?: never;
     /** Create a webhook */
@@ -549,7 +594,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Rotate signing secret */
+    /**
+     * Rotate signing secret
+     * @description BillionSend extension. Mints a new signing secret (or takes the one in signing_secret) and returns it. For overlap_hours the previous secret keeps signing too: every delivery in that window carries both signatures, space-separated in webhook-signature, so the receiver can switch at any point without a gap. A second rotation inside the window replaces the previous secret.
+     */
     post: operations["webhooks.rotate"];
     delete?: never;
     options?: never;
@@ -598,7 +646,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List suppressions */
+    /**
+     * List suppressions
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
     get: operations["suppressions.list"];
     put?: never;
     /** Add a suppression */
@@ -634,7 +685,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List unsubscribes */
+    /**
+     * List unsubscribes
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
     get: operations["unsubscribes.list"];
     put?: never;
     /** Record an unsubscribe */
@@ -669,7 +723,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List templates */
+    /**
+     * List templates
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
     get: operations["templates.list"];
     put?: never;
     /** Create a template */
@@ -759,7 +816,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Estimate a verification */
+    /**
+     * Estimate a verification
+     * @description How many of the target's contacts were never verified and what verifying them would cost. Changes nothing.
+     */
     post: operations["verifications.estimate"];
     delete?: never;
     options?: never;
@@ -774,10 +834,16 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List verifications */
+    /**
+     * List verifications
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
     get: operations["verifications.list"];
     put?: never;
-    /** Start a verification */
+    /**
+     * Start a verification
+     * @description Starts deep verification of the target's contacts, one run per 50,000 of them. Contacts verified before are skipped unless recheck is true, and a contact already being verified never joins a second run. Paid plans only; billed per verified address on the monthly invoice.
+     */
     post: operations["verifications.create"];
     delete?: never;
     options?: never;
@@ -826,7 +892,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Stream inbox events */
+    /**
+     * Stream inbox events
+     * @description BillionSend extension: a server-sent event stream of every inbox event of the team, named like the webhook events (inbox.email.received, inbox.thread.created, email.received, …; types narrows them), each carrying the webhook payload's data. Send the key as a Bearer header; the stream stays open, and a client that reconnects with Last-Event-ID resumes without losing events. Needs a team-wide key: a key held to one domain streams one inbox at a time. An agent (an inbox-scoped key, or an MCP connection) never receives the events about held mail (inbox.email.quarantined), replay included, and naming them in types is a 403. A stream closes within a few seconds once its key is revoked, its person leaves the team or its inbox is gone; it is also closed every ten minutes or so, and the client reconnects with Last-Event-ID. Streams are capped per key and per team on each API process (429 too_many_streams).
+     */
     get: operations["inboxes.events.stream"];
     put?: never;
     post?: never;
@@ -843,7 +912,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Stream one inbox's events */
+    /**
+     * Stream one inbox's events
+     * @description BillionSend extension: the event stream of one inbox, as GET /inboxes/events, ending when the inbox is deleted or expires. An inbox-scoped key may stream its own inbox, without the events about held mail.
+     */
     get: operations["inboxes.events.streamInbox"];
     put?: never;
     post?: never;
@@ -860,10 +932,16 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List inboxes */
+    /**
+     * List inboxes
+     * @description The team's inboxes, newest first (`after` pages toward older ones). An inbox-scoped key lists only its inbox.
+     */
     get: operations["inboxes.list"];
     put?: never;
-    /** Create an inbox */
+    /**
+     * Create an inbox
+     * @description An address that receives into threads, on one of your verified domains (receiving on, or forwarding: true) or, with email_address omitted, an address on the shared inbox domain that needs no DNS: username names it, or it is random. domain_id takes a row of GET /domains instead of email_address: the team's shared subdomain, or one of your domains with username. It never expires unless expires_in says so. Returns the full inbox. BillionSend extensions: username, domain_id, kind (agent by default), expires_in and safety.
+     */
     post: operations["inboxes.create"];
     delete?: never;
     options?: never;
@@ -878,15 +956,24 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Retrieve an inbox */
+    /**
+     * Retrieve an inbox
+     * @description By id, or by its email address (case-insensitive). An expired inbox is not found.
+     */
     get: operations["inboxes.get"];
     put?: never;
     post?: never;
-    /** Delete an inbox */
+    /**
+     * Delete an inbox
+     * @description Its threads, drafts, labels and the messages only it received go with it, and its address stops receiving. Its inbox-scoped API keys are revoked. Needs the owner, admin or developer role, or a full access team key.
+     */
     delete: operations["inboxes.delete"];
     options?: never;
     head?: never;
-    /** Update an inbox */
+    /**
+     * Update an inbox
+     * @description Its name or from_name; BillionSend extension: expires_in, a new lifetime counted from now. On a shared-domain inbox a new from_name is reviewed first (503 while that review is unavailable). Returns the full inbox.
+     */
     patch: operations["inboxes.update"];
     trace?: never;
   };
@@ -897,7 +984,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get agent settings */
+    /**
+     * Get agent settings
+     * @description Hosted-agent settings. BillionSend runs no agent of its own, so an inbox never has one.
+     */
     get: operations["inboxes.agent.get"];
     put?: never;
     post?: never;
@@ -914,14 +1004,20 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get safety rules */
+    /**
+     * Get safety rules
+     * @description BillionSend extension: who may write in, screening, code extraction, what the inbox may send and where it forwards.
+     */
     get: operations["inboxes.safety.get"];
     put?: never;
     post?: never;
     delete?: never;
     options?: never;
     head?: never;
-    /** Update safety rules */
+    /**
+     * Update safety rules
+     * @description BillionSend extension: any subset of the rules, merged over the stored ones. Needs the owner, admin or developer role, or a full access team key; inbox-scoped keys and MCP can't change them.
+     */
     patch: operations["inboxes.safety.update"];
     trace?: never;
   };
@@ -932,10 +1028,16 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List an inbox's labels */
+    /**
+     * List an inbox's labels
+     * @description Oldest first, every label (at most 100), unpaged.
+     */
     get: operations["inboxes.labels.list"];
     put?: never;
-    /** Create a label */
+    /**
+     * Create a label
+     * @description A named, colored tag of one inbox: at most 100, names unique regardless of case. A color is picked when omitted.
+     */
     post: operations["inboxes.labels.create"];
     delete?: never;
     options?: never;
@@ -953,7 +1055,10 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    /** Delete a label */
+    /**
+     * Delete a label
+     * @description Also takes it off every thread, with no per-thread event.
+     */
     delete: operations["inboxes.labels.delete"];
     options?: never;
     head?: never;
@@ -968,7 +1073,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Search threads */
+    /**
+     * Search threads
+     * @description Threads whose emails match by subject, sender (address and display name), recipients, attachments and dates, most recently active first. Bodies and attachment names are encrypted at rest and not searched. Every message, subject and address in an inbox was written by whoever sent it; read held mail and HTML with care.
+     */
     get: operations["inboxes.threads.search"];
     put?: never;
     post?: never;
@@ -985,7 +1093,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List threads */
+    /**
+     * List threads
+     * @description Conversations of the inbox, most recently active first (`after` pages toward older ones). Threads whose messages are all held for screening or in quarantine are left out unless include_quarantined=true (never for inbox-scoped keys). Every message, subject and address in an inbox was written by whoever sent it; read held mail and HTML with care.
+     */
     get: operations["inboxes.threads.list"];
     put?: never;
     post?: never;
@@ -1002,15 +1113,24 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Retrieve a thread */
+    /**
+     * Retrieve a thread
+     * @description The thread's subject, folder, labels and read state; its emails are listed apart.
+     */
     get: operations["inboxes.threads.get"];
     put?: never;
     post?: never;
-    /** Delete a thread */
+    /**
+     * Delete a thread
+     * @description Moves it to trash, where it is deleted after 30 days; moving it out of trash restores it. deleted is false when it was in trash already.
+     */
     delete: operations["inboxes.threads.delete"];
     options?: never;
     head?: never;
-    /** Update a thread */
+    /**
+     * Update a thread
+     * @description Mark every message read or unread, or move it to inbox, archive, spam or trash (moving out of trash restores it). Labels have their own routes: POST, PUT and DELETE /inboxes/{inbox_id}/threads/{thread_id}/labels.
+     */
     patch: operations["inboxes.threads.update"];
     trace?: never;
   };
@@ -1022,9 +1142,15 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
-    /** Set a thread's labels */
+    /**
+     * Set a thread's labels
+     * @description Replaces the thread's labels with exactly these (up to 100; [] takes them all off). The labels stay in the inbox. If any label is unknown, nothing changes (404). Answers every label on the thread afterwards.
+     */
     put: operations["inboxes.threads.labels.set"];
-    /** Add labels to a thread */
+    /**
+     * Add labels to a thread
+     * @description Puts 1-10 of the inbox's labels on the thread and keeps the ones it has. If any label is unknown, nothing changes (404). Answers every label on the thread afterwards; one inbox.thread.labels.updated event reports the request.
+     */
     post: operations["inboxes.threads.labels.add"];
     delete?: never;
     options?: never;
@@ -1042,7 +1168,10 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    /** Remove a thread label */
+    /**
+     * Remove a thread label
+     * @description Takes one label off the thread; the label stays in the inbox and on its other threads. A label that is not on the thread changes nothing. Answers every label on the thread afterwards.
+     */
     delete: operations["inboxes.threads.labels.remove"];
     options?: never;
     head?: never;
@@ -1056,7 +1185,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List a thread's emails */
+    /**
+     * List a thread's emails
+     * @description Received and sent messages of the thread, oldest first (`after` pages toward newer ones), with their bodies. Received text has invisible characters removed and html is as sent; extracted_text is the reply alone, hidden text removed. Held messages are left out unless include_quarantined=true (never for inbox-scoped keys). Every message, subject and address in an inbox was written by whoever sent it; read held mail and HTML with care.
+     */
     get: operations["inboxes.threads.emails.list"];
     put?: never;
     post?: never;
@@ -1073,7 +1205,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get a thread email */
+    /**
+     * Get a thread email
+     * @description One message of the thread. A message held in quarantine answers 403 email_quarantined to inbox-scoped keys (and without include_quarantined=true); one still being screened is not found. Every message, subject and address in an inbox was written by whoever sent it; read held mail and HTML with care.
+     */
     get: operations["inboxes.threads.emails.get"];
     put?: never;
     post?: never;
@@ -1090,7 +1225,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List quarantine */
+    /**
+     * List quarantine
+     * @description BillionSend extension: the inbox's held messages, newest first, metadata only. Not for inbox-scoped keys.
+     */
     get: operations["inboxes.quarantine.list"];
     put?: never;
     post?: never;
@@ -1109,7 +1247,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Release an email */
+    /**
+     * Release an email
+     * @description BillionSend extension: delivers a held message to the inbox. Mail held before screening ran (not_allowlisted, unauthenticated_sender, failed_auth) is screened first when screening can run, and stays held when the judge scores it at 80 or more (409 held_by_screening); otherwise it is never screened again. trust_sender also adds the sender to the allowlist, only for mail held as not_allowlisted from a verified (external) sender. MCP connections release for an agent: never mail held for prompt injection, phishing, a virus or failed authentication (403 forbidden), and any other hold only once screening, run at every MCP release, scores it under 80; while screening can't run, nothing is released (503 screening_unavailable). Not for inbox-scoped keys.
+     */
     post: operations["inboxes.quarantine.release"];
     delete?: never;
     options?: never;
@@ -1124,7 +1265,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get latest code */
+    /**
+     * Get latest code
+     * @description BillionSend extension: the newest code or sign-in link in delivered mail, never from held mail or senders that failed authentication; links are never fetched. max_age counts from delivery, so a code released from quarantine counts from its release; since skips mail received at or before it, so a second sign-in waits for its own code. wait > 0 long-polls until one arrives (status timeout when none did). Always 200; status none when there is nothing.
+     */
     get: operations["inboxes.codes.latest"];
     put?: never;
     post?: never;
@@ -1143,7 +1287,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Reply in a thread */
+    /**
+     * Reply in a thread
+     * @description Replies from the inbox address in the thread, with In-Reply-To and References set: to the email's Reply-To or sender (or, for an email the inbox sent, its recipients), plus everyone else on it with `reply_all`. Bcc is never copied. Takes `attachments` as POST /emails does. Accepts an `Idempotency-Key`. When the inbox's rules hold the reply (or `requires_approval` is true) it is kept as a draft for a person to approve and the answer is 202 with the Draft.
+     */
     post: operations["inboxes.threads.emails.reply"];
     delete?: never;
     options?: never;
@@ -1160,7 +1307,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Forward a thread email */
+    /**
+     * Forward a thread email
+     * @description Forwards the email from the inbox address, quoted under "---------- Forwarded message ---------" with its From, Date, Subject and To, after an optional note. Its attachments go along, with any `attachments` you add, within 10 MiB in all. An email that carries malware is never forwarded. Accepts an `Idempotency-Key`; a forward the inbox's rules hold answers 202 with the Draft.
+     */
     post: operations["inboxes.threads.emails.forward"];
     delete?: never;
     options?: never;
@@ -1177,7 +1327,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Send an email from an inbox */
+    /**
+     * Send an email from an inbox
+     * @description Sends a new conversation from the inbox address in one call (`to`, `subject`, `html` and/or `text`, optional `cc`, `bcc` and `attachments` as POST /emails takes them). It runs the same rules as a reply: an inbox that may not start conversations, a first-time recipient past the ramp, or `requires_approval: true` keeps it as a draft for a person to approve and the answer is 202 with the Draft. Accepts an `Idempotency-Key`. An inbox on the shared domain takes no attachments.
+     */
     post: operations["inboxes.send"];
     delete?: never;
     options?: never;
@@ -1192,10 +1345,16 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List drafts */
+    /**
+     * List drafts
+     * @description Unsent drafts (draft and pending_approval), most recently updated first; `after` pages toward older ones.
+     */
     get: operations["inboxes.drafts.list"];
     put?: never;
-    /** Create a draft */
+    /**
+     * Create a draft
+     * @description A standalone draft, or with `thread_id` and `reply_to_email_id` a reply draft in that thread. One unsent reply draft per email: creating another answers 200 with the existing one. A reply draft copies no recipients; set `to` before sending. `attachments` are kept encrypted with the draft until it is sent, rejected, expired or deleted. Nothing is sent until POST /inboxes/{inbox_id}/drafts/{draft_id}/send, or until `send_at` (BillionSend extension) when it is given: the draft is then sent as the caller at that time, through every rule and limit, and must have a recipient. With `send_at`, a reply draft for an email that already has one answers 409 instead of the existing draft.
+     */
     post: operations["inboxes.drafts.create"];
     delete?: never;
     options?: never;
@@ -1210,15 +1369,24 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Retrieve a draft */
+    /**
+     * Retrieve a draft
+     * @description One draft with its body, also after it was sent (status sent, email_id set).
+     */
     get: operations["inboxes.drafts.get"];
     put?: never;
     post?: never;
-    /** Delete a draft */
+    /**
+     * Delete a draft
+     * @description Removes an unsent draft; a sent one answers 409.
+     */
     delete: operations["inboxes.drafts.delete"];
     options?: never;
     head?: never;
-    /** Update a draft */
+    /**
+     * Update a draft
+     * @description Each given field replaces the stored one; null clears it. Setting html or text replaces the whole body: the part left out becomes null. `attachments` replaces the whole list (null or an empty list removes the files). A sent draft, or one that changed during the request, answers 409. An edit by an agent sends a draft waiting for approval back to draft. `send_at` (BillionSend extension) schedules the draft to be sent as the caller, or reschedules it, and clears `send_error`; null cancels the schedule. A draft waiting for approval cannot be scheduled (409). When the scheduled send goes out, the draft becomes sent; when the inbox's rules hold it, pending_approval; when it is refused (the key revoked, the inbox deleted, a limit reached), it stays a draft with `send_at` null, `send_error` set and an `inbox.draft.send_failed` webhook.
+     */
     patch: operations["inboxes.drafts.update"];
     trace?: never;
   };
@@ -1231,7 +1399,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Send a draft */
+    /**
+     * Send a draft
+     * @description Sends the draft from the inbox address; the body is optional and only ever holds `headers`, which are not supported yet (an empty value is fine), and an `Idempotency-Key` is accepted. Answers the sent email's id. A draft waiting for approval goes out only when a person or a team-wide full access key sends it (403 approval_required otherwise), and their send skips the inbox's rules but never the team's limits or the shared domain's rules. An agent's send of a draft runs the rules and may hold it (202).
+     */
     post: operations["inboxes.drafts.send"];
     delete?: never;
     options?: never;
@@ -1248,7 +1419,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Reject a draft */
+    /**
+     * Reject a draft
+     * @description BillionSend extension: a person or a team-wide full access key turns down a draft waiting for approval. It stays readable with status rejected; webhooks report it deleted.
+     */
     post: operations["inboxes.drafts.reject"];
     delete?: never;
     options?: never;
@@ -1265,7 +1439,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Reply to an email */
+    /**
+     * Reply to an email
+     * @description BillionSend extension: replies server-side, threaded with In-Reply-To and References. It goes out from the inbox the email reached (`inbox_id` picks one), else from the first address it was received for, or from `from`. A reply from an inbox runs its rules and may be held as a draft (202). Accepts an `Idempotency-Key`. Needs a full access key.
+     */
     post: operations["emails.receiving.reply"];
     delete?: never;
     options?: never;
@@ -1282,7 +1459,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Forward an email */
+    /**
+     * Forward an email
+     * @description BillionSend extension: forwards server-side, inline under a note (default) or with the original attached as forwarded_message.eml (`mode: attachment`), within 10 MiB. An email that carries malware is never forwarded. Sender rules and the 202 draft answer are those of the reply. Accepts an `Idempotency-Key`. Needs a full access key.
+     */
     post: operations["emails.receiving.forward"];
     delete?: never;
     options?: never;
@@ -1299,7 +1479,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Sign up as an agent */
+    /**
+     * Sign up as an agent
+     * @description BillionSend extension, no API key needed. Creates an account for an agent without a person present: a team named after the agent, one inbox on the shared domain (no DNS) and an inbox-scoped key for it, so the agent can receive mail at once. The account is **unclaimed**: it only receives, and every send answers 403 `team_unclaimed`. A claim link goes to `human_email`; the person opens it, signs in and claims the account, which becomes theirs on the Free plan (the key keeps working, as an inbox-scoped key under their team). An account nobody claims deletes itself 7 days after signup. Limits: 3 signups per client address per hour, 100 per hour in all, 3 per `human_email` per day.
+     */
     post: operations["agent.signup"];
     delete?: never;
     options?: never;
@@ -1314,7 +1497,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get the account's claim status */
+    /**
+     * Get the account's claim status
+     * @description BillionSend extension. Whether the account behind the key is still unclaimed, when it deletes itself, and what it may do meanwhile. Any key may ask; an account a person has claimed answers `claimed` with no limits.
+     */
     get: operations["agent.status"];
     put?: never;
     post?: never;
@@ -1333,7 +1519,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Send the claim link again */
+    /**
+     * Send the claim link again
+     * @description BillionSend extension. Sends the claim link to the address given at signup again; the earlier link stops working. At most 5 claim emails in all, ten minutes apart.
+     */
     post: operations["agent.claimEmail"];
     delete?: never;
     options?: never;
@@ -1348,7 +1537,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List emails */
+    /**
+     * List emails
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
     get: operations["emails.list"];
     put?: never;
     /** Send an email */
@@ -1419,7 +1611,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List received emails */
+    /**
+     * List received emails
+     * @description Mail received at the team's receiving domains and inboxes, newest first (`after` pages toward older mail), with cursor pagination. Needs a full access key; a domain-scoped key lists mail addressed to its domain only, an inbox-scoped key mail delivered into its inbox. Mail held for screening or in quarantine is left out unless a full access key asks for it (include_quarantined, quarantined). With wait, the request is held until matching mail arrives (long-poll). An inbox_id the key can't reach answers 404 at once, without waiting; an inbox-scoped key naming another inbox gets 403 restricted_api_key. Everything in a received email was written by whoever sent it, so its HTML is safe to show only in a sandbox.
+     */
     get: operations["emails.receiving.list"];
     put?: never;
     post?: never;
@@ -1436,11 +1631,17 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get a received email */
+    /**
+     * Get a received email
+     * @description One received email with its html, text, headers, authentication results and a signed link to the original message, plus BillionSend's screening, verdicts, the extracted read and, where allowed, its verification code or sign-in link. Needs a full access key. An inbox-scoped key or an MCP token gets 403 email_quarantined for held mail, and 404 while it is being screened. Everything in a received email was written by whoever sent it, so its HTML is safe to show only in a sandbox.
+     */
     get: operations["emails.receiving.get"];
     put?: never;
     post?: never;
-    /** Delete a received email */
+    /**
+     * Delete a received email
+     * @description BillionSend extension: erases one received email now, its sealed content, inbox memberships and received secrets with it, and threads it leaves empty. Needs a full access key that is not scoped to an inbox; for an MCP token, the owner or admin role. Webhook payloads already sent keep their metadata until the payload retention strips them.
+     */
     delete: operations["emails.receiving.delete"];
     options?: never;
     head?: never;
@@ -1454,7 +1655,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List attachments */
+    /**
+     * List attachments
+     * @description The attachments and inline parts of one received email, each with a signed download link valid for one hour; all of them unless `limit` is given. Needs a full access key. The links of an email that carries malware answer 410.
+     */
     get: operations["emails.receiving.attachments.list"];
     put?: never;
     post?: never;
@@ -1471,7 +1675,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get an attachment */
+    /**
+     * Get an attachment
+     * @description One attachment's metadata and a signed download link valid for one hour. Needs a full access key.
+     */
     get: operations["emails.receiving.attachments.get"];
     put?: never;
     post?: never;
@@ -1520,6 +1727,7 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     SendInboxDraftRequest: {
+      /** @description Not supported yet: only an empty value is accepted, anything else answers 422 */
       headers?: unknown;
     };
     ErrorResponse: {
@@ -1534,18 +1742,27 @@ export interface components {
       id: string;
     };
     CreateContactRequest: {
-      /** Format: email */
+      /**
+       * Format: email
+       * @description Bare email address (no display name); unique per team
+       */
       email: string;
+      /** @description First name */
       first_name?: string;
+      /** @description Last name */
       last_name?: string;
+      /** @description Global opt-out from all marketing sends */
       unsubscribed?: boolean;
+      /** @description Flat map of custom properties (string or number values) */
       properties?: {
         [key: string]: unknown;
       };
+      /** @description Segments to add the contact to on creation */
       segments?: {
         /** Format: uuid */
         id: string;
       }[];
+      /** @description Initial per-topic subscription choices */
       topics?: {
         /** Format: uuid */
         id: string;
@@ -1556,6 +1773,7 @@ export interface components {
     BatchGetContactsResponse: {
       /** @enum {string} */
       object: "list";
+      /** @description The contacts found, in request order */
       data: {
         /** Format: uuid */
         id: string;
@@ -1563,14 +1781,23 @@ export interface components {
         first_name: string | null;
         last_name: string | null;
         created_at: string;
+        /** @description Opt-out from every marketing send of the team, whichever domain sends. A recipient's own unsubscribe never sets it: that is recorded for the domain whose email carried the link (see unsubscribed_domains). */
         unsubscribed: boolean;
+        /** @description BillionSend extension: the domains this contact unsubscribed from through a link in their email. Marketing sends from those domains skip the contact; other domains still reach them. The team-wide opt-out is `unsubscribed`, not an entry here. Remove an entry with DELETE /unsubscribes/{id}. */
         unsubscribed_domains: {
-          /** Format: uuid */
+          /**
+           * Format: uuid
+           * @description Null when the domain has since been deleted from the team
+           */
           domain_id: string | null;
+          /** @description The domain's name */
           name: string;
           unsubscribed_at: string;
         }[];
-        /** @enum {string|null} */
+        /**
+         * @description BillionSend extension: the verdict of the contact's last deep verification (POST /verifications); null while it was never verified
+         * @enum {string|null}
+         */
         verification_status:
           | "valid"
           | "invalid"
@@ -1580,7 +1807,9 @@ export interface components {
           | "disposable"
           | "unknown"
           | null;
+        /** @description When the last deep verification finished; null while never verified */
         verified_at: string | null;
+        /** @description Present with include=properties */
         properties?: {
           [key: string]:
             | {
@@ -1594,21 +1823,31 @@ export interface components {
                 value: number;
               };
         };
+        /** @description Present with include=topics */
         topics?: {
           /** Format: uuid */
           id: string;
           name: string;
           description: string | null;
-          /** @enum {string} */
+          /**
+           * @description Effective choice: the contact's explicit one, else the topic's default
+           * @enum {string}
+           */
           subscription: "opt_in" | "opt_out";
+          /** @description True when the contact or the API chose this; false when it is the topic's default */
           explicit: boolean;
-          /** @enum {string} */
+          /**
+           * @description The hosted preference page lists public topics only
+           * @enum {string}
+           */
           visibility: "public" | "private";
         }[];
         /** @enum {string} */
         object: "contact";
       }[];
+      /** @description Request entries that matched no contact of the team */
       missing: {
+        /** @description Position in the request's contacts array */
         index: number;
         /** Format: uuid */
         id?: string;
@@ -1616,12 +1855,14 @@ export interface components {
       }[];
     };
     BatchGetContactsRequest: {
+      /** @description Up to 1000 contacts, each by id or by email address (matched case-insensitively) */
       contacts: {
         /** Format: uuid */
         id?: string;
         /** Format: email */
         email?: string;
       }[];
+      /** @description Facets to attach to every contact returned: properties and/or topics */
       include?: ("properties" | "topics")[];
     };
     BatchRemoveContactsResponse: {
@@ -1636,26 +1877,36 @@ export interface components {
       deleted: true;
     };
     BatchRemoveContactsRequest: {
+      /** @description Contact ids to delete, up to 1000 */
       ids?: string[];
+      /** @description Contact email addresses to delete, up to 1000; matched case-insensitively */
       emails?: string[];
+      /** @description Also erase each address from email history, event payloads and API logs (GDPR/LGPD); by default the send log is kept */
       erase?: boolean;
     };
     BatchContactsResponse: {
+      /** @description One entry per successful item, in request order */
       data: {
         /** @enum {string} */
         object: "contact";
+        /** @description Position of the item in the request array */
         index: number;
-        /** Format: uuid */
+        /**
+         * Format: uuid
+         * @description The contact's id (the existing one for skipped/updated)
+         */
         id: string;
         /** @enum {string} */
         status: "created" | "updated" | "skipped";
       }[];
+      /** @description Per-status totals over the request items; they sum to the request length */
       counts: {
         created: number;
         updated: number;
         skipped: number;
         failed: number;
       };
+      /** @description Permissive mode only: the failed items by request index, each with the statusCode and name strict mode would answer for it */
       errors?: {
         index: number;
         statusCode: number;
@@ -1663,6 +1914,7 @@ export interface components {
         message: string;
       }[];
     };
+    /** @description 1-1000 CreateContactRequest items */
     BatchContactsRequest: components["schemas"]["CreateContactRequest"][];
     ListContactsResponse: {
       /** @enum {string} */
@@ -1674,14 +1926,23 @@ export interface components {
         first_name: string | null;
         last_name: string | null;
         created_at: string;
+        /** @description Opt-out from every marketing send of the team, whichever domain sends. A recipient's own unsubscribe never sets it: that is recorded for the domain whose email carried the link (see unsubscribed_domains). */
         unsubscribed: boolean;
+        /** @description BillionSend extension: the domains this contact unsubscribed from through a link in their email. Marketing sends from those domains skip the contact; other domains still reach them. The team-wide opt-out is `unsubscribed`, not an entry here. Remove an entry with DELETE /unsubscribes/{id}. */
         unsubscribed_domains: {
-          /** Format: uuid */
+          /**
+           * Format: uuid
+           * @description Null when the domain has since been deleted from the team
+           */
           domain_id: string | null;
+          /** @description The domain's name */
           name: string;
           unsubscribed_at: string;
         }[];
-        /** @enum {string|null} */
+        /**
+         * @description BillionSend extension: the verdict of the contact's last deep verification (POST /verifications); null while it was never verified
+         * @enum {string|null}
+         */
         verification_status:
           | "valid"
           | "invalid"
@@ -1691,7 +1952,9 @@ export interface components {
           | "disposable"
           | "unknown"
           | null;
+        /** @description When the last deep verification finished; null while never verified */
         verified_at: string | null;
+        /** @description Present with include=properties */
         properties?: {
           [key: string]:
             | {
@@ -1705,15 +1968,23 @@ export interface components {
                 value: number;
               };
         };
+        /** @description Present with include=topics */
         topics?: {
           /** Format: uuid */
           id: string;
           name: string;
           description: string | null;
-          /** @enum {string} */
+          /**
+           * @description Effective choice: the contact's explicit one, else the topic's default
+           * @enum {string}
+           */
           subscription: "opt_in" | "opt_out";
+          /** @description True when the contact or the API chose this; false when it is the topic's default */
           explicit: boolean;
-          /** @enum {string} */
+          /**
+           * @description The hosted preference page lists public topics only
+           * @enum {string}
+           */
           visibility: "public" | "private";
         }[];
       }[];
@@ -1726,14 +1997,23 @@ export interface components {
       first_name: string | null;
       last_name: string | null;
       created_at: string;
+      /** @description Opt-out from every marketing send of the team, whichever domain sends. A recipient's own unsubscribe never sets it: that is recorded for the domain whose email carried the link (see unsubscribed_domains). */
       unsubscribed: boolean;
+      /** @description BillionSend extension: the domains this contact unsubscribed from through a link in their email. Marketing sends from those domains skip the contact; other domains still reach them. The team-wide opt-out is `unsubscribed`, not an entry here. Remove an entry with DELETE /unsubscribes/{id}. */
       unsubscribed_domains: {
-        /** Format: uuid */
+        /**
+         * Format: uuid
+         * @description Null when the domain has since been deleted from the team
+         */
         domain_id: string | null;
+        /** @description The domain's name */
         name: string;
         unsubscribed_at: string;
       }[];
-      /** @enum {string|null} */
+      /**
+       * @description BillionSend extension: the verdict of the contact's last deep verification (POST /verifications); null while it was never verified
+       * @enum {string|null}
+       */
       verification_status:
         | "valid"
         | "invalid"
@@ -1743,6 +2023,7 @@ export interface components {
         | "disposable"
         | "unknown"
         | null;
+      /** @description When the last deep verification finished; null while never verified */
       verified_at: string | null;
       /** @enum {string} */
       object: "contact";
@@ -1761,9 +2042,13 @@ export interface components {
       };
     };
     UpdateContactRequest: {
+      /** @description First name; null clears it */
       first_name?: string | null;
+      /** @description Last name; null clears it */
       last_name?: string | null;
+      /** @description Global opt-out from all marketing sends */
       unsubscribed?: boolean;
+      /** @description Custom properties to set (merged); null removes a key */
       properties?: {
         [key: string]: unknown;
       };
@@ -1773,7 +2058,10 @@ export interface components {
       object: "preferences_link";
       /** Format: uuid */
       contact: string;
-      /** Format: uri */
+      /**
+       * Format: uri
+       * @description The contact's hosted preference page; no expiry, treat as a secret
+       */
       url: string;
     };
     ListContactTopicsResponse: {
@@ -1784,10 +2072,17 @@ export interface components {
         id: string;
         name: string;
         description: string | null;
-        /** @enum {string} */
+        /**
+         * @description Effective choice: the contact's explicit one, else the topic's default
+         * @enum {string}
+         */
         subscription: "opt_in" | "opt_out";
+        /** @description True when the contact or the API chose this; false when it is the topic's default */
         explicit: boolean;
-        /** @enum {string} */
+        /**
+         * @description The hosted preference page lists public topics only
+         * @enum {string}
+         */
         visibility: "public" | "private";
       }[];
       /** @enum {boolean} */
@@ -1869,7 +2164,10 @@ export interface components {
       /** Format: uuid */
       id: string;
       name: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: the domain the segment is bound to; null for a team-wide segment
+       */
       domain_id: string | null;
       filter: components["schemas"]["SegmentFilter"];
       created_at: string;
@@ -1885,7 +2183,10 @@ export interface components {
     } | null;
     CreateSegmentRequest: {
       name: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: id of one of your domains. A broadcast to this segment must then be sent from that domain (422 otherwise), so an audience is never mailed under another brand or against another brand's opt-outs. null or omitted: a segment of the whole team, sendable from any domain. On update, null makes the segment a team-wide one again.
+       */
       domain_id?: string | null;
       filter?: components["schemas"]["SegmentFilter"];
     };
@@ -1898,7 +2199,10 @@ export interface components {
         /** Format: uuid */
         id: string;
         name: string;
-        /** Format: uuid */
+        /**
+         * Format: uuid
+         * @description BillionSend extension: the domain the segment is bound to; null for a team-wide segment
+         */
         domain_id: string | null;
         filter: components["schemas"]["SegmentFilter"];
         created_at: string;
@@ -1911,7 +2215,10 @@ export interface components {
       /** Format: uuid */
       id: string;
       name: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: the domain the segment is bound to; null for a team-wide segment
+       */
       domain_id: string | null;
       filter: components["schemas"]["SegmentFilter"];
       created_at: string;
@@ -1919,7 +2226,10 @@ export interface components {
     };
     UpdateSegmentRequest: {
       name?: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: id of one of your domains. A broadcast to this segment must then be sent from that domain (422 otherwise), so an audience is never mailed under another brand or against another brand's opt-outs. null or omitted: a segment of the whole team, sendable from any domain. On update, null makes the segment a team-wide one again.
+       */
       domain_id?: string | null;
       filter?: components["schemas"]["SegmentFilter"];
     };
@@ -1934,29 +2244,52 @@ export interface components {
     SendBroadcastResponse: {
       /** Format: uuid */
       id: string;
+      /** @description When the last email is expected to go out (ISO 8601); null when unknown */
       finishes_at?: string | null;
-      /** @enum {boolean} */
+      /**
+       * @description finishes_at is an estimate that moves as other sends come in
+       * @enum {boolean}
+       */
       estimated?: true;
       warning?: {
-        /** @enum {string} */
+        /**
+         * @description paced: more than the capacity available now; queued_behind: other sends go first
+         * @enum {string}
+         */
         code: "paced" | "queued_behind";
+        /** @description Days the send spans */
         days: number;
         message: string;
       };
     };
     CreateBroadcastRequest: {
+      /** @description Internal name shown in the dashboard */
       name?: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description Segment to send to; omitted means every contact of the team
+       */
       segment_id?: string;
+      /** @description Sender, "Name <user@domain>"; the domain must be one of the team's own verified domains when the broadcast is sent: sending from an address on the shared inbox domain answers 403 */
       from: string;
+      /** @description Subject line; supports {{{FIRST_NAME|there}}} merge fields */
       subject: string;
+      /** @description HTML body; include {{{UNSUBSCRIBE_URL}}} for the opt-out link */
       html?: string;
+      /** @description Plain-text body; at least one of html/text is required */
       text?: string;
+      /** @description Reply-To address or list */
       reply_to?: string | string[];
+      /** @description Inbox preview (preheader) text */
       preview_text?: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description Topic id; only contacts subscribed to it receive the broadcast
+       */
       topic_id?: string | null;
+      /** @description true sends (or schedules) immediately instead of saving a draft */
       send?: boolean;
+      /** @description Deliver later (requires send: true): ISO 8601 with offset or relative like "in 1 hour" */
       scheduled_at?: string;
     };
     ListBroadcastsResponse: {
@@ -1968,11 +2301,15 @@ export interface components {
         name: string | null;
         /** Format: uuid */
         segment_id: string | null;
+        /** @description draft, queued, sent, or the BillionSend extensions canceled and failed. failed: the send could not go ahead, either on a condition no retry would change or because the retries ran out; failure_reason says why. Emails already handed off stay sent. */
         status: string;
         created_at: string;
         scheduled_at: string | null;
         sent_at: string | null;
-        /** @enum {string|null} */
+        /**
+         * @description BillionSend extension: why a failed broadcast failed (domain_missing: its sending domain was deleted; sender_domain_mismatch: from is no longer on that domain; topic_other_domain / segment_other_domain: its topic or segment is bound to another domain; domain_unverified: its sending domain was not verified through every retry; retries_exhausted: sending kept failing until the retries ran out); null unless status is failed
+         * @enum {string|null}
+         */
         failure_reason:
           | "domain_missing"
           | "sender_domain_mismatch"
@@ -1981,8 +2318,11 @@ export interface components {
           | "domain_unverified"
           | "retries_exhausted"
           | null;
+        /** @description BillionSend extension: when the broadcast failed; null unless status is failed */
         failed_at: string | null;
+        /** @description Emails handed off so far; null before the send starts and once its emails have left the retention window */
         sent_count: number | null;
+        /** @description Estimated instant the last email goes out, while the broadcast is going out; else null */
         finishes_at: string | null;
       }[];
       has_more: boolean;
@@ -1993,11 +2333,15 @@ export interface components {
       name: string | null;
       /** Format: uuid */
       segment_id: string | null;
+      /** @description draft, queued, sent, or the BillionSend extensions canceled and failed. failed: the send could not go ahead, either on a condition no retry would change or because the retries ran out; failure_reason says why. Emails already handed off stay sent. */
       status: string;
       created_at: string;
       scheduled_at: string | null;
       sent_at: string | null;
-      /** @enum {string|null} */
+      /**
+       * @description BillionSend extension: why a failed broadcast failed (domain_missing: its sending domain was deleted; sender_domain_mismatch: from is no longer on that domain; topic_other_domain / segment_other_domain: its topic or segment is bound to another domain; domain_unverified: its sending domain was not verified through every retry; retries_exhausted: sending kept failing until the retries ran out); null unless status is failed
+       * @enum {string|null}
+       */
       failure_reason:
         | "domain_missing"
         | "sender_domain_mismatch"
@@ -2006,8 +2350,11 @@ export interface components {
         | "domain_unverified"
         | "retries_exhausted"
         | null;
+      /** @description BillionSend extension: when the broadcast failed; null unless status is failed */
       failed_at: string | null;
+      /** @description Emails handed off so far; null before the send starts and once its emails have left the retention window */
       sent_count: number | null;
+      /** @description Estimated instant the last email goes out, while the broadcast is going out; else null */
       finishes_at: string | null;
       /** @enum {string} */
       object: "broadcast";
@@ -2017,7 +2364,10 @@ export interface components {
       preview_text: string | null;
       /** Format: uuid */
       topic_id: string | null;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: the domain of yours that from is on, set whenever from is. Its opt-outs decide who is left out and its unsubscribe page opens from the links. null while from is not on a domain of yours (the broadcast is sent only once it is).
+       */
       domain_id: string | null;
       html: string | null;
       text: string | null;
@@ -2048,6 +2398,7 @@ export interface components {
       deleted: true;
     };
     SendBroadcastRequest: {
+      /** @description Deliver later: ISO 8601 with offset or relative like "in 1 hour"; omitted sends now */
       scheduled_at?: string;
     };
     DuplicateBroadcastResponse: {
@@ -2061,6 +2412,7 @@ export interface components {
       object: "broadcast";
       /** Format: uuid */
       id: string;
+      /** @description Emails stopped before going out; the ones already sent are not recalled */
       canceled_remaining: number;
     };
     TopicResponse: {
@@ -2072,7 +2424,10 @@ export interface components {
       default_subscription: "opt_in" | "opt_out";
       /** @enum {string} */
       visibility: "private" | "public";
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: the domain the topic is bound to; null for a team-wide topic
+       */
       domain_id: string | null;
       created_at: string;
     };
@@ -2083,7 +2438,10 @@ export interface components {
       default_subscription: "opt_in" | "opt_out";
       /** @enum {string} */
       visibility?: "private" | "public";
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: id of one of your domains. The topic then appears only on that domain's unsubscribe page, and a send with this topic_id must come from that domain (422 otherwise). null or omitted: a topic of the whole team, shown for every domain. On update, null makes the topic a team-wide one again.
+       */
       domain_id?: string | null;
     };
     ListTopicsResponse: {
@@ -2098,7 +2456,10 @@ export interface components {
         default_subscription: "opt_in" | "opt_out";
         /** @enum {string} */
         visibility: "private" | "public";
-        /** Format: uuid */
+        /**
+         * Format: uuid
+         * @description BillionSend extension: the domain the topic is bound to; null for a team-wide topic
+         */
         domain_id: string | null;
         created_at: string;
       }[];
@@ -2114,7 +2475,10 @@ export interface components {
       description?: string;
       /** @enum {string} */
       visibility?: "private" | "public";
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: id of one of your domains. The topic then appears only on that domain's unsubscribe page, and a send with this topic_id must come from that domain (422 otherwise). null or omitted: a topic of the whole team, shown for every domain. On update, null makes the topic a team-wide one again.
+       */
       domain_id?: string | null;
     };
     RemoveTopicResponse: {
@@ -2135,13 +2499,23 @@ export interface components {
       open_tracking: boolean;
       click_tracking: boolean;
       tracking_subdomain: string | null;
-      /** @enum {string|null} */
+      /**
+       * @description BillionSend extension: where the tracking subdomain stands: pending (waiting for its CNAME and certificate), active (links go through it) or failed (did not activate within 72 hours; links use the shared host). null while no tracking_subdomain is set.
+       * @enum {string|null}
+       */
       tracking_status: "pending" | "active" | "failed" | null;
+      /** @description BillionSend extension: why the tracking subdomain is not active, when known */
       tracking_error: string | null;
+      /** @description BillionSend extension: the domain's own unsubscribe host label, null when unset */
       unsubscribe_subdomain: string | null;
-      /** @enum {string|null} */
+      /**
+       * @description BillionSend extension: where the unsubscribe subdomain stands: pending, active (unsubscribe links go through it) or failed (links use the shared host). null while no unsubscribe_subdomain is set. When both subdomains are the same label they share one host and always read the same.
+       * @enum {string|null}
+       */
       unsubscribe_status: "pending" | "active" | "failed" | null;
+      /** @description BillionSend extension: why the unsubscribe subdomain is not active, when known */
       unsubscribe_error: string | null;
+      /** @description BillionSend extension: this domain's own look for its unsubscribe pages. A null field falls back to the team's default page, then to the built-in default. */
       unsubscribe_page: {
         brand_name: string | null;
         message: string | null;
@@ -2152,48 +2526,83 @@ export interface components {
         accent_color: string | null;
         /** @enum {string|null} */
         logo_radius: "square" | "gentle" | "rounded" | "circle" | null;
+        /** @description Read-only; uploaded in the dashboard */
         logo_url: string | null;
       };
       capabilities: {
+        /** @description enabled; on the shared row, disabled while the instance pauses sending from the shared domain */
         sending: string;
+        /** @description enabled while the domain receives mail; always disabled on an instance that does not */
         receiving: string;
       };
+      /** @description BillionSend extension: whether mail to an address without an inbox is stored (true) or refused at RCPT (false) */
       receiving_catch_all: boolean;
+      /** @description BillionSend extension: true on the team's subdomain of the shared inbox domain, a read-only row listed after the team's own domains (403 on changes) that POST /inboxes domain_id takes; false on the team's own domains */
       shared: boolean;
-      /** @enum {string} */
+      /**
+       * @description BillionSend extension, on the shared row only: what its inboxes' addresses may send. open starts conversations, reply_only replies inside their threads, receive_only sends nothing. Holds on names still apply per send: an address whose username or from_name imitates a brand, or one on an older label that does, replies only, even when the mode is open.
+       * @enum {string}
+       */
       sending_mode?: "open" | "reply_only" | "receive_only";
-      /** @enum {string|null} */
+      /**
+       * @description BillionSend extension, on the shared row only: what holds sending below open: the team's plan or the instance; null when open
+       * @enum {string|null}
+       */
       sending_mode_reason?: "plan" | "instance" | null;
       records: {
+        /** @description Which record this is: DKIM, SPF (the MAIL FROM MX and TXT rows), DMARC, Tracking (the tracking subdomain's CNAME, present once a tracking subdomain is set), Unsubscribe (the unsubscribe subdomain's CNAME, present once an unsubscribe subdomain is set to a label other than the tracking one) or Receiving (the MX inbound mail needs, present while receiving is enabled; it reads verified only when it is among the domain's lowest-numbered MX records). Only the DKIM and SPF rows gate sending. */
         record: string;
         name: string;
         type: string;
         ttl: string;
+        /** @description not_started | pending | verified | failed. DKIM and SPF rows combine public DNS with the provider's verification: found in DNS but not yet confirmed reads pending, a different published value reads failed, no record reads not_started. DMARC reads verified when a policy covers the domain — its own or a parent domain's (see inherited_from) — and not_started when none does. Tracking and Unsubscribe read verified once their CNAME resolves and its certificate is issued, pending until then, and failed when it did not activate within 72 hours. */
         status: string;
         value: string;
         priority?: number;
-        /** @enum {string} */
+        /**
+         * @description What public DNS answers for this record right now: found, missing, mismatch (a different value is published) or unknown (the lookup did not conclude). Omitted when no live check ran (the create response).
+         * @enum {string}
+         */
         live?: "found" | "missing" | "mismatch" | "unknown";
+        /** @description One sentence explaining a row that is not verified: found but awaiting the provider, the value that is published instead, no record at the name, or which parent DMARC policy covers the domain. Omitted when there is nothing to add. */
         detail?: string;
+        /** @description DMARC only: the _dmarc name whose policy covers this domain when it has no record of its own (RFC 7489 organizational-domain fallback). */
         inherited_from?: string;
-        /** @enum {string} */
+        /**
+         * @description DMARC only, alongside inherited_from: the inherited policy's p= value.
+         * @enum {string}
+         */
         policy?: "none" | "quarantine" | "reject";
       }[];
     };
     CreateDomainRequest: {
       name: string;
-      /** @enum {string} */
+      /**
+       * @description SES region of the identity, one of the regions this deployment serves (the values listed here; the first is the default). Any other region is rejected with 422. A domain has one region, fixed when it is added.
+       * @enum {string}
+       */
       region?: "us-east-1" | "eu-west-1" | "sa-east-1" | "ap-northeast-1";
       /** @default send */
       custom_return_path?: string;
+      /** @description Inject a tracking pixel served from the tracking host and record email.opened events. Off by default. */
       open_tracking?: boolean;
+      /** @description Rewrite links to redirect through the tracking host and record email.clicked events. Off by default. */
       click_tracking?: boolean;
+      /** @description DNS label of the domain's own tracking host, e.g. "links" for links.<domain>. Optional: without one, tracked links use the shared tracking host. Setting it adds a Tracking CNAME to records[] (point it at the given value, DNS only); its certificate is issued automatically once it resolves, the Tracking record then reads verified, and links go through it from then on. A subdomain that does not activate within 72 hours reads failed; send the same tracking_subdomain again to retry. */
       tracking_subdomain?: string;
+      /** @description BillionSend extension: DNS label of the domain's own unsubscribe host, e.g. "unsubscribe" for unsubscribe.<domain>. Optional: without one, unsubscribe links (and the List-Unsubscribe header) use the shared unsubscribe host. Setting it adds an Unsubscribe CNAME to records[] (point it at the given value, DNS only); its certificate is issued automatically once it resolves, the Unsubscribe record then reads verified, and unsubscribe links go through it from then on. The same label as tracking_subdomain is allowed: one host then serves both and records[] shows one row. A subdomain that does not activate within 72 hours reads failed; send the same unsubscribe_subdomain again to retry. Kept apart from tracking_subdomain because ad blockers filter tracking hosts by name. */
       unsubscribe_subdomain?: string;
+      /** @description What the domain is used for (sending, receiving); omitted fields keep their value. */
       capabilities?: {
-        /** @enum {string} */
+        /**
+         * @description Only enabled is accepted: a domain of your own can't be receive-only, so disabled is a 422.
+         * @enum {string}
+         */
         sending?: "enabled" | "disabled";
-        /** @enum {string} */
+        /**
+         * @description Inbound mail for every address at the domain (a catch-all), readable at /emails/receiving and announced by the email.received webhook. Enabling needs a verified domain on an instance that receives mail, and adds a Receiving MX record to records[]. A domain that already has mailboxes is best received on a subdomain (inbound.example.com): the Receiving MX would take their mail.
+         * @enum {string}
+         */
         receiving?: "enabled" | "disabled";
       };
     };
@@ -2210,13 +2619,23 @@ export interface components {
         open_tracking: boolean;
         click_tracking: boolean;
         tracking_subdomain: string | null;
-        /** @enum {string|null} */
+        /**
+         * @description BillionSend extension: where the tracking subdomain stands: pending (waiting for its CNAME and certificate), active (links go through it) or failed (did not activate within 72 hours; links use the shared host). null while no tracking_subdomain is set.
+         * @enum {string|null}
+         */
         tracking_status: "pending" | "active" | "failed" | null;
+        /** @description BillionSend extension: why the tracking subdomain is not active, when known */
         tracking_error: string | null;
+        /** @description BillionSend extension: the domain's own unsubscribe host label, null when unset */
         unsubscribe_subdomain: string | null;
-        /** @enum {string|null} */
+        /**
+         * @description BillionSend extension: where the unsubscribe subdomain stands: pending, active (unsubscribe links go through it) or failed (links use the shared host). null while no unsubscribe_subdomain is set. When both subdomains are the same label they share one host and always read the same.
+         * @enum {string|null}
+         */
         unsubscribe_status: "pending" | "active" | "failed" | null;
+        /** @description BillionSend extension: why the unsubscribe subdomain is not active, when known */
         unsubscribe_error: string | null;
+        /** @description BillionSend extension: this domain's own look for its unsubscribe pages. A null field falls back to the team's default page, then to the built-in default. */
         unsubscribe_page: {
           brand_name: string | null;
           message: string | null;
@@ -2227,17 +2646,28 @@ export interface components {
           accent_color: string | null;
           /** @enum {string|null} */
           logo_radius: "square" | "gentle" | "rounded" | "circle" | null;
+          /** @description Read-only; uploaded in the dashboard */
           logo_url: string | null;
         };
         capabilities: {
+          /** @description enabled; on the shared row, disabled while the instance pauses sending from the shared domain */
           sending: string;
+          /** @description enabled while the domain receives mail; always disabled on an instance that does not */
           receiving: string;
         };
+        /** @description BillionSend extension: whether mail to an address without an inbox is stored (true) or refused at RCPT (false) */
         receiving_catch_all: boolean;
+        /** @description BillionSend extension: true on the team's subdomain of the shared inbox domain, a read-only row listed after the team's own domains (403 on changes) that POST /inboxes domain_id takes; false on the team's own domains */
         shared: boolean;
-        /** @enum {string} */
+        /**
+         * @description BillionSend extension, on the shared row only: what its inboxes' addresses may send. open starts conversations, reply_only replies inside their threads, receive_only sends nothing. Holds on names still apply per send: an address whose username or from_name imitates a brand, or one on an older label that does, replies only, even when the mode is open.
+         * @enum {string}
+         */
         sending_mode?: "open" | "reply_only" | "receive_only";
-        /** @enum {string|null} */
+        /**
+         * @description BillionSend extension, on the shared row only: what holds sending below open: the team's plan or the instance; null when open
+         * @enum {string|null}
+         */
         sending_mode_reason?: "plan" | "instance" | null;
       }[];
       has_more: boolean;
@@ -2252,13 +2682,23 @@ export interface components {
       open_tracking: boolean;
       click_tracking: boolean;
       tracking_subdomain: string | null;
-      /** @enum {string|null} */
+      /**
+       * @description BillionSend extension: where the tracking subdomain stands: pending (waiting for its CNAME and certificate), active (links go through it) or failed (did not activate within 72 hours; links use the shared host). null while no tracking_subdomain is set.
+       * @enum {string|null}
+       */
       tracking_status: "pending" | "active" | "failed" | null;
+      /** @description BillionSend extension: why the tracking subdomain is not active, when known */
       tracking_error: string | null;
+      /** @description BillionSend extension: the domain's own unsubscribe host label, null when unset */
       unsubscribe_subdomain: string | null;
-      /** @enum {string|null} */
+      /**
+       * @description BillionSend extension: where the unsubscribe subdomain stands: pending, active (unsubscribe links go through it) or failed (links use the shared host). null while no unsubscribe_subdomain is set. When both subdomains are the same label they share one host and always read the same.
+       * @enum {string|null}
+       */
       unsubscribe_status: "pending" | "active" | "failed" | null;
+      /** @description BillionSend extension: why the unsubscribe subdomain is not active, when known */
       unsubscribe_error: string | null;
+      /** @description BillionSend extension: this domain's own look for its unsubscribe pages. A null field falls back to the team's default page, then to the built-in default. */
       unsubscribe_page: {
         brand_name: string | null;
         message: string | null;
@@ -2269,59 +2709,103 @@ export interface components {
         accent_color: string | null;
         /** @enum {string|null} */
         logo_radius: "square" | "gentle" | "rounded" | "circle" | null;
+        /** @description Read-only; uploaded in the dashboard */
         logo_url: string | null;
       };
       capabilities: {
+        /** @description enabled; on the shared row, disabled while the instance pauses sending from the shared domain */
         sending: string;
+        /** @description enabled while the domain receives mail; always disabled on an instance that does not */
         receiving: string;
       };
+      /** @description BillionSend extension: whether mail to an address without an inbox is stored (true) or refused at RCPT (false) */
       receiving_catch_all: boolean;
+      /** @description BillionSend extension: true on the team's subdomain of the shared inbox domain, a read-only row listed after the team's own domains (403 on changes) that POST /inboxes domain_id takes; false on the team's own domains */
       shared: boolean;
-      /** @enum {string} */
+      /**
+       * @description BillionSend extension, on the shared row only: what its inboxes' addresses may send. open starts conversations, reply_only replies inside their threads, receive_only sends nothing. Holds on names still apply per send: an address whose username or from_name imitates a brand, or one on an older label that does, replies only, even when the mode is open.
+       * @enum {string}
+       */
       sending_mode?: "open" | "reply_only" | "receive_only";
-      /** @enum {string|null} */
+      /**
+       * @description BillionSend extension, on the shared row only: what holds sending below open: the team's plan or the instance; null when open
+       * @enum {string|null}
+       */
       sending_mode_reason?: "plan" | "instance" | null;
       /** @enum {string} */
       object: "domain";
       records: {
+        /** @description Which record this is: DKIM, SPF (the MAIL FROM MX and TXT rows), DMARC, Tracking (the tracking subdomain's CNAME, present once a tracking subdomain is set), Unsubscribe (the unsubscribe subdomain's CNAME, present once an unsubscribe subdomain is set to a label other than the tracking one) or Receiving (the MX inbound mail needs, present while receiving is enabled; it reads verified only when it is among the domain's lowest-numbered MX records). Only the DKIM and SPF rows gate sending. */
         record: string;
         name: string;
         type: string;
         ttl: string;
+        /** @description not_started | pending | verified | failed. DKIM and SPF rows combine public DNS with the provider's verification: found in DNS but not yet confirmed reads pending, a different published value reads failed, no record reads not_started. DMARC reads verified when a policy covers the domain — its own or a parent domain's (see inherited_from) — and not_started when none does. Tracking and Unsubscribe read verified once their CNAME resolves and its certificate is issued, pending until then, and failed when it did not activate within 72 hours. */
         status: string;
         value: string;
         priority?: number;
-        /** @enum {string} */
+        /**
+         * @description What public DNS answers for this record right now: found, missing, mismatch (a different value is published) or unknown (the lookup did not conclude). Omitted when no live check ran (the create response).
+         * @enum {string}
+         */
         live?: "found" | "missing" | "mismatch" | "unknown";
+        /** @description One sentence explaining a row that is not verified: found but awaiting the provider, the value that is published instead, no record at the name, or which parent DMARC policy covers the domain. Omitted when there is nothing to add. */
         detail?: string;
+        /** @description DMARC only: the _dmarc name whose policy covers this domain when it has no record of its own (RFC 7489 organizational-domain fallback). */
         inherited_from?: string;
-        /** @enum {string} */
+        /**
+         * @description DMARC only, alongside inherited_from: the inherited policy's p= value.
+         * @enum {string}
+         */
         policy?: "none" | "quarantine" | "reject";
       }[];
     };
     UpdateDomainRequest: {
+      /** @description Rewrite links to redirect through the tracking host and record email.clicked events. Off by default. */
       click_tracking?: boolean;
+      /** @description Inject a tracking pixel served from the tracking host and record email.opened events. Off by default. */
       open_tracking?: boolean;
+      /** @description DNS label of the domain's own tracking host, e.g. "links" for links.<domain>. Optional: without one, tracked links use the shared tracking host. Setting it adds a Tracking CNAME to records[] (point it at the given value, DNS only); its certificate is issued automatically once it resolves, the Tracking record then reads verified, and links go through it from then on. A subdomain that does not activate within 72 hours reads failed; send the same tracking_subdomain again to retry. Empty string or null clears it. */
       tracking_subdomain?: string | null;
+      /** @description BillionSend extension: DNS label of the domain's own unsubscribe host, e.g. "unsubscribe" for unsubscribe.<domain>. Optional: without one, unsubscribe links (and the List-Unsubscribe header) use the shared unsubscribe host. Setting it adds an Unsubscribe CNAME to records[] (point it at the given value, DNS only); its certificate is issued automatically once it resolves, the Unsubscribe record then reads verified, and unsubscribe links go through it from then on. The same label as tracking_subdomain is allowed: one host then serves both and records[] shows one row. A subdomain that does not activate within 72 hours reads failed; send the same unsubscribe_subdomain again to retry. Kept apart from tracking_subdomain because ad blockers filter tracking hosts by name. Empty string or null clears it. */
       unsubscribe_subdomain?: string | null;
+      /** @description BillionSend extension: this domain's own look for its unsubscribe pages. Fields not sent keep their value; null clears one, and a cleared field falls back to the team's default page. logo_url is read-only here: the logo is uploaded in the dashboard. */
       unsubscribe_page?: {
+        /** @description Name shown on the page; max 80 characters */
         brand_name?: string | null;
+        /** @description Text above the unsubscribe button; max 500 characters */
         message?: string | null;
+        /** @description Text shown once the choice is saved; max 500 characters */
         success_message?: string | null;
+        /** @description Where the recipient goes after unsubscribing instead of the in-page message; http(s) only */
         redirect_url?: string | null;
+        /** @description Page background, #rrggbb */
         background_color?: string | null;
+        /** @description Page text color, #rrggbb */
         text_color?: string | null;
+        /** @description Button and link color, #rrggbb */
         accent_color?: string | null;
-        /** @enum {string|null} */
+        /**
+         * @description Corner radius of the logo: square, gentle, rounded or circle
+         * @enum {string|null}
+         */
         logo_radius?: "square" | "gentle" | "rounded" | "circle" | null;
       };
       tls?: unknown;
+      /** @description What the domain is used for (sending, receiving); omitted fields keep their value. */
       capabilities?: {
-        /** @enum {string} */
+        /**
+         * @description Only enabled is accepted: a domain of your own can't be receive-only, so disabled is a 422.
+         * @enum {string}
+         */
         sending?: "enabled" | "disabled";
-        /** @enum {string} */
+        /**
+         * @description Inbound mail for every address at the domain (a catch-all), readable at /emails/receiving and announced by the email.received webhook. Enabling needs a verified domain on an instance that receives mail, and adds a Receiving MX record to records[]. A domain that already has mailboxes is best received on a subdomain (inbound.example.com): the Receiving MX would take their mail.
+         * @enum {string}
+         */
         receiving?: "enabled" | "disabled";
       };
+      /** @description BillionSend extension: store mail to addresses without an inbox (true) or refuse it at RCPT (false). Turning it on needs receiving enabled and, on BillionSend Cloud, a paid plan. */
       receiving_catch_all?: boolean;
     };
     RemoveDomainResponse: {
@@ -2344,9 +2828,15 @@ export interface components {
        * @enum {string}
        */
       permission?: "full_access" | "sending_access";
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description Restricts the key to this one verified domain of the team: a GET /domains row with shared: false. The key sends only from it and reads and changes only that domain's own resources: its emails, its broadcasts, topics and segments bound to it, its opt-outs, its inboxes and received mail, its own GET, PATCH, DELETE and verify of /domains/{id}, its metrics, and the keys held to the same domain (GET and DELETE /api-keys). Everything that belongs to the team as a whole answers 403 restricted_api_key: webhooks, suppressions, templates, contact properties, /usage, /deliverability, /verifications and POST /domains. Omitted or null, the key inherits the calling key's scope: all domains, or the calling key's domain if it is domain-scoped. A domain-scoped calling key cannot name any other domain (403 restricted_api_key).
+       */
       domain_id?: string | null;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: restricts the key to one inbox of the team. It reads that inbox's threads, drafts and received mail and sends only from its address; every other route answers 403 restricted_api_key. Needs full_access, can't be combined with domain_id, and an inbox holds at most 5 active keys (outside the team's 25).
+       */
       inbox_id?: string | null;
     };
     ListApiKeysResponse: {
@@ -2358,7 +2848,10 @@ export interface components {
         name: string;
         created_at: string;
         last_used_at: string | null;
-        /** Format: uuid */
+        /**
+         * Format: uuid
+         * @description BillionSend extension: the one inbox the key is restricted to, or null
+         */
         inbox_id: string | null;
       }[];
       has_more: boolean;
@@ -2424,7 +2917,9 @@ export interface components {
         | "inbox.draft.deleted"
         | "inbox.draft.send_failed"
       )[];
+      /** @description BillionSend extension: inbox events and email.received reach this endpoint only for these inboxes of the team (at most 100). null means every inbox. Omitted: every inbox. */
       inbox_ids?: string[] | null;
+      /** @description Signing secret to use instead of minting one: whsec_ followed by base64 of 24-64 bytes (the Standard Webhooks format). An existing secret carried over keeps the receiver verifying unchanged; when omitted, a new one is generated. */
       signing_secret?: string;
     };
     ListWebhooksResponse: {
@@ -2438,6 +2933,7 @@ export interface components {
         /** @enum {string} */
         status: "enabled" | "disabled";
         events: string[] | null;
+        /** @description BillionSend extension: inbox events and email.received reach this endpoint only for these inboxes of the team (at most 100). null means every inbox. */
         inbox_ids: string[] | null;
       }[];
       has_more: boolean;
@@ -2450,10 +2946,13 @@ export interface components {
       /** @enum {string} */
       status: "enabled" | "disabled";
       events: string[] | null;
+      /** @description BillionSend extension: inbox events and email.received reach this endpoint only for these inboxes of the team (at most 100). null means every inbox. */
       inbox_ids: string[] | null;
       /** @enum {string} */
       object: "webhook";
+      /** @description Not returned to a team member's MCP call; the dashboard shows members only its last 4 characters */
       signing_secret?: string;
+      /** @description While set, deliveries are also signed with the secret this one replaced (a rotation's overlap window) */
       previous_secret_expires_at: string | null;
     };
     RotateWebhookSecretResponse: {
@@ -2465,7 +2964,9 @@ export interface components {
       previous_secret_expires_at: string | null;
     };
     RotateWebhookSecretRequest: {
+      /** @description New secret to sign with: whsec_ followed by base64 of 24-64 bytes. Omit to mint one. */
       signing_secret?: string;
+      /** @description Hours the previous secret keeps signing alongside the new one (default 24, max 72). Every delivery in the window carries both signatures, so a receiver holding either verifies; 0 drops the old secret at once. */
       overlap_hours?: number;
     };
     WebhookIdResponse: {
@@ -2522,6 +3023,7 @@ export interface components {
       )[];
       /** @enum {string} */
       status?: "enabled" | "disabled";
+      /** @description BillionSend extension: inbox events and email.received reach this endpoint only for these inboxes of the team (at most 100). null means every inbox. Omitted: unchanged. */
       inbox_ids?: string[] | null;
     };
     RemoveWebhookResponse: {
@@ -2542,8 +3044,12 @@ export interface components {
       id: string;
     };
     BatchAddSuppressionsRequest: {
+      /** @description Addresses to block, up to 1000; duplicates collapse */
       emails: string[];
-      /** @enum {string} */
+      /**
+       * @description Origin recorded on rows this request creates (default manual): bounce, complaint or manual; an address already suppressed keeps its origin
+       * @enum {string}
+       */
       origin?: "bounce" | "complaint" | "manual";
     };
     BatchRemoveSuppressionsResponse: {
@@ -2558,13 +3064,21 @@ export interface components {
       deleted: true;
     };
     BatchRemoveSuppressionsRequest: {
+      /** @description Addresses to unblock, up to 1000 */
       emails?: string[];
+      /** @description Suppression ids to remove, up to 1000 */
       ids?: string[];
     };
     CreateSuppressionRequest: {
-      /** Format: email */
+      /**
+       * Format: email
+       * @description Bare email address to block; stored normalized (lowercase)
+       */
       email: string;
-      /** @enum {string} */
+      /**
+       * @description Origin recorded on rows this request creates (default manual): bounce, complaint or manual; an address already suppressed keeps its origin
+       * @enum {string}
+       */
       origin?: "bounce" | "complaint" | "manual";
     };
     ListSuppressionsResponse: {
@@ -2576,7 +3090,10 @@ export interface components {
         email: string;
         /** @enum {string} */
         origin: "bounce" | "complaint" | "manual";
-        /** Format: uuid */
+        /**
+         * Format: uuid
+         * @description Email id whose bounce/complaint created the entry
+         */
         source_id: string | null;
         created_at: string;
       }[];
@@ -2588,7 +3105,10 @@ export interface components {
       email: string;
       /** @enum {string} */
       origin: "bounce" | "complaint" | "manual";
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description Email id whose bounce/complaint created the entry
+       */
       source_id: string | null;
       created_at: string;
       /** @enum {string} */
@@ -2600,9 +3120,14 @@ export interface components {
       data: {
         /** Format: uuid */
         id: string;
+        /** @description The address; a tombstone for a recipient erased under GDPR/LGPD */
         email: string;
-        /** Format: uuid */
+        /**
+         * Format: uuid
+         * @description The domain the opt-out is for; null for the whole team, or once that domain was deleted
+         */
         domain_id: string | null;
+        /** @description The domain's name; null for the whole team. A deleted domain's name stays, and its opt-outs apply again if the domain is added back */
         domain: string | null;
         created_at: string;
       }[];
@@ -2611,18 +3136,29 @@ export interface components {
     UnsubscribeResponse: {
       /** Format: uuid */
       id: string;
+      /** @description The address; a tombstone for a recipient erased under GDPR/LGPD */
       email: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description The domain the opt-out is for; null for the whole team, or once that domain was deleted
+       */
       domain_id: string | null;
+      /** @description The domain's name; null for the whole team. A deleted domain's name stays, and its opt-outs apply again if the domain is added back */
       domain: string | null;
       created_at: string;
       /** @enum {string} */
       object: "unsubscribe";
     };
     CreateUnsubscribeRequest: {
-      /** Format: email */
+      /**
+       * Format: email
+       * @description Bare email address that opted out; stored normalized (lowercase)
+       */
       email: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description One of your domains: the address stops receiving marketing mail from it. Omitted or null: from every domain of the team
+       */
       domain_id?: string | null;
     };
     RemoveUnsubscribeResponse: {
@@ -2641,12 +3177,19 @@ export interface components {
     };
     CreateTemplateRequest: {
       name: string;
+      /** @description "" or null clears the subject */
       subject?: string | null;
+      /** @description Stored as sent; the dashboard sanitizes at render */
       html: string;
+      /** @description "" or null clears the text part */
       text?: string | null;
+      /** @description Case-sensitive handle, unique per team; GET /templates/{alias} resolves it */
       alias?: string | null;
+      /** @description Not supported yet: any value is a 422 */
       from?: string | null;
+      /** @description Not supported yet: any value is a 422 */
       reply_to?: string | string[] | null;
+      /** @description Not supported yet: a non-empty list is a 422 */
       variables?: unknown[];
     };
     ListTemplatesResponse: {
@@ -2684,18 +3227,24 @@ export interface components {
       reply_to: null;
       html: string;
       text: string | null;
+      /** @description Always empty */
       variables: unknown[];
       /** @enum {boolean} */
       has_unpublished_versions: false;
     };
     UpdateTemplateRequest: {
       name?: string;
+      /** @description "" or null clears the subject */
       subject?: string | null;
       html?: string;
       text?: string | null;
+      /** @description null clears the alias */
       alias?: string | null;
+      /** @description Not supported yet: any value is a 422 */
       from?: string | null;
+      /** @description Not supported yet: any value is a 422 */
       reply_to?: string | string[] | null;
+      /** @description Not supported yet: a non-empty list is a 422 */
       variables?: unknown[];
     };
     RemoveTemplateResponse: {
@@ -2709,17 +3258,25 @@ export interface components {
     VerificationAvailabilityResponse: {
       /** @enum {string} */
       object: "verification_availability";
+      /** @description Deep verification is open to paid plans; Free has the basic checks only */
       paid_plan: boolean;
+      /** @description Whether deep verification can be started right now */
       available: boolean;
+      /** @description What 1,000 verified addresses cost past the free credit, in cents */
       price_per_1k_cents: number;
     };
     EstimateVerificationResponse: {
       /** @enum {string} */
       object: "verification_estimate";
+      /** @description Contacts the target names */
       total: number;
+      /** @description Of them, never verified: what a start would verify (verified ones are skipped) */
       unverified: number;
+      /** @description Of the unverified, already being verified */
       in_run: number;
+      /** @description Free verification credit left this quota month, which a run uses first */
       grant_remaining: number;
+      /** @description What verifying the unverified would cost past the credit, in cents */
       estimated_cents: number;
     };
     EstimateVerificationRequest: {
@@ -2729,34 +3286,46 @@ export interface components {
       | {
           /** @enum {string} */
           kind: "contacts";
+          /** @description Contacts of the team, by id */
           contact_ids: string[];
         }
       | {
           /** @enum {string} */
           kind: "segment";
-          /** Format: uuid */
+          /**
+           * Format: uuid
+           * @description Every contact in this segment
+           */
           segment_id: string;
         }
       | {
           /** @enum {string} */
           kind: "broadcast";
-          /** Format: uuid */
+          /**
+           * Format: uuid
+           * @description The broadcast's audience: the contacts it would mail, leaving out everyone who unsubscribed
+           */
           broadcast_id: string;
         };
     StartVerificationResponse: {
       /** @enum {string} */
       object: "verification_start";
+      /** @description The runs started, one per 50,000 contacts */
       runs: {
         /** Format: uuid */
         id: string;
         total: number;
       }[];
+      /** @description Contacts that joined a run */
       contacts: number;
+      /** @description Contacts skipped because they were verified before (pass recheck to include them) */
       already_verified: number;
+      /** @description Contacts skipped because a run already holds them */
       in_run: number;
     };
     StartVerificationRequest: {
       target: components["schemas"]["VerificationTarget"];
+      /** @description Verify contacts verified before too; by default they are skipped */
       recheck?: boolean;
     };
     ListVerificationsResponse: {
@@ -2767,9 +3336,15 @@ export interface components {
         object: "verification";
         /** Format: uuid */
         id: string;
-        /** @enum {string} */
+        /**
+         * @description queued, submitted (being verified), completed or failed
+         * @enum {string}
+         */
         status: "queued" | "submitted" | "completed" | "failed";
-        /** @enum {string|null} */
+        /**
+         * @description Why a failed run failed; nothing is billed for it
+         * @enum {string|null}
+         */
         failure_reason:
           | "timeout"
           | "provider_failed"
@@ -2777,12 +3352,17 @@ export interface components {
           | "results_unreadable"
           | "submit_failed"
           | null;
+        /** @description Contacts in the run */
         total: number;
+        /** @description Results by verdict once the run completed */
         counts: {
           [key: string]: number;
         } | null;
+        /** @description Addresses with a definite verdict, which is what is billed (unknown is free) */
         billable: number | null;
+        /** @description Of billable, covered by the free credit */
         grant_used: number | null;
+        /** @description Of billable, billed on the monthly invoice */
         metered: number | null;
         created_at: string;
         finished_at: string | null;
@@ -2794,9 +3374,15 @@ export interface components {
       object: "verification";
       /** Format: uuid */
       id: string;
-      /** @enum {string} */
+      /**
+       * @description queued, submitted (being verified), completed or failed
+       * @enum {string}
+       */
       status: "queued" | "submitted" | "completed" | "failed";
-      /** @enum {string|null} */
+      /**
+       * @description Why a failed run failed; nothing is billed for it
+       * @enum {string|null}
+       */
       failure_reason:
         | "timeout"
         | "provider_failed"
@@ -2804,12 +3390,17 @@ export interface components {
         | "results_unreadable"
         | "submit_failed"
         | null;
+      /** @description Contacts in the run */
       total: number;
+      /** @description Results by verdict once the run completed */
       counts: {
         [key: string]: number;
       } | null;
+      /** @description Addresses with a definite verdict, which is what is billed (unknown is free) */
       billable: number | null;
+      /** @description Of billable, covered by the free credit */
       grant_used: number | null;
+      /** @description Of billable, billed on the monthly invoice */
       metered: number | null;
       created_at: string;
       finished_at: string | null;
@@ -2817,33 +3408,57 @@ export interface components {
     UsageResponse: {
       /** @enum {string} */
       object: "usage";
-      /** @enum {string|null} */
+      /**
+       * @description Effective plan; null on the instance's own (system) team
+       * @enum {string|null}
+       */
       plan: "free" | "starter" | "pro" | "scale" | null;
       limits: {
+        /** @description Daily cap (UTC day) on Free; null on monthly plans */
         emails_per_day: number | null;
+        /** @description Emails included per billing period on Starter, Pro and Scale; null on Free */
         emails_per_month: number | null;
+        /** @description null = unlimited */
         domains: number | null;
+        /** @description Contacts the team may hold; null = unlimited */
         contacts: number | null;
+        /** @description Inboxes the team may hold at once; null = unlimited */
         inboxes: number | null;
+        /** @description Webhook endpoints the team may hold; null = unlimited */
         webhook_endpoints: number | null;
       };
       today: {
+        /** @description Emails accepted so far this UTC day */
         emails_sent: number;
+        /** @description Next UTC midnight, when the daily counter resets */
         resets_at: string;
       };
+      /** @description Billing-period usage on monthly plans; null on daily plans */
       period: {
+        /** @description Emails accepted so far this billing period */
         emails_sent: number;
+        /** @description Emails the plan includes per period */
         included: number;
+        /** @description Whether sends past `included` bill overage instead of being refused */
         overage_enabled: boolean;
+        /** @description Overage price per 1,000 emails, in USD */
         overage_usd_per_1k: number;
+        /** @description Billing period start */
         starts_at: string;
+        /** @description Billing period end, when the counter resets */
         ends_at: string;
       } | null;
+      /** @description Deep verification of contacts this quota month (POST /verifications) */
       verification: {
+        /** @description Addresses deep verification gave a definite verdict this quota month */
         verified: number;
+        /** @description Of them, covered by the free credit */
         from_grant: number;
+        /** @description Of them, billed on the monthly invoice */
         metered: number;
+        /** @description What the billed addresses cost, in cents */
         cost_cents: number;
+        /** @description Price per 1,000 verified addresses past the credit, in cents */
         price_per_1k_cents: number;
       };
       team: {
@@ -2851,6 +3466,7 @@ export interface components {
         id: string;
         name: string;
       };
+      /** @description Dashboard origin, for building links; null when unset */
       app_url: string | null;
     };
     Inbox: {
@@ -2860,47 +3476,82 @@ export interface components {
       id: string;
       name: string;
       email_address: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description A shared address's is its team's shared subdomain: the GET /domains row with shared: true
+       */
       domain_id: string;
       receiving_address: string | null;
       from_name: string | null;
+      /** @description Threads with an unread message */
       unread: number;
+      /** @description Unsent drafts */
       drafts: number;
       last_received: string | null;
       created_at: string;
       updated_at: string;
       /** @enum {string} */
       kind: "agent" | "human";
+      /** @description On the shared inbox domain */
       shared: boolean;
       expires_at: string | null;
+      /** @description Held messages not yet released */
       quarantined: number;
+      /** @description Drafts waiting for a person */
       pending_approval: number;
     };
     CreateInboxRequest: {
+      /** @description An address on one of your verified domains; it needs receiving on unless forwarding is true. BillionSend extension: omitted, the inbox gets an address on the shared inbox domain (no DNS), named by username or random, unless domain_id names one of your domains. */
       email_address?: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: the id of a GET /domains row, instead of email_address. The team's subdomain of the shared domain (the row with shared: true) is the same as leaving email_address out; one of your verified domains needs username, the part before the @.
+       */
       domain_id?: string;
+      /** @description BillionSend extension: with email_address omitted, the part before the @ of the shared-domain address, trimmed and lowercased: 1-64 letters, digits, dots, hyphens and underscores, starting and ending with a letter or digit, never cut short. Reserved names (postmaster, abuse, admin, security, support, noreply, no-reply, billing, hostmaster, webmaster, mailer-daemon, root, compared without dots, hyphens and underscores), the fwd- prefix and brand look-alikes answer 422, and one already in use 409. Where the instance reviews names, a chosen one is reviewed first: 503 with retry-after while that review is unavailable. Omitted: a random one. With a domain_id of one of your domains, it is the part before the @ there, required, under email_address's rule. */
       username?: string;
+      /** @description Internal name, 1-320 characters, so any address fits. Defaults to email_address. */
       name?: string;
+      /** @description The name recipients see, a plain name (not "Name <email>"); "" leaves it unset. On the shared domain it may not imitate a brand, and it is reviewed like username. */
       from_name?: string;
+      /** @description Receive without an MX record: mail forwarded to the inbox's receiving_address lands in it */
       forwarding?: boolean;
-      /** @enum {string} */
+      /**
+       * @description BillionSend extension: agent (default; threads, screening, drafts that wait for approval) or human (a team mailbox)
+       * @enum {string}
+       */
       kind?: "agent" | "human";
+      /** @description BillionSend extension: a lifetime counted from now, "1h" to "365d"; omitted or null, the inbox never expires. A shared-domain inbox left unused for 90 days (no mail in or out, no API calls on it) is deleted either way. */
       expires_in?: string | null;
       safety?: components["schemas"]["InboxSafetyPatch"];
     };
+    /** @description BillionSend extension: safety rules over the kind's defaults */
     InboxSafetyPatch: {
-      /** @enum {string} */
+      /**
+       * @description Who may write in: anyone; verified (DMARC-aligned senders, known threads, the allowlist); allowlist only. Mail that fails is quarantined.
+       * @enum {string}
+       */
       accept_from?: "anyone" | "verified" | "allowlist";
+      /** @description "local@domain" (exact) or "*@domain" (the domain and its subdomains). On the shared domain it only lets mail in */
       allowlist?: string[];
+      /** @description Owners besides the team members' login addresses; ignored on the shared domain */
       owner_addresses?: string[];
+      /** @description Score external mail for prompt injection (agent inboxes only) */
       screening?: boolean;
+      /** @description Expose extracted codes and sign-in links */
       extract_codes?: boolean;
-      /** @enum {string} */
+      /**
+       * @description What the inbox may send without a person's approval. On the shared domain "allowlist" answers 422, and so does "open" unless the instance lets the team start conversations there (paid plans only)
+       * @enum {string}
+       */
       send_policy?: "reply_only" | "allowlist" | "open";
+      /** @description Every send waits for a person */
       require_approval?: boolean;
+      /** @description Received codes and sign-in links can't be sent on to anyone but owners */
       private_codes?: boolean;
+      /** @description Unattended recipients per UTC day; null: no cap. 1-50 on the shared domain */
       send_cap?: number | null;
+      /** @description Forward every delivered message to these team member or owner addresses; team members only on the shared domain */
       forward_to?: string[];
     };
     ListInboxesResponse: {
@@ -2925,7 +3576,9 @@ export interface components {
     };
     UpdateInboxRequest: {
       name?: string;
+      /** @description "" removes it. On the shared domain a new one may not imitate a brand, and it is reviewed first where the instance reviews names (503 with retry-after while that review is unavailable). */
       from_name?: string;
+      /** @description BillionSend extension: a new lifetime counted from now, "1h" to "365d"; null never expires */
       expires_in?: string | null;
     };
     RemoveInboxResponse: {
@@ -2956,17 +3609,31 @@ export interface components {
       object: "inbox_safety";
       /** Format: uuid */
       inbox_id: string;
-      /** @enum {string} */
+      /**
+       * @description Who may write in: anyone; verified (DMARC-aligned senders, known threads, the allowlist); allowlist only. Mail that fails is quarantined.
+       * @enum {string}
+       */
       accept_from: "anyone" | "verified" | "allowlist";
+      /** @description "local@domain" (exact) or "*@domain" (the domain and its subdomains). On the shared domain it only lets mail in */
       allowlist: string[];
+      /** @description Owners besides the team members' login addresses; ignored on the shared domain */
       owner_addresses: string[];
+      /** @description Score external mail for prompt injection (agent inboxes only) */
       screening: boolean;
+      /** @description Expose extracted codes and sign-in links */
       extract_codes: boolean;
-      /** @enum {string} */
+      /**
+       * @description What the inbox may send without a person's approval. On the shared domain "allowlist" answers 422, and so does "open" unless the instance lets the team start conversations there (paid plans only)
+       * @enum {string}
+       */
       send_policy: "reply_only" | "allowlist" | "open";
+      /** @description Every send waits for a person */
       require_approval: boolean;
+      /** @description Received codes and sign-in links can't be sent on to anyone but owners */
       private_codes: boolean;
+      /** @description Unattended recipients per UTC day; null: no cap. 1-50 on the shared domain */
       send_cap: number | null;
+      /** @description Forward every delivered message to these team member or owner addresses; team members only on the shared domain */
       forward_to: string[];
     };
     ListInboxLabelsResponse: {
@@ -2976,6 +3643,7 @@ export interface components {
         /** Format: uuid */
         id: string;
         name: string;
+        /** @description Uppercase #RRGGBB */
         color: string;
         created_at: string;
       }[];
@@ -2984,13 +3652,16 @@ export interface components {
       /** Format: uuid */
       id: string;
       name: string;
+      /** @description Uppercase #RRGGBB */
       color: string;
       created_at: string;
       /** @enum {string} */
       object: "inbox_label";
     };
     CreateInboxLabelRequest: {
+      /** @description 1-64 characters, unique in the inbox regardless of case */
       name: string;
+      /** @description #RRGGBB; a color is picked when omitted */
       color?: string;
     };
     UpdateInboxLabelRequest: {
@@ -3027,12 +3698,14 @@ export interface components {
         has_attachment: boolean;
         has_draft: boolean;
         read: boolean;
+        /** @description BillionSend extension, with include_quarantined=true: messages in quarantine, not yet released; mail still being screened isn't counted. Held mail never counts as unread */
         quarantined?: number;
         received_at: string;
         /** @enum {string} */
         folder: "inbox" | "archive" | "spam" | "sent" | "trash";
         /** Format: uuid */
         matched_email_id: string | null;
+        /** @description Fragments with **match** markers; only keys that matched; {} without query */
         highlights: {
           subject?: string[];
           from?: string[];
@@ -3064,6 +3737,7 @@ export interface components {
         has_attachment: boolean;
         has_draft: boolean;
         read: boolean;
+        /** @description BillionSend extension, with include_quarantined=true: messages in quarantine, not yet released; mail still being screened isn't counted. Held mail never counts as unread */
         quarantined?: number;
         received_at: string;
         /** @enum {string} */
@@ -3085,16 +3759,22 @@ export interface components {
         color: string;
       }[];
       read: boolean;
+      /** @description BillionSend extension: held messages; 0 for inbox-scoped keys */
       quarantined: number;
     };
     UpdateInboxThreadRequest: {
+      /** @description Marks every message read or unread */
       read?: boolean;
-      /** @enum {string} */
+      /**
+       * @description sent is assigned, never chosen
+       * @enum {string}
+       */
       folder?: "inbox" | "archive" | "spam" | "trash";
     };
     InboxThreadLabels: {
       /** @enum {string} */
       object: "list";
+      /** @description Every label on the thread after the change */
       data: {
         /** Format: uuid */
         id: string;
@@ -3103,9 +3783,11 @@ export interface components {
       }[];
     };
     AddInboxThreadLabelsRequest: {
+      /** @description 1-10 label IDs of the inbox */
       labels: string[];
     };
     SetInboxThreadLabelsRequest: {
+      /** @description Up to 100 label IDs of the inbox: exactly the labels the thread ends up with */
       labels: string[];
     };
     RemoveInboxThreadResponse: {
@@ -3143,6 +3825,7 @@ export interface components {
           received_at: string;
           /** @enum {string} */
           direction: "inbound";
+          /** @description BillionSend extension: hidden text, quotes and signature removed */
           extracted_text: string | null;
           screening: {
             /** @enum {string} */
@@ -3197,6 +3880,7 @@ export interface components {
           received_at: string;
           /** @enum {string} */
           direction: "outbound";
+          /** @description BillionSend extension: the email's last event */
           status: string;
         };
     ListQuarantinedEmailsResponse: {
@@ -3239,6 +3923,7 @@ export interface components {
       trusted_sender: string | null;
     };
     ReleaseQuarantinedRequest: {
+      /** @description Also add the sender's address to the inbox allowlist */
       trust_sender?: boolean;
     };
     VerificationCode: {
@@ -3266,9 +3951,15 @@ export interface components {
         | null;
     };
     InboxSentEmail: {
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description The ID of the sent email: GET /emails/{id} reads it
+       */
       id: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: the thread the email was sent in
+       */
       thread_id: string | null;
     };
     InboxDraft: {
@@ -3292,6 +3983,7 @@ export interface components {
       email_id: string | null;
       created_at: string;
       updated_at: string;
+      /** @description The draft's files, by position; empty once it is sent, rejected or expired */
       attachments: {
         id: string;
         filename: string;
@@ -3305,86 +3997,130 @@ export interface components {
       decided_by: string | null;
       decided_at: string | null;
       expires_at: string | null;
+      /** @description BillionSend extension: when the scheduled send goes out; null when not scheduled */
       send_at: string | null;
+      /** @description BillionSend extension: the error name of the last scheduled send that was refused (e.g. invalid_api_key, inbox_send_cap_reached, not_found); null otherwise */
       send_error: string | null;
     };
     InboxReplyRequest: {
+      /** @description HTML body */
       html?: string;
+      /** @description Plain-text body */
       text?: string;
+      /** @description 1-2000 characters on one line; defaults to the thread subject with Re: or Fwd: */
       subject?: string;
+      /** @description Files with base64 `content` (no remote paths), 10 MiB decoded in all; none on the shared domain. A held send keeps them with its draft */
       attachments?:
         | {
             filename?: string | false | null;
             content?: string;
             content_type?: string;
+            /** @description Inline part: the HTML shows it with <img src="cid:<content_id>"> */
             content_id?: string;
             path?: string;
           }[]
         | null;
+      /** @description An address or a list of them; "Name <address>" works too */
       cc?: string | string[];
+      /** @description An address or a list of them; "Name <address>" works too */
       bcc?: string | string[];
+      /** @description Also copy the message's other recipients (cc), never its bcc */
       reply_all?: boolean;
+      /** @description BillionSend extension: hold the email as a draft that a person approves (202 with the Draft) */
       requires_approval?: boolean;
+      /** @description Not supported yet: only an empty value is accepted, anything else answers 422 */
       headers?: unknown;
     };
     InboxForwardRequest: {
+      /** @description An address or a list of them; "Name <address>" works too */
       to: string | string[];
+      /** @description An address or a list of them; "Name <address>" works too */
       cc?: string | string[];
+      /** @description An address or a list of them; "Name <address>" works too */
       bcc?: string | string[];
+      /** @description HTML body */
       html?: string;
+      /** @description Plain-text body */
       text?: string;
+      /** @description 1-2000 characters on one line; defaults to the thread subject with Re: or Fwd: */
       subject?: string;
+      /** @description Files with base64 `content` (no remote paths), 10 MiB decoded in all; none on the shared domain. A held send keeps them with its draft */
       attachments?:
         | {
             filename?: string | false | null;
             content?: string;
             content_type?: string;
+            /** @description Inline part: the HTML shows it with <img src="cid:<content_id>"> */
             content_id?: string;
             path?: string;
           }[]
         | null;
+      /** @description BillionSend extension: hold the email as a draft that a person approves (202 with the Draft) */
       requires_approval?: boolean;
+      /** @description Not supported yet: only an empty value is accepted, anything else answers 422 */
       headers?: unknown;
     };
     InboxSendRequest: {
+      /** @description An address or a list of them; "Name <address>" works too */
       to: string | string[];
+      /** @description An address or a list of them; "Name <address>" works too */
       cc?: string | string[];
+      /** @description An address or a list of them; "Name <address>" works too */
       bcc?: string | string[];
+      /** @description 1-2000 characters on one line */
       subject: string;
+      /** @description HTML body */
       html?: string;
+      /** @description Plain-text body */
       text?: string;
+      /** @description Files with base64 `content` (no remote paths), 10 MiB decoded in all; none on the shared domain. A held send keeps them with its draft */
       attachments?:
         | {
             filename?: string | false | null;
             content?: string;
             content_type?: string;
+            /** @description Inline part: the HTML shows it with <img src="cid:<content_id>"> */
             content_id?: string;
             path?: string;
           }[]
         | null;
+      /** @description Not supported yet: only an empty value is accepted, anything else answers 422 */
       headers?: unknown;
+      /** @description BillionSend extension: hold the email as a draft that a person approves (202 with the Draft) */
       requires_approval?: boolean;
     };
     CreateInboxDraftRequest: {
+      /** @description An address or a list of them; "Name <address>" works too */
       to?: string | string[] | null;
+      /** @description An address or a list of them; "Name <address>" works too */
       cc?: string | string[] | null;
+      /** @description An address or a list of them; "Name <address>" works too */
       bcc?: string | string[] | null;
       subject?: string | null;
       html?: string | null;
       text?: string | null;
+      /** @description Files with base64 `content` (no remote paths), 10 MiB decoded in all; none on the shared domain. A held send keeps them with its draft */
       attachments?:
         | {
             filename?: string | false | null;
             content?: string;
             content_type?: string;
+            /** @description Inline part: the HTML shows it with <img src="cid:<content_id>"> */
             content_id?: string;
             path?: string;
           }[]
         | null;
+      /** @description BillionSend extension: send the draft at this time, as the caller, within 30 days: an ISO 8601 datetime with offset (e.g. "2026-09-01T12:00:00Z") or a relative time like "in 2 hours". A past time sends it within a minute; null cancels. The send runs every rule and limit then; a refused one leaves the draft unsent with send_error set and fires inbox.draft.send_failed. A draft waiting for approval cannot be scheduled (409) */
       send_at?: string | null;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description With reply_to_email_id: a reply draft in this thread
+       */
       thread_id?: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description The email of the thread the draft answers
+       */
       reply_to_email_id?: string;
     };
     ListInboxDraftsResponse: {
@@ -3415,26 +4151,34 @@ export interface components {
         /** @enum {string} */
         status: "draft" | "pending_approval" | "sent" | "rejected" | "expired";
         approval_reasons: string[];
+        /** @description BillionSend extension: when the scheduled send goes out; null when not scheduled */
         send_at: string | null;
+        /** @description BillionSend extension: the error name of the last scheduled send that was refused (e.g. invalid_api_key, inbox_send_cap_reached, not_found); null otherwise */
         send_error: string | null;
       }[];
     };
     UpdateInboxDraftRequest: {
+      /** @description An address or a list of them; "Name <address>" works too */
       to?: string | string[] | null;
+      /** @description An address or a list of them; "Name <address>" works too */
       cc?: string | string[] | null;
+      /** @description An address or a list of them; "Name <address>" works too */
       bcc?: string | string[] | null;
       subject?: string | null;
       html?: string | null;
       text?: string | null;
+      /** @description Files with base64 `content` (no remote paths), 10 MiB decoded in all; none on the shared domain. A held send keeps them with its draft */
       attachments?:
         | {
             filename?: string | false | null;
             content?: string;
             content_type?: string;
+            /** @description Inline part: the HTML shows it with <img src="cid:<content_id>"> */
             content_id?: string;
             path?: string;
           }[]
         | null;
+      /** @description BillionSend extension: send the draft at this time, as the caller, within 30 days: an ISO 8601 datetime with offset (e.g. "2026-09-01T12:00:00Z") or a relative time like "in 2 hours". A past time sends it within a minute; null cancels. The send runs every rule and limit then; a refused one leaves the draft unsent with send_error set and fires inbox.draft.send_failed. A draft waiting for approval cannot be scheduled (409) */
       send_at?: string | null;
     };
     DeleteInboxDraftResponse: {
@@ -3456,47 +4200,76 @@ export interface components {
       inbox_id: string | null;
     };
     ReceivedEmailReplyRequest: {
+      /** @description HTML body */
       html?: string;
+      /** @description Plain-text body */
       text?: string;
+      /** @description 1-2000 characters on one line; defaults to the thread subject with Re: or Fwd: */
       subject?: string;
+      /** @description Files with base64 `content` (no remote paths), 10 MiB decoded in all; none on the shared domain. A held send keeps them with its draft */
       attachments?:
         | {
             filename?: string | false | null;
             content?: string;
             content_type?: string;
+            /** @description Inline part: the HTML shows it with <img src="cid:<content_id>"> */
             content_id?: string;
             path?: string;
           }[]
         | null;
+      /** @description An address or a list of them; "Name <address>" works too */
       cc?: string | string[];
+      /** @description An address or a list of them; "Name <address>" works too */
       bcc?: string | string[];
+      /** @description Also copy the message's other recipients (cc), never its bcc */
       reply_all?: boolean;
+      /** @description BillionSend extension: hold the email as a draft that a person approves (202 with the Draft) */
       requires_approval?: boolean;
+      /** @description Sender on a verified team domain; defaults to the inbox address the email reached, else the first address it was received for */
       from?: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description The inbox to answer from, among those the email reached
+       */
       inbox_id?: string;
     };
     ReceivedEmailForwardRequest: {
+      /** @description An address or a list of them; "Name <address>" works too */
       to: string | string[];
+      /** @description An address or a list of them; "Name <address>" works too */
       cc?: string | string[];
+      /** @description An address or a list of them; "Name <address>" works too */
       bcc?: string | string[];
+      /** @description HTML body */
       html?: string;
+      /** @description Plain-text body */
       text?: string;
+      /** @description 1-2000 characters on one line; defaults to the thread subject with Re: or Fwd: */
       subject?: string;
+      /** @description Files with base64 `content` (no remote paths), 10 MiB decoded in all; none on the shared domain. A held send keeps them with its draft */
       attachments?:
         | {
             filename?: string | false | null;
             content?: string;
             content_type?: string;
+            /** @description Inline part: the HTML shows it with <img src="cid:<content_id>"> */
             content_id?: string;
             path?: string;
           }[]
         | null;
+      /** @description BillionSend extension: hold the email as a draft that a person approves (202 with the Draft) */
       requires_approval?: boolean;
+      /** @description Sender on a verified team domain; defaults to the inbox address the email reached, else the first address it was received for */
       from?: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description The inbox to answer from, among those the email reached
+       */
       inbox_id?: string;
-      /** @enum {string} */
+      /**
+       * @description inline (default) quotes the original under the note; attachment sends it as forwarded_message.eml
+       * @enum {string}
+       */
       mode?: "inline" | "attachment";
     };
     AgentSignupResponse: {
@@ -3504,23 +4277,32 @@ export interface components {
       object: "agent_signup";
       /** @enum {string} */
       status: "unclaimed";
+      /** @description An inbox-scoped key for the inbox below. Shown once; store it now. */
       api_key: string;
       inbox: components["schemas"]["Inbox"];
       claim: {
+        /** @description Where the claim link was sent */
         email: string;
+        /** @description When the account deletes itself if nobody claimed it, as ISO 8601 */
         expires_at: string;
       };
+      /** @description What the account may do while nobody has claimed it */
       limits: {
         receive_only: boolean;
         inboxes: number;
         emails_per_day: number;
+        /** @description Emails the account may receive per UTC day; past it the sender is told to retry */
         received_per_day: number;
+        /** @description Emails the inbox may receive per rolling hour; past it the sender is told to retry */
         received_per_inbox_per_hour: number;
       };
     };
     AgentSignupRequest: {
+      /** @description The person behind the agent. The claim link goes to this address and nowhere else. A disposable-email address, or one on a BillionSend domain, answers 422; at most 3 unclaimed accounts wait on one address. */
       human_email: string;
+      /** @description The agent's name, at most 60 characters, a plain name (no @, links or phone numbers). It becomes the account's name until a person renames it. A brand look-alike answers 422. */
       name: string;
+      /** @description The part before the @ of the inbox address, under the same rules as POST /inboxes (reserved names and brand look-alikes answer 422, a name in use 409). Omitted: a random one. */
       username?: string;
     };
     AgentAccountStatus: {
@@ -3528,15 +4310,20 @@ export interface components {
       object: "agent_account";
       /** @enum {string} */
       status: "unclaimed" | "claimed";
+      /** @description Set while the account is unclaimed */
       claim: {
         expires_at: string;
+        /** @description How many more times the claim link can be sent again */
         mails_left: number;
       } | null;
+      /** @description Set while the account is unclaimed */
       limits: {
         receive_only: boolean;
         inboxes: number;
         emails_per_day: number;
+        /** @description Emails the account may receive per UTC day; past it the sender is told to retry */
         received_per_day: number;
+        /** @description Emails the inbox may receive per rolling hour; past it the sender is told to retry */
         received_per_inbox_per_hour: number;
       } | null;
     };
@@ -3551,37 +4338,56 @@ export interface components {
       id: string;
     };
     SendEmailRequest: {
-      /** @example Acme <onboarding@acme.dev> */
+      /**
+       * @description Sender, "Name <user@domain>" or bare address; the domain must be verified for the team
+       * @example Acme <onboarding@acme.dev>
+       */
       from: string;
       /**
+       * @description Recipient address or list of up to 50
        * @example [
        *       "success@simulator.amazonses.com"
        *     ]
        */
       to: string | string[];
+      /** @description Subject line */
       subject: string;
+      /** @description HTML body; at least one of html/text is required */
       html?: string;
+      /** @description Plain-text body; at least one of html/text is required */
       text?: string;
+      /** @description Cc address or list */
       cc?: string | string[];
+      /** @description Bcc address or list */
       bcc?: string | string[];
+      /** @description Reply-To address or list */
       reply_to?: string | string[];
+      /** @description Deliver later: ISO 8601 with offset, or relative like "in 2 hours" (an ISO 8601 datetime with offset (e.g. "2026-09-01T12:00:00Z") or a relative time like "in 5 mins", "in 2 hours", or "in 1 day"); max 30 days ahead */
       scheduled_at?: string;
+      /** @description Key/value labels attached to the email for filtering; names starting with billionsend_, in any letter case, are reserved */
       tags?: {
         name: string;
         value: string;
       }[];
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description Topic id: recipients opted out of the topic are skipped; a send to one address that is a contact also gets that contact's unsubscribe link. A topic bound to a domain (domain_id) can be sent only from that domain (422 otherwise)
+       */
       topic_id?: string | null;
+      /** @description Attachments with base64 content (no remote paths) */
       attachments?: {
         filename?: string | false | null;
         content?: string;
         content_type?: string;
+        /** @description Inline part: the HTML shows it with <img src="cid:<content_id>"> */
         content_id?: string;
         path?: string;
       }[];
+      /** @description Extra message headers (transport headers are rejected) */
       headers?: {
         [key: string]: string;
       };
+      /** @description Not supported: any value is a 422; an email takes html and/or text */
       template?: unknown;
     };
     BatchEmailResponse: {
@@ -3618,12 +4424,14 @@ export interface components {
         /** Format: uuid */
         id: string;
         to: string[];
+        /** @description Bare address from the From header; the display name is in headers.from */
         from: string;
         created_at: string;
         subject: string;
         bcc: string[];
         cc: string[];
         reply_to: string[];
+        /** @description The team's envelope recipients: the addresses the message was delivered to here */
         received_for: string[];
         message_id: string;
         attachments: {
@@ -3635,10 +4443,17 @@ export interface components {
           content_disposition: string | null;
           size: number;
         }[];
-        /** Format: uuid */
+        /**
+         * Format: uuid
+         * @description BillionSend extension: the inbox this read is about (an inbox-scoped key's own, the inbox_id filter's, else the oldest inbox the email reached); null for mail no inbox took
+         */
         inbox_id: string | null;
-        /** Format: uuid */
+        /**
+         * Format: uuid
+         * @description BillionSend extension: that inbox's thread
+         */
         thread_id: string | null;
+        /** @description BillionSend extension, full access keys only: every inbox the email reached and its screening verdict there */
         inboxes?: {
           /** Format: uuid */
           inbox_id: string;
@@ -3647,21 +4462,31 @@ export interface components {
           /** @enum {string} */
           verdict: "pending" | "clean" | "suspicious" | "quarantined" | "released";
         }[];
-        /** @enum {string|null} */
+        /**
+         * @description BillionSend extension: the local spam score's verdict; null for mail from before it existed
+         * @enum {string|null}
+         */
         spam_verdict: "pass" | "gray" | "fail" | null;
-        /** @enum {string|null} */
+        /**
+         * @description BillionSend extension: clamd's verdict (fail blocks every download for good); null when nothing scanned it
+         * @enum {string|null}
+         */
         virus_verdict: "pass" | "fail" | "processing_failed" | null;
+        /** @description BillionSend extension, with an inbox in context: whether that inbox marked it read */
         read?: boolean;
+        /** @description BillionSend extension: the screening verdict and the sender's trust tier */
         screening: {
           /** @enum {string} */
           verdict: "pending" | "clean" | "suspicious" | "quarantined" | "released";
           /** @enum {string} */
           sender_trust: "owner" | "allowlisted" | "known_thread" | "external" | "unauthenticated" | "failed";
         };
+        /** @description BillionSend extension: whether a verification code or sign-in link was found; the values come with GET of one email */
         extracted: {
           kinds: ("code" | "link")[];
         };
       }[];
+      /** @description BillionSend extension, with wait only: matching mail that arrived but is held (being screened or quarantined), ids and why only */
       held?: {
         /** Format: uuid */
         id: string;
@@ -3687,12 +4512,14 @@ export interface components {
       /** Format: uuid */
       id: string;
       to: string[];
+      /** @description Bare address from the From header; the display name is in headers.from */
       from: string;
       created_at: string;
       subject: string;
       bcc: string[];
       cc: string[];
       reply_to: string[];
+      /** @description The team's envelope recipients: the addresses the message was delivered to here */
       received_for: string[];
       message_id: string;
       attachments: {
@@ -3704,10 +4531,17 @@ export interface components {
         content_disposition: string | null;
         size: number;
       }[];
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: the inbox this read is about (an inbox-scoped key's own, the inbox_id filter's, else the oldest inbox the email reached); null for mail no inbox took
+       */
       inbox_id: string | null;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description BillionSend extension: that inbox's thread
+       */
       thread_id: string | null;
+      /** @description BillionSend extension, full access keys only: every inbox the email reached and its screening verdict there */
       inboxes?: {
         /** Format: uuid */
         inbox_id: string;
@@ -3716,11 +4550,19 @@ export interface components {
         /** @enum {string} */
         verdict: "pending" | "clean" | "suspicious" | "quarantined" | "released";
       }[];
-      /** @enum {string|null} */
+      /**
+       * @description BillionSend extension: the local spam score's verdict; null for mail from before it existed
+       * @enum {string|null}
+       */
       spam_verdict: "pass" | "gray" | "fail" | null;
-      /** @enum {string|null} */
+      /**
+       * @description BillionSend extension: clamd's verdict (fail blocks every download for good); null when nothing scanned it
+       * @enum {string|null}
+       */
       virus_verdict: "pass" | "fail" | "processing_failed" | null;
+      /** @description BillionSend extension, with an inbox in context: whether that inbox marked it read */
       read?: boolean;
+      /** @description BillionSend extension: the screening verdict, the sender's trust tier, why it was held, the inbound judge's reasons and scores (0-100), and whether hidden text was removed from what agents read */
       screening: {
         /** @enum {string} */
         verdict: "pending" | "clean" | "suspicious" | "quarantined" | "released";
@@ -3742,9 +4584,13 @@ export interface components {
         phishing_score: number | null;
         hidden_text_removed: boolean;
       };
+      /** @description BillionSend extension: the local spam score, 0-100 */
       spam_score: number | null;
+      /** @description BillionSend extension: clamd's signature name when it failed */
       virus_signature: string | null;
+      /** @description BillionSend extension: what a person sees of the reply, as text with light markdown: hidden text, invisible characters, quoted history and signature taken out. null once the content retention removed it */
       extracted_text: string | null;
+      /** @description BillionSend extension: the verification code or sign-in link, served only from delivered mail of a sender that did not fail authentication, in an inbox that extracts codes. Links are never fetched. */
       extracted: {
         kinds: ("code" | "link")[];
         code: string | null;
@@ -3758,14 +4604,17 @@ export interface components {
       /** @enum {string} */
       html_format: "data_uri" | "cid";
       text: string | null;
+      /** @description Top-level headers, lowercase names; a repeated header's values joined by newlines */
       headers: {
         [key: string]: string;
       } | null;
+      /** @description pass, fail, gray, processing_failed or unknown, checked when the message arrived */
       authentication: {
         spf: string;
         dkim: string;
         dmarc: string;
       };
+      /** @description The original RFC 822 message: a signed link valid for one hour that needs no API key. null once the content retention period removed the message. */
       raw: {
         download_url: string;
         expires_at: string;
@@ -3792,6 +4641,7 @@ export interface components {
         /** @enum {string} */
         content_disposition: "inline" | "attachment";
         content_id?: string;
+        /** @description Signed link to the file's bytes, valid for one hour; it needs no API key */
         download_url: string;
         expires_at: string;
       }[];
@@ -3805,6 +4655,7 @@ export interface components {
       /** @enum {string} */
       content_disposition: "inline" | "attachment";
       content_id?: string;
+      /** @description Signed link to the file's bytes, valid for one hour; it needs no API key */
       download_url: string;
       expires_at: string;
       /** @enum {string} */
@@ -3834,6 +4685,7 @@ export interface components {
       object: "email_insights";
       /** Format: uuid */
       email_id: string;
+      /** @description Best-practice score, 0-10, one decimal */
       score: number;
       score_version: number;
       /** @enum {string} */
@@ -3842,11 +4694,13 @@ export interface components {
       html_size_bytes: number | null;
       computed_at: string;
       checks: {
+        /** @description Check id from the @billionsend/core check catalog */
         id: string;
         /** @enum {string} */
         severity: "critical" | "major" | "minor" | "info";
         /** @enum {string} */
         status: "pass" | "fail" | "passed_by_design" | "not_applicable" | "unknown";
+        /** @description Points deducted from the score; 0 unless status is fail */
         penalty: number;
         detail?: {
           [key: string]: unknown;
@@ -3902,6 +4756,7 @@ export interface components {
   parameters: never;
   requestBodies: never;
   headers: {
+    /** @description The request's id (a UUID), the id of its row on the dashboard's Logs page; quote it when asking about a request */
     RequestId: string;
   };
   pathItems: never;
@@ -4107,6 +4962,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Email metrics for the range, as totals and, when dimensions are given, one row per combination. Counts come from statistics written within seconds of the events; `received` is the accepted-for-sending count and is left out of answers scoped or broken down by domain, broadcast or email. Rates are percentages. Counts cover whole UTC hours: `start_date` is floored to its hour, the whole hour of `end_date` counts, and the response shows the start used. Dates before 1970 read as 1970. `timezone` must be an IANA name such as `Europe/Berlin` or `UTC`, not a UTC offset. `sent` counts recipients, like `delivered`, `bounced` and `complained`, so the rates stay at or under 100%. `email` rows list up to 1,000 emails created in the range when no email_id is given. A key held to one domain always reads that domain only. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4131,6 +4987,7 @@ export interface operations {
           };
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4140,6 +4997,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4149,6 +5007,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4158,8 +5017,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4168,6 +5029,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The statistics store is not answering; sending is unaffected. Retry shortly. */
       503: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4182,9 +5044,13 @@ export interface operations {
   "contacts.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
+        /** @description Comma-separated facets attached to every item — `properties` (the {type, value} map GET /contacts/{id} returns) and `topics` (the rows GET /contacts/{id}/topics returns). Omitted, each item has only the contact fields. */
         include?: string;
       };
       header?: never;
@@ -4193,6 +5059,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Contacts */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4202,6 +5069,7 @@ export interface operations {
           "application/json": components["schemas"]["ListContactsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4211,6 +5079,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4220,8 +5089,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4245,6 +5116,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Contact created */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4254,6 +5126,7 @@ export interface operations {
           "application/json": components["schemas"]["ContactIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4263,6 +5136,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Plan limit reached */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4272,6 +5146,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Unknown segment or topic */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4281,6 +5156,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Contact already exists */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4290,6 +5166,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4299,8 +5176,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4324,6 +5203,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description The contacts found, and the entries that matched none */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4333,6 +5213,7 @@ export interface operations {
           "application/json": components["schemas"]["BatchGetContactsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4342,6 +5223,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4351,8 +5233,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4376,6 +5260,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description The contacts that were deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4385,6 +5270,7 @@ export interface operations {
           "application/json": components["schemas"]["BatchRemoveContactsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4394,6 +5280,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4403,8 +5290,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4418,9 +5307,11 @@ export interface operations {
   "contacts.batch.create": {
     parameters: {
       query?: {
+        /** @description What to do with an item whose email (case-insensitive) already belongs to a contact: `error` fails the item, `skip` leaves the contact untouched and reports its id, `upsert` merges the item into it. Also decides how an email repeated inside the batch is handled: `error` fails the later occurrence, `skip` keeps the first, `upsert` collapses them into one write (later scalar fields win, associations are unioned). */
         on_conflict?: "error" | "skip" | "upsert";
       };
       header?: {
+        /** @description `strict` (default): any invalid item rejects the whole batch with that item's status and a `contacts.{index}: ` message prefix, writing nothing. `permissive`: invalid items are listed in `errors` and the valid subset is written. */
         "x-batch-validation"?: "strict" | "permissive";
       };
       path?: never;
@@ -4432,6 +5323,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Batch processed */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4441,6 +5333,7 @@ export interface operations {
           "application/json": components["schemas"]["BatchContactsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4450,6 +5343,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Plan limit reached (strict mode) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4459,6 +5353,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Unknown segment or topic (strict mode) */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4468,6 +5363,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Contact already exists (strict mode, on_conflict=error) */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4477,6 +5373,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4486,8 +5383,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4509,6 +5408,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Contact */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4518,6 +5418,7 @@ export interface operations {
           "application/json": components["schemas"]["GetContactResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4527,6 +5428,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4536,8 +5438,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4551,6 +5455,7 @@ export interface operations {
   "contacts.delete": {
     parameters: {
       query?: {
+        /** @description BillionSend extension. `true` also erases the address from email history, event payloads and API logs (a GDPR/LGPD erasure); by default the send log is kept and ages out with the team's retention window */
         erase?: "true" | "false";
       };
       header?: never;
@@ -4561,6 +5466,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Contact deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4570,6 +5476,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveContactResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4579,6 +5486,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4588,8 +5496,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4615,6 +5525,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Contact updated */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4624,6 +5535,7 @@ export interface operations {
           "application/json": components["schemas"]["ContactIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4633,6 +5545,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description An agent acting for a role below owner and admin tried to lift the recipient's own whole-team opt-out */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4642,6 +5555,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4651,6 +5565,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4660,8 +5575,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4683,6 +5600,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description The contact's preference page URL */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4692,6 +5610,7 @@ export interface operations {
           "application/json": components["schemas"]["ContactPreferencesLinkResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4701,6 +5620,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4710,6 +5630,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description APP_BASE_URL or the encryption key is not configured */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4719,8 +5640,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4742,6 +5665,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Every topic of the team with the contact's effective subscription and whether it was chosen explicitly */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4751,6 +5675,7 @@ export interface operations {
           "application/json": components["schemas"]["ListContactTopicsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4760,6 +5685,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4769,8 +5695,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4796,6 +5724,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Contact topic subscriptions updated */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4805,6 +5734,7 @@ export interface operations {
           "application/json": components["schemas"]["UpdateContactTopicsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4814,6 +5744,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4823,6 +5754,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4832,8 +5764,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4856,6 +5790,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Contact added to the segment */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4865,6 +5800,7 @@ export interface operations {
           "application/json": components["schemas"]["AddContactSegmentResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4874,6 +5810,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4883,8 +5820,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4907,6 +5846,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Contact removed from the segment */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4916,6 +5856,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveContactSegmentResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4925,6 +5866,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4934,8 +5876,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -4961,6 +5905,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Contact created in the audience */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4970,6 +5915,7 @@ export interface operations {
           "application/json": components["schemas"]["ContactIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4979,6 +5925,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Plan limit reached */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4988,6 +5935,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -4997,6 +5945,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Contact already exists */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5006,6 +5955,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5015,8 +5965,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5039,6 +5991,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Contact */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5048,6 +6001,7 @@ export interface operations {
           "application/json": components["schemas"]["GetContactResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5057,6 +6011,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5066,8 +6021,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5081,6 +6038,7 @@ export interface operations {
   "audiences.contacts.delete": {
     parameters: {
       query?: {
+        /** @description BillionSend extension. `true` also erases the address from email history, event payloads and API logs (a GDPR/LGPD erasure); by default the send log is kept and ages out with the team's retention window */
         erase?: "true" | "false";
       };
       header?: never;
@@ -5092,6 +6050,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Contact deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5101,6 +6060,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveContactResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5110,6 +6070,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5119,8 +6080,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5147,6 +6110,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Contact updated */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5156,6 +6120,7 @@ export interface operations {
           "application/json": components["schemas"]["ContactIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5165,6 +6130,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description An agent acting for a role below owner and admin tried to lift the recipient's own whole-team opt-out */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5174,6 +6140,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5183,6 +6150,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5192,8 +6160,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5207,8 +6177,11 @@ export interface operations {
   "contactProperties.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
@@ -5217,6 +6190,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Contact properties */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5226,6 +6200,7 @@ export interface operations {
           "application/json": components["schemas"]["ListContactPropertiesResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5235,6 +6210,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5244,8 +6220,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5269,6 +6247,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Contact property created */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5278,6 +6257,7 @@ export interface operations {
           "application/json": components["schemas"]["GetContactPropertyResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5287,6 +6267,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Property already exists */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5296,6 +6277,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5305,8 +6287,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5328,6 +6312,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Contact property */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5337,6 +6322,7 @@ export interface operations {
           "application/json": components["schemas"]["GetContactPropertyResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5346,6 +6332,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5355,8 +6342,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5378,6 +6367,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Contact property deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5387,6 +6377,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveContactPropertyResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5396,6 +6387,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5405,8 +6397,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5432,6 +6426,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Contact property updated */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5441,6 +6436,7 @@ export interface operations {
           "application/json": components["schemas"]["ContactPropertyIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5450,6 +6446,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5459,6 +6456,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5468,8 +6466,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5483,8 +6483,11 @@ export interface operations {
   "segments.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
@@ -5493,6 +6496,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Segments */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5502,6 +6506,7 @@ export interface operations {
           "application/json": components["schemas"]["ListSegmentsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5511,6 +6516,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5520,8 +6526,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5545,6 +6553,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Segment created */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5554,6 +6563,7 @@ export interface operations {
           "application/json": components["schemas"]["SegmentResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5563,6 +6573,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description A key held to one domain bound this to another domain, or unbound it */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5572,6 +6583,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error, or a domain_id that is not one of your domains */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5581,8 +6593,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5604,6 +6618,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Segment */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5613,6 +6628,7 @@ export interface operations {
           "application/json": components["schemas"]["GetSegmentResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5622,6 +6638,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5631,8 +6648,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5654,6 +6673,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Segment deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5663,6 +6683,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveSegmentResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5672,6 +6693,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5681,6 +6703,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Segment is in use */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5690,8 +6713,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5717,6 +6742,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Segment updated */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5726,6 +6752,7 @@ export interface operations {
           "application/json": components["schemas"]["SegmentResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5735,6 +6762,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description A key held to one domain bound this to another domain, or unbound it */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5744,6 +6772,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5753,6 +6782,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error, or a domain_id that is not one of your domains */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5762,8 +6792,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5777,9 +6809,13 @@ export interface operations {
   "segments.contacts.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
+        /** @description Comma-separated facets attached to every item — `properties` (the {type, value} map GET /contacts/{id} returns) and `topics` (the rows GET /contacts/{id}/topics returns). Omitted, each item has only the contact fields. */
         include?: string;
       };
       header?: never;
@@ -5790,6 +6826,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Contacts the segment resolves to */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5799,6 +6836,7 @@ export interface operations {
           "application/json": components["schemas"]["ListContactsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5808,6 +6846,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5817,6 +6856,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5826,8 +6866,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5841,8 +6883,11 @@ export interface operations {
   "broadcasts.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
@@ -5851,6 +6896,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Broadcasts */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5860,6 +6906,7 @@ export interface operations {
           "application/json": components["schemas"]["ListBroadcastsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5869,6 +6916,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5878,8 +6926,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5903,6 +6953,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Broadcast created (and scheduled when send: true) */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5912,6 +6963,7 @@ export interface operations {
           "application/json": components["schemas"]["SendBroadcastResponse"];
         };
       };
+      /** @description Broadcast state conflict */
       400: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5921,6 +6973,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5930,6 +6983,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, sending paused, or a From on the shared inbox domain */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5939,6 +6993,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5948,6 +7003,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5957,8 +7013,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -5980,6 +7038,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Broadcast */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5989,6 +7048,7 @@ export interface operations {
           "application/json": components["schemas"]["GetBroadcastResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -5998,6 +7058,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6007,8 +7068,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6030,6 +7093,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Broadcast deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6039,6 +7103,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveBroadcastResponse"];
         };
       };
+      /** @description Not a draft, or a failed broadcast that already wrote emails */
       400: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6048,6 +7113,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6057,6 +7123,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6066,8 +7133,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6093,6 +7162,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Broadcast updated */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6102,6 +7172,7 @@ export interface operations {
           "application/json": components["schemas"]["BroadcastIdResponse"];
         };
       };
+      /** @description Not a draft */
       400: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6111,6 +7182,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6120,6 +7192,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6129,6 +7202,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6138,8 +7212,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6165,6 +7241,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Broadcast scheduled; finishes_at and warning say when it goes out */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6174,6 +7251,7 @@ export interface operations {
           "application/json": components["schemas"]["SendBroadcastResponse"];
         };
       };
+      /** @description Not a draft */
       400: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6183,6 +7261,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6192,6 +7271,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Sending paused, or a From on the shared inbox domain */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6201,6 +7281,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6210,6 +7291,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6219,8 +7301,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6242,6 +7326,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description The new draft's id */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6251,6 +7336,7 @@ export interface operations {
           "application/json": components["schemas"]["DuplicateBroadcastResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6260,6 +7346,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6269,6 +7356,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6278,8 +7366,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6301,6 +7391,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Broadcast canceled */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6310,6 +7401,7 @@ export interface operations {
           "application/json": components["schemas"]["CancelBroadcastResponse"];
         };
       };
+      /** @description Not queued */
       400: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6319,6 +7411,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6328,6 +7421,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6337,8 +7431,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6358,6 +7454,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Topics */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6367,6 +7464,7 @@ export interface operations {
           "application/json": components["schemas"]["ListTopicsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6376,8 +7474,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6401,6 +7501,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Topic created */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6410,6 +7511,7 @@ export interface operations {
           "application/json": components["schemas"]["TopicResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6419,6 +7521,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description A key held to one domain bound this to another domain, or unbound it */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6428,6 +7531,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error, or a domain_id that is not one of your domains */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6437,8 +7541,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6460,6 +7566,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Topic */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6469,6 +7576,7 @@ export interface operations {
           "application/json": components["schemas"]["TopicResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6478,6 +7586,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6487,8 +7596,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6510,6 +7621,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Topic deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6519,6 +7631,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveTopicResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6528,6 +7641,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6537,6 +7651,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Topic is in use */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6546,8 +7661,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6573,6 +7690,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Topic updated */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6582,6 +7700,7 @@ export interface operations {
           "application/json": components["schemas"]["TopicIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6591,6 +7710,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description A key held to one domain bound this to another domain, or unbound it */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6600,6 +7720,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6609,6 +7730,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error, or a domain_id that is not one of your domains */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6618,8 +7740,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6633,8 +7757,11 @@ export interface operations {
   "domains.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
@@ -6643,6 +7770,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Domains */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6652,6 +7780,7 @@ export interface operations {
           "application/json": components["schemas"]["ListDomainsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6661,6 +7790,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6670,8 +7800,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6695,6 +7827,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Domain created */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6704,6 +7837,7 @@ export interface operations {
           "application/json": components["schemas"]["CreateDomainResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6713,6 +7847,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Plan domain limit reached, an own tracking or unsubscribe subdomain needs a paid plan, or the key is held to one domain (it cannot create domains) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6722,6 +7857,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Domain already added */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6731,6 +7867,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6740,8 +7877,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Too many domains created recently, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6763,6 +7902,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Domain with its DNS records; the team's shared subdomain has none (records: []) */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6772,6 +7912,7 @@ export interface operations {
           "application/json": components["schemas"]["GetDomainResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6781,6 +7922,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found, or a domain other than the one the calling key is held to */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6790,8 +7932,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6813,6 +7957,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Domain deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6822,6 +7967,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveDomainResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6831,6 +7977,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Team suspended, not available for this team, or the team's subdomain of the shared domain, which is read-only */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6840,6 +7987,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found, or a domain other than the one the calling key is held to */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6849,6 +7997,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Topics or segments are bound to the domain, or a scheduled or sending broadcast uses it */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6858,8 +8007,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6885,6 +8036,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Domain updated; full object with records */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6894,6 +8046,7 @@ export interface operations {
           "application/json": components["schemas"]["GetDomainResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6903,6 +8056,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Catch-all receiving or an own tracking / unsubscribe subdomain needs a paid plan, or the team's subdomain of the shared domain, which is read-only */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6912,6 +8066,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found, or a domain other than the one the calling key is held to */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6921,6 +8076,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Another team receives mail for this domain */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6930,6 +8086,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6939,8 +8096,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -6962,6 +8121,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Verification result: the domain with per-record status */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6971,6 +8131,7 @@ export interface operations {
           "application/json": components["schemas"]["GetDomainResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6980,6 +8141,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The team's subdomain of the shared domain, which is read-only */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6989,6 +8151,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found, or a domain other than the one the calling key is held to */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6998,8 +8161,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7013,8 +8178,11 @@ export interface operations {
   "apiKeys.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
@@ -7023,6 +8191,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description API keys (never tokens) */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7032,6 +8201,7 @@ export interface operations {
           "application/json": components["schemas"]["ListApiKeysResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7041,6 +8211,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7050,8 +8221,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7075,6 +8248,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description API key created; the token is returned only here */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7084,6 +8258,7 @@ export interface operations {
           "application/json": components["schemas"]["CreateApiKeyResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7093,6 +8268,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: a sending_access key, an inbox-scoped key, or a domain_id outside the calling key's domain */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7102,6 +8278,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7111,8 +8288,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7134,6 +8313,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description API key revoked */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7143,6 +8323,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveApiKeyResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7152,6 +8333,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7161,8 +8343,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7176,8 +8360,11 @@ export interface operations {
   "webhooks.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
@@ -7186,6 +8373,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Webhooks (list rows never carry the signing secret) */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7195,6 +8383,7 @@ export interface operations {
           "application/json": components["schemas"]["ListWebhooksResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7204,6 +8393,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7213,8 +8403,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7238,6 +8430,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Webhook created; signing_secret is also retrievable via GET /webhooks/{id} */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7247,6 +8440,7 @@ export interface operations {
           "application/json": components["schemas"]["CreateWebhookResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7256,6 +8450,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Plan webhook endpoint limit reached */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7265,6 +8460,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7274,8 +8470,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7297,6 +8495,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Webhook, including its signing secret */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7306,6 +8505,7 @@ export interface operations {
           "application/json": components["schemas"]["GetWebhookResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7315,6 +8515,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7324,8 +8525,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7347,6 +8550,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Webhook deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7356,6 +8560,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveWebhookResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7365,6 +8570,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7374,8 +8580,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7401,6 +8609,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Webhook updated */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7410,6 +8619,7 @@ export interface operations {
           "application/json": components["schemas"]["WebhookIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7419,6 +8629,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7428,6 +8639,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7437,8 +8649,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7464,6 +8678,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description The new secret and when the previous one stops signing */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7473,6 +8688,7 @@ export interface operations {
           "application/json": components["schemas"]["RotateWebhookSecretResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7482,6 +8698,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7491,6 +8708,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7500,8 +8718,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7525,6 +8745,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description One entry per distinct address (case-insensitive) in input order; addresses already suppressed return their existing id and keep their origin. New rows record the request's origin (bounce, complaint or manual; default manual). Accepts up to 1000 addresses. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7534,6 +8755,7 @@ export interface operations {
           "application/json": components["schemas"]["BatchAddSuppressionsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7543,6 +8765,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7552,8 +8775,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7577,6 +8802,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Exactly one of emails or ids (up to 1000 each); lists only the rows actually removed. Rows whose address was erased (GDPR/LGPD) keep blocking sends but are hidden from the list and from lookups by email; they are reachable by id only. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7586,6 +8812,7 @@ export interface operations {
           "application/json": components["schemas"]["BatchRemoveSuppressionsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7595,6 +8822,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7604,8 +8832,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7619,9 +8849,13 @@ export interface operations {
   "suppressions.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
+        /** @description Only suppressions of this origin: bounce, complaint or manual */
         origin?: "bounce" | "complaint" | "manual";
       };
       header?: never;
@@ -7630,6 +8864,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Suppressions, optionally filtered by origin (bounce, complaint or manual). Rows whose address was erased (GDPR/LGPD) keep blocking sends but are hidden from the list and from lookups by email; they are reachable by id only. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7639,6 +8874,7 @@ export interface operations {
           "application/json": components["schemas"]["ListSuppressionsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7648,6 +8884,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7657,8 +8894,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7682,6 +8921,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Address blocked with the given origin (bounce, complaint or manual; default manual). Idempotent: an address already suppressed keeps its entry and origin and its existing id is returned. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7691,6 +8931,7 @@ export interface operations {
           "application/json": components["schemas"]["SuppressionIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7700,6 +8941,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7709,8 +8951,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7732,6 +8976,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Suppression by id or by email address. Rows whose address was erased (GDPR/LGPD) keep blocking sends but are hidden from the list and from lookups by email; they are reachable by id only. An erased row reports "[erased]" as its email. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7741,6 +8986,7 @@ export interface operations {
           "application/json": components["schemas"]["GetSuppressionResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7750,6 +8996,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7759,8 +9006,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7782,6 +9031,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Suppression removed, by id or by email address; the address can receive mail again. Rows whose address was erased (GDPR/LGPD) keep blocking sends but are hidden from the list and from lookups by email; they are reachable by id only. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7791,6 +9041,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveSuppressionResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7800,6 +9051,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7809,8 +9061,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7824,9 +9078,13 @@ export interface operations {
   "unsubscribes.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
+        /** @description Only opt-outs from this domain (one of your domains); omitted lists every opt-out of the team, whole-team ones included */
         domain_id?: string;
       };
       header?: never;
@@ -7835,6 +9093,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Opt-outs, newest first, optionally of one domain (domain_id). A row with domain null opts the address out of every domain of the team. Rows whose address was erased (GDPR/LGPD) keep blocking marketing mail but are hidden from the list; they are reachable by id only. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7844,6 +9103,7 @@ export interface operations {
           "application/json": components["schemas"]["ListUnsubscribesResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7853,6 +9113,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description A key held to one domain asked for another domain's opt-outs */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7862,6 +9123,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7871,8 +9133,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7896,6 +9160,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description The address now stops receiving marketing mail from the domain (domain_id) or from every domain of the team (domain_id omitted or null). Idempotent: an opt-out that already exists is returned as it is, with its original created_at. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7905,6 +9170,7 @@ export interface operations {
           "application/json": components["schemas"]["UnsubscribeResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7914,6 +9180,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description A key held to one domain recorded an opt-out for another domain or for the whole team */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7923,6 +9190,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error, or a domain_id that is not one of your domains */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7932,8 +9200,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7955,6 +9225,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Opt-out removed: the address can receive marketing mail from that domain again (a team-wide opt-out lifts for every domain). Rows whose address was erased (GDPR/LGPD) keep blocking marketing mail but are hidden from the list; they are reachable by id only. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7964,6 +9235,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveUnsubscribeResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7973,6 +9245,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7982,8 +9255,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7997,8 +9272,11 @@ export interface operations {
   "templates.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
@@ -8007,6 +9285,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Templates */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8016,6 +9295,7 @@ export interface operations {
           "application/json": components["schemas"]["ListTemplatesResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8025,6 +9305,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8034,8 +9315,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8059,6 +9342,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Template created. Templates have no draft/publish cycle: every save is live, so status is always published. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8068,6 +9352,7 @@ export interface operations {
           "application/json": components["schemas"]["TemplateIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8077,6 +9362,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Alias already in use */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8086,6 +9372,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error, including from/reply_to/variables (not supported yet) */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8095,8 +9382,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8112,12 +9401,14 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description Template id or alias */
         id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Template by id or alias. Templates have no draft/publish cycle: every save is live, so status is always published. from, reply_to and variables are not supported yet and read as null, null and []. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8127,6 +9418,7 @@ export interface operations {
           "application/json": components["schemas"]["GetTemplateResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8136,6 +9428,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8145,8 +9438,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8162,12 +9457,14 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description Template id or alias */
         id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Template deleted. Broadcasts keep their own copy of the content. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8177,6 +9474,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveTemplateResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8186,6 +9484,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8195,8 +9494,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8212,6 +9513,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description Template id or alias */
         id: string;
       };
       cookie?: never;
@@ -8222,6 +9524,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Template updated (live immediately) */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8231,6 +9534,7 @@ export interface operations {
           "application/json": components["schemas"]["TemplateIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8240,6 +9544,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8249,6 +9554,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Alias already in use */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8258,6 +9564,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error, including from/reply_to/variables (not supported yet) */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8267,8 +9574,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8284,12 +9593,14 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description Template id or alias */
         id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description No-op kept for SDK compatibility. Templates have no draft/publish cycle: every save is live, so status is always published. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8299,6 +9610,7 @@ export interface operations {
           "application/json": components["schemas"]["TemplateIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8308,6 +9620,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8317,8 +9630,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8334,12 +9649,14 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description Template id or alias */
         id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Copy named "<name> (copy)" with no alias; returns the new template id */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8349,6 +9666,7 @@ export interface operations {
           "application/json": components["schemas"]["TemplateIdResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8358,6 +9676,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8367,8 +9686,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8388,6 +9709,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Whether the team may start deep verification, and its price */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8397,6 +9719,7 @@ export interface operations {
           "application/json": components["schemas"]["VerificationAvailabilityResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8406,8 +9729,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8431,6 +9756,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description The counts and the estimated cost */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8440,6 +9766,7 @@ export interface operations {
           "application/json": components["schemas"]["EstimateVerificationResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8449,6 +9776,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The segment or broadcast is not one of the team's */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8458,6 +9786,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8467,8 +9796,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8482,8 +9813,11 @@ export interface operations {
   "verifications.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
@@ -8492,6 +9826,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description The team's verification runs, newest first */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8501,6 +9836,7 @@ export interface operations {
           "application/json": components["schemas"]["ListVerificationsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8510,6 +9846,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8519,8 +9856,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8544,6 +9883,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description The runs started */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8553,6 +9893,7 @@ export interface operations {
           "application/json": components["schemas"]["StartVerificationResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8562,6 +9903,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The team is on the Free plan (plan_limit_reached) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8571,6 +9913,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The segment or broadcast is not one of the team's */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8580,6 +9923,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Nothing left to verify, too many contacts at once, or a validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8589,8 +9933,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8599,6 +9945,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Deep verification is not available right now */
       503: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8621,6 +9968,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description One verification run: its status, and its results once completed */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8630,6 +9978,7 @@ export interface operations {
           "application/json": components["schemas"]["VerificationRun"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8639,6 +9988,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8648,6 +9998,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8657,8 +10008,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8678,6 +10031,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Effective plan, its send, domain, contact, inbox and webhook endpoint limits, today's accepted send count (UTC day), on a monthly plan the billing period's usage, and this quota month's deep verification. BillionSend extension; plan, limits and period are null on the instance's own (system) team. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8687,6 +10041,7 @@ export interface operations {
           "application/json": components["schemas"]["UsageResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8696,6 +10051,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8705,8 +10061,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8720,7 +10078,9 @@ export interface operations {
   "inboxes.events.stream": {
     parameters: {
       query?: {
+        /** @description Comma-separated event names to receive (inbox.email.received, email.received, and the other inbox.* webhook events); every inbox event when omitted */
         types?: string;
+        /** @description The id of the last event the client saw, for clients that cannot set the Last-Event-ID header; the header wins when both are sent */
         last_event_id?: string;
       };
       header?: never;
@@ -8729,6 +10089,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description An event stream that stays open. A client that reconnects with Last-Event-ID gets the events it missed (up to 24 hours back, then a stream.gap event) before the live ones */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8738,6 +10099,7 @@ export interface operations {
           "text/event-stream": string;
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8747,6 +10109,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description A key held to one domain or one inbox, or an agent naming an event about held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8756,6 +10119,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8765,8 +10129,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Too many streams open, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8780,17 +10146,21 @@ export interface operations {
   "inboxes.events.streamInbox": {
     parameters: {
       query?: {
+        /** @description Comma-separated event names to receive (inbox.email.received, email.received, and the other inbox.* webhook events); every inbox event when omitted */
         types?: string;
+        /** @description The id of the last event the client saw, for clients that cannot set the Last-Event-ID header; the header wins when both are sent */
         last_event_id?: string;
       };
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description An event stream that stays open. A client that reconnects with Last-Event-ID gets the events it missed (up to 24 hours back, then a stream.gap event) before the live ones */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8800,6 +10170,7 @@ export interface operations {
           "text/event-stream": string;
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8809,6 +10180,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description An agent naming an event about held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8818,6 +10190,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8827,6 +10200,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8836,8 +10210,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Too many streams open, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8851,9 +10227,13 @@ export interface operations {
   "inboxes.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
+        /** @description BillionSend extension: agent or human inboxes only */
         kind?: "agent" | "human";
       };
       header?: never;
@@ -8862,6 +10242,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Inboxes */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8871,6 +10252,7 @@ export interface operations {
           "application/json": components["schemas"]["ListInboxesResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8880,6 +10262,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Pagination cursor not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8889,6 +10272,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8898,8 +10282,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8923,6 +10309,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Inbox created */
       201: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8932,6 +10319,7 @@ export interface operations {
           "application/json": components["schemas"]["Inbox"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8941,6 +10329,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The plan's inbox limit, or a restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8950,6 +10339,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The address is already used by an inbox */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8959,6 +10349,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8968,8 +10359,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Too many inboxes created in the last hour, or too many names reviewed or refused on the shared domain today, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8978,6 +10371,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description A chosen username or from_name on the shared domain can't be reviewed right now, or the team's subdomain on the shared domain is still waiting for its name review; retry-after says when to try again */
       503: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8994,12 +10388,14 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Inbox */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9009,6 +10405,7 @@ export interface operations {
           "application/json": components["schemas"]["Inbox"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9018,6 +10415,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9027,6 +10425,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9036,8 +10435,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9053,12 +10454,14 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Inbox deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9068,6 +10471,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveInboxResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9077,6 +10481,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key or role */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9086,6 +10491,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9095,8 +10501,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9112,6 +10520,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
@@ -9122,6 +10531,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Inbox updated */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9131,6 +10541,7 @@ export interface operations {
           "application/json": components["schemas"]["Inbox"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9140,6 +10551,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9149,6 +10561,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9158,8 +10571,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Too many names reviewed or refused on the shared domain today, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9168,6 +10583,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description A new from_name on the shared domain can't be reviewed right now; retry-after says when to try again */
       503: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9184,12 +10600,14 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description No hosted agent */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9199,6 +10617,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxAgent"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9208,6 +10627,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9217,8 +10637,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9234,12 +10656,14 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Safety rules */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9249,6 +10673,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxSafety"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9258,6 +10683,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9267,8 +10693,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9284,6 +10712,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
@@ -9294,6 +10723,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Safety rules */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9303,6 +10733,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxSafety"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9312,6 +10743,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key or role */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9321,6 +10753,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9330,6 +10763,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9339,8 +10773,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9356,12 +10792,14 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Labels */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9371,6 +10809,7 @@ export interface operations {
           "application/json": components["schemas"]["ListInboxLabelsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9380,6 +10819,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9389,8 +10829,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9406,6 +10848,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
@@ -9416,6 +10859,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Label created */
       201: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9425,6 +10869,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxLabel"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9434,6 +10879,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9443,6 +10889,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error, a duplicate name or the 100-label cap */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9452,8 +10899,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9469,13 +10918,16 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
+        /** @description The label ID */
         label_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Label deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9485,6 +10937,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveInboxLabelResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9494,6 +10947,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9503,8 +10957,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9520,7 +10976,9 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
+        /** @description The label ID */
         label_id: string;
       };
       cookie?: never;
@@ -9531,6 +10989,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Label updated */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9540,6 +10999,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxLabel"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9549,6 +11009,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9558,6 +11019,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error or a duplicate name */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9567,8 +11029,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9582,30 +11046,47 @@ export interface operations {
   "inboxes.threads.search": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
+        /** @description Comma-separated: inbox, archive, spam, sent, trash. Defaults to inbox, or inbox,archive,sent with labels */
         folders?: string;
+        /** @description Comma-separated label ids (at most 50); threads with any of them */
         labels?: string;
+        /** @description true: every message read; false: at least one unread */
         read?: boolean;
+        /** @description BillionSend extension: true includes held messages (owner views; a full access key that is not inbox-scoped) */
         include_quarantined?: boolean;
+        /** @description Words that must all match the subject, sender or recipients; "a phrase"; -word excludes. At most 256 characters and 32 words. */
         query?: string;
+        /** @description Comma-separated parts of the sender's address or name (at most 20) */
         from?: string;
+        /** @description Comma-separated parts of a recipient (at most 20) */
         to?: string;
+        /** @description Comma-separated parts of a CC recipient (at most 20) */
         cc?: string;
+        /** @description Comma-separated parts of a BCC recipient (at most 20) */
         bcc?: string;
+        /** @description true: only threads with an attachment; false: only without */
         has_attachment?: boolean;
+        /** @description A date (2026-09-01) or an ISO 8601 timestamp, UTC unless offset */
         start_date?: string;
+        /** @description Same forms; a date covers the whole day */
         end_date?: string;
       };
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Matching threads */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9615,6 +11096,7 @@ export interface operations {
           "application/json": components["schemas"]["SearchInboxThreadsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9624,6 +11106,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description include_quarantined from an inbox-scoped key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9633,6 +11116,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Inbox, label or cursor not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9642,6 +11126,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9651,8 +11136,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9666,22 +11153,31 @@ export interface operations {
   "inboxes.threads.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
+        /** @description Comma-separated: inbox, archive, spam, sent, trash. Defaults to inbox, or inbox,archive,sent with labels */
         folders?: string;
+        /** @description Comma-separated label ids (at most 50); threads with any of them */
         labels?: string;
+        /** @description true: every message read; false: at least one unread */
         read?: boolean;
+        /** @description BillionSend extension: true includes held messages (owner views; a full access key that is not inbox-scoped) */
         include_quarantined?: boolean;
       };
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Threads */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9691,6 +11187,7 @@ export interface operations {
           "application/json": components["schemas"]["ListInboxThreadsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9700,6 +11197,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description include_quarantined from an inbox-scoped key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9709,6 +11207,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Inbox, label or cursor not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9718,6 +11217,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9727,8 +11227,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9744,13 +11246,16 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
+        /** @description The thread ID */
         thread_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Thread */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9760,6 +11265,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxThread"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9769,6 +11275,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9778,8 +11285,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9795,13 +11304,16 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
+        /** @description The thread ID */
         thread_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Thread moved to trash */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9811,6 +11323,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveInboxThreadResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9820,6 +11333,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9829,8 +11343,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9846,7 +11362,9 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
+        /** @description The thread ID */
         thread_id: string;
       };
       cookie?: never;
@@ -9857,6 +11375,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Thread updated */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9866,6 +11385,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxThread"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9875,6 +11395,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Inbox or thread not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9884,6 +11405,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9893,8 +11415,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9910,7 +11434,9 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
+        /** @description The thread ID */
         thread_id: string;
       };
       cookie?: never;
@@ -9921,6 +11447,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description The labels on the thread */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9930,6 +11457,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxThreadLabels"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9939,6 +11467,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Inbox, thread or label not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9948,6 +11477,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9957,8 +11487,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9974,7 +11506,9 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
+        /** @description The thread ID */
         thread_id: string;
       };
       cookie?: never;
@@ -9985,6 +11519,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description The labels on the thread */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9994,6 +11529,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxThreadLabels"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10003,6 +11539,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Inbox, thread or label not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10012,6 +11549,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10021,8 +11559,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10038,14 +11578,18 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
+        /** @description The thread ID */
         thread_id: string;
+        /** @description The label ID */
         label_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description The labels left on the thread */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10055,6 +11599,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxThreadLabels"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10064,6 +11609,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Inbox, thread or label not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10073,8 +11619,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10088,20 +11636,27 @@ export interface operations {
   "inboxes.threads.emails.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
+        /** @description BillionSend extension: true includes held messages (owner views; a full access key that is not inbox-scoped) */
         include_quarantined?: boolean;
       };
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
+        /** @description The thread ID */
         thread_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Emails */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10111,6 +11666,7 @@ export interface operations {
           "application/json": components["schemas"]["ListInboxThreadEmailsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10120,6 +11676,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description include_quarantined from an inbox-scoped key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10129,6 +11686,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Inbox, thread or cursor not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10138,6 +11696,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10147,8 +11706,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10162,18 +11723,23 @@ export interface operations {
   "inboxes.threads.emails.get": {
     parameters: {
       query?: {
+        /** @description BillionSend extension: true includes held messages (owner views; a full access key that is not inbox-scoped) */
         include_quarantined?: boolean;
       };
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
+        /** @description The thread ID */
         thread_id: string;
+        /** @description The email ID */
         email_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Email */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10183,6 +11749,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxThreadEmail"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10192,6 +11759,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Quarantined, or include_quarantined from an inbox-scoped key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10201,6 +11769,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10210,8 +11779,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10225,18 +11796,23 @@ export interface operations {
   "inboxes.quarantine.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Held messages */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10246,6 +11822,7 @@ export interface operations {
           "application/json": components["schemas"]["ListQuarantinedEmailsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10255,6 +11832,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10264,6 +11842,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Inbox or cursor not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10273,6 +11852,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10282,8 +11862,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10299,7 +11881,9 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
+        /** @description The received email's ID */
         email_id: string;
       };
       cookie?: never;
@@ -10310,6 +11894,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Released */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10319,6 +11904,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxRelease"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10328,6 +11914,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, trust_sender refused, or an MCP connection releasing mail held for its content */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10337,6 +11924,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found or not quarantined */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10346,6 +11934,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Screening held it again: it stays in quarantine */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10355,6 +11944,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error, or the allowlist is full */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10364,8 +11954,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10374,6 +11966,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description An MCP connection's release while screening can't run; retry-after says when to try again */
       503: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10388,19 +11981,25 @@ export interface operations {
   "inboxes.codes.latest": {
     parameters: {
       query?: {
+        /** @description An exact sender address, or a domain covering itself and its subdomains */
         from?: string;
+        /** @description Seconds to wait for a code to arrive, 0-50 (default 0) */
         wait?: number;
+        /** @description How long ago the code may have reached the inbox, in seconds, 60-86400 (default 600); a released code counts from its release */
         max_age?: number;
+        /** @description Only mail received after this ISO 8601 instant, such as the received_at of a code already used */
         since?: string;
       };
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description The latest code, or a status saying why none */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10410,6 +12009,7 @@ export interface operations {
           "application/json": components["schemas"]["VerificationCode"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10419,6 +12019,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10428,6 +12029,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10437,8 +12039,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Too many waits at once, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10453,9 +12057,11 @@ export interface operations {
     parameters: {
       query?: never;
       header?: {
+        /** @description 1 to 256 characters. A retry with the same key and the same body answers the original response instead of sending again; the same key with a different body answers 409 invalid_idempotent_request. */
         "Idempotency-Key"?: string;
       };
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
         thread_id: string;
         email_id: string;
@@ -10468,6 +12074,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Sent */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10477,6 +12084,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxSentEmail"];
         };
       };
+      /** @description Held for approval */
       202: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10486,6 +12094,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxDraft"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10495,6 +12104,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10504,6 +12114,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10513,6 +12124,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10522,6 +12134,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10531,8 +12144,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10547,9 +12162,11 @@ export interface operations {
     parameters: {
       query?: never;
       header?: {
+        /** @description 1 to 256 characters. A retry with the same key and the same body answers the original response instead of sending again; the same key with a different body answers 409 invalid_idempotent_request. */
         "Idempotency-Key"?: string;
       };
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
         thread_id: string;
         email_id: string;
@@ -10562,6 +12179,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Sent */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10571,6 +12189,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxSentEmail"];
         };
       };
+      /** @description Held for approval */
       202: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10580,6 +12199,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxDraft"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10589,6 +12209,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10598,6 +12219,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10607,6 +12229,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10616,6 +12239,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10625,8 +12249,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10641,9 +12267,11 @@ export interface operations {
     parameters: {
       query?: never;
       header?: {
+        /** @description 1 to 256 characters. A retry with the same key and the same body answers the original response instead of sending again; the same key with a different body answers 409 invalid_idempotent_request. */
         "Idempotency-Key"?: string;
       };
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
@@ -10654,6 +12282,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Sent */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10663,6 +12292,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxSentEmail"];
         };
       };
+      /** @description Held for approval */
       202: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10672,6 +12302,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxDraft"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10681,6 +12312,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10690,6 +12322,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10699,6 +12332,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10708,6 +12342,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10717,8 +12352,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10732,18 +12369,23 @@ export interface operations {
   "inboxes.drafts.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
+      /** @description Drafts */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10753,6 +12395,7 @@ export interface operations {
           "application/json": components["schemas"]["ListInboxDraftsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10762,6 +12405,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10771,6 +12415,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10780,6 +12425,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10789,6 +12435,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10798,8 +12445,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10815,6 +12464,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
       };
       cookie?: never;
@@ -10825,6 +12475,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description The existing reply draft */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10834,6 +12485,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxDraft"];
         };
       };
+      /** @description Created */
       201: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10843,6 +12495,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxDraft"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10852,6 +12505,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10861,6 +12515,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10870,6 +12525,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10879,6 +12535,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10888,8 +12545,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10905,6 +12564,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
         draft_id: string;
       };
@@ -10912,6 +12572,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Draft */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10921,6 +12582,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxDraft"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10930,6 +12592,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10939,6 +12602,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10948,6 +12612,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10957,6 +12622,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10966,8 +12632,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10983,6 +12651,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
         draft_id: string;
       };
@@ -10990,6 +12659,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10999,6 +12669,7 @@ export interface operations {
           "application/json": components["schemas"]["DeleteInboxDraftResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11008,6 +12679,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11017,6 +12689,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11026,6 +12699,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11035,6 +12709,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11044,8 +12719,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11061,6 +12738,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
         draft_id: string;
       };
@@ -11072,6 +12750,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Draft */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11081,6 +12760,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxDraft"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11090,6 +12770,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11099,6 +12780,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11108,6 +12790,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11117,6 +12800,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11126,8 +12810,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11142,9 +12828,11 @@ export interface operations {
     parameters: {
       query?: never;
       header?: {
+        /** @description 1 to 256 characters. A retry with the same key and the same body answers the original response instead of sending again; the same key with a different body answers 409 invalid_idempotent_request. */
         "Idempotency-Key"?: string;
       };
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
         draft_id: string;
       };
@@ -11156,6 +12844,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Sent */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11165,6 +12854,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxSentEmail"];
         };
       };
+      /** @description Held for approval */
       202: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11174,6 +12864,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxDraft"];
         };
       };
+      /** @description Malformed JSON body */
       400: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11183,6 +12874,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11192,6 +12884,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11201,6 +12894,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11210,6 +12904,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11219,6 +12914,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11228,8 +12924,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11245,6 +12943,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
         inbox_id: string;
         draft_id: string;
       };
@@ -11252,6 +12951,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Rejected */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11261,6 +12961,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxDraft"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11270,6 +12971,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11279,6 +12981,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11288,6 +12991,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11297,6 +13001,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11306,8 +13011,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11322,6 +13029,7 @@ export interface operations {
     parameters: {
       query?: never;
       header?: {
+        /** @description 1 to 256 characters. A retry with the same key and the same body answers the original response instead of sending again; the same key with a different body answers 409 invalid_idempotent_request. */
         "Idempotency-Key"?: string;
       };
       path: {
@@ -11335,6 +13043,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Sent */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11344,6 +13053,7 @@ export interface operations {
           "application/json": components["schemas"]["ReceivedEmailSendResponse"];
         };
       };
+      /** @description Held for approval */
       202: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11353,6 +13063,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxDraft"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11362,6 +13073,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11371,6 +13083,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11380,6 +13093,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11389,6 +13103,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11398,8 +13113,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11414,6 +13131,7 @@ export interface operations {
     parameters: {
       query?: never;
       header?: {
+        /** @description 1 to 256 characters. A retry with the same key and the same body answers the original response instead of sending again; the same key with a different body answers 409 invalid_idempotent_request. */
         "Idempotency-Key"?: string;
       };
       path: {
@@ -11427,6 +13145,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Sent */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11436,6 +13155,7 @@ export interface operations {
           "application/json": components["schemas"]["ReceivedEmailSendResponse"];
         };
       };
+      /** @description Held for approval */
       202: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11445,6 +13165,7 @@ export interface operations {
           "application/json": components["schemas"]["InboxDraft"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11454,6 +13175,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11463,6 +13185,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11472,6 +13195,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict, or a draft already sent */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11481,6 +13205,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11490,8 +13215,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The inbox's daily send limit, or the team's daily limit for mail from the shared domain, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11515,6 +13242,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description The unclaimed account, its inbox and its key */
       201: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11524,6 +13252,7 @@ export interface operations {
           "application/json": components["schemas"]["AgentSignupResponse"];
         };
       };
+      /** @description The username is already used by an inbox */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11533,6 +13262,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error: human_email, name or username refused (disposable or BillionSend address, not a plain name, a brand look-alike, a reserved name) */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11542,6 +13272,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Too many signups from this address, in all, or for this human_email; retry-after says when to try again */
       429: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11551,6 +13282,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description This instance does not offer agent signup, or the username can't be reviewed right now; retry-after says when to try again where it applies */
       503: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11571,6 +13303,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description The account's status */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11580,6 +13313,7 @@ export interface operations {
           "application/json": components["schemas"]["AgentAccountStatus"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11589,8 +13323,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11610,6 +13346,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description The email is on its way */
       202: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11619,6 +13356,7 @@ export interface operations {
           "application/json": components["schemas"]["AgentClaimEmail"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11628,6 +13366,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description The account is already claimed */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11637,8 +13376,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Asked too soon, or the account used all its claim emails, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11652,8 +13393,11 @@ export interface operations {
   "emails.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
@@ -11662,6 +13406,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Emails */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11671,6 +13416,7 @@ export interface operations {
           "application/json": components["schemas"]["ListEmailsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11680,6 +13426,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11689,6 +13436,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11698,8 +13446,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11714,6 +13464,7 @@ export interface operations {
     parameters: {
       query?: never;
       header?: {
+        /** @description 1 to 256 characters. A retry with the same key and the same body answers the original response instead of sending again; the same key with a different body answers 409 invalid_idempotent_request. */
         "Idempotency-Key"?: string;
       };
       path?: never;
@@ -11725,6 +13476,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Email accepted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11734,6 +13486,7 @@ export interface operations {
           "application/json": components["schemas"]["SendEmailResponse"];
         };
       };
+      /** @description Idempotency-Key is not 1 to 256 characters */
       400: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11743,6 +13496,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11752,6 +13506,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11761,6 +13516,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11770,6 +13526,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11779,6 +13536,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11788,8 +13546,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Sending quota exceeded, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11804,7 +13564,9 @@ export interface operations {
     parameters: {
       query?: never;
       header?: {
+        /** @description 1 to 256 characters. A retry with the same key and the same body answers the original response instead of sending again; the same key with a different body answers 409 invalid_idempotent_request. */
         "Idempotency-Key"?: string;
+        /** @description `strict` (default): any invalid email rejects the whole batch with that email's error, sending nothing. `permissive`: invalid emails are listed in `errors` by index and the valid ones are sent. */
         "x-batch-validation"?: "strict" | "permissive";
       };
       path?: never;
@@ -11816,6 +13578,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Batch accepted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11825,6 +13588,7 @@ export interface operations {
           "application/json": components["schemas"]["BatchEmailResponse"];
         };
       };
+      /** @description Idempotency-Key is not 1 to 256 characters */
       400: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11834,6 +13598,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11843,6 +13608,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11852,6 +13618,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11861,6 +13628,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Idempotency conflict */
       409: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11870,6 +13638,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11879,8 +13648,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Sending quota exceeded, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11902,6 +13673,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Email canceled */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11911,6 +13683,7 @@ export interface operations {
           "application/json": components["schemas"]["CancelEmailResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11920,6 +13693,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11929,6 +13703,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not cancelable */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11938,8 +13713,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11961,6 +13738,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Email */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11970,6 +13748,7 @@ export interface operations {
           "application/json": components["schemas"]["GetEmailResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11979,6 +13758,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11988,6 +13768,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11997,8 +13778,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12020,6 +13803,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Email deleted, including its events */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12029,6 +13813,7 @@ export interface operations {
           "application/json": components["schemas"]["RemoveEmailResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12038,6 +13823,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12047,6 +13833,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12056,8 +13843,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12083,6 +13872,7 @@ export interface operations {
       };
     };
     responses: {
+      /** @description Email rescheduled */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12092,6 +13882,7 @@ export interface operations {
           "application/json": components["schemas"]["UpdateEmailResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12101,6 +13892,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12110,6 +13902,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not reschedulable */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12119,8 +13912,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12134,17 +13929,29 @@ export interface operations {
   "emails.receiving.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
+        /** @description BillionSend extension: hold the request up to this many seconds (0-50) until matching mail newer than the cursor arrives; an empty list with 200 when none did */
         wait?: number;
+        /** @description BillionSend extension: only mail received after this instant; with wait and no cursor it defaults to one minute before the request */
         since?: string;
+        /** @description BillionSend extension: only mail delivered into this inbox */
         inbox_id?: string;
+        /** @description BillionSend extension: only mail with this address in received_for */
         to?: string;
+        /** @description BillionSend extension: a sender address, or a domain matching itself and its subdomains */
         from?: string;
+        /** @description BillionSend extension: case-insensitive subject substring */
         subject_contains?: string;
+        /** @description BillionSend extension, with an inbox in context (inbox_id, or an inbox-scoped key): read state in that inbox */
         unread?: "true" | "false";
+        /** @description BillionSend extension, full access keys only: list held mail too, flagged by screening */
         include_quarantined?: "true" | "false";
+        /** @description BillionSend extension, full access keys only: list held mail only */
         quarantined?: "true" | "false";
       };
       header?: never;
@@ -12153,6 +13960,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Received emails */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12162,6 +13970,7 @@ export interface operations {
           "application/json": components["schemas"]["ListReceivedEmailsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12171,6 +13980,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12180,6 +13990,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Inbox not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12189,6 +14000,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12198,8 +14010,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Too many concurrent waits, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12213,6 +14027,7 @@ export interface operations {
   "emails.receiving.get": {
     parameters: {
       query?: {
+        /** @description data_uri (default) inlines images the HTML references by cid: as data: URIs; cid leaves the cid: references, the parts being in attachments */
         html_format?: "data_uri" | "cid";
       };
       header?: never;
@@ -12223,6 +14038,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Received email */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12232,6 +14048,7 @@ export interface operations {
           "application/json": components["schemas"]["GetReceivedEmailResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12241,6 +14058,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key, or the email is quarantined */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12250,6 +14068,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12259,6 +14078,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12268,8 +14088,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12291,6 +14113,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Deleted */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12300,6 +14123,7 @@ export interface operations {
           "application/json": components["schemas"]["DeleteReceivedEmailResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12309,6 +14133,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12318,6 +14143,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12327,8 +14153,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12342,8 +14170,11 @@ export interface operations {
   "emails.receiving.attachments.list": {
     parameters: {
       query?: {
+        /** @description Page size, 1-100 (default 20) */
         limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
         after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
         before?: string;
       };
       header?: never;
@@ -12354,6 +14185,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Attachments */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12363,6 +14195,7 @@ export interface operations {
           "application/json": components["schemas"]["ListReceivedAttachmentsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12372,6 +14205,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12381,6 +14215,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12390,6 +14225,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12399,8 +14235,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12423,6 +14261,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Attachment */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12432,6 +14271,7 @@ export interface operations {
           "application/json": components["schemas"]["GetReceivedAttachmentResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12441,6 +14281,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12450,6 +14291,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12459,8 +14301,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12482,6 +14326,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Best-practice check results and score computed when the email was sent */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12491,6 +14336,7 @@ export interface operations {
           "application/json": components["schemas"]["EmailInsightsResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12500,6 +14346,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12509,6 +14356,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Not found */
       404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12518,8 +14366,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12539,6 +14389,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Account deliverability score over the trailing 30 days */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12548,6 +14399,7 @@ export interface operations {
           "application/json": components["schemas"]["DeliverabilityResponse"];
         };
       };
+      /** @description Missing, malformed, unknown or revoked API key */
       401: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12557,6 +14409,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12566,8 +14419,10 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
