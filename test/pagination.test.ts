@@ -111,6 +111,53 @@ describe("listAll", () => {
     });
   });
 
+  it("throws application_error on a page without a data array", async () => {
+    for (const body of [
+      { has_more: false },
+      { data: null, has_more: false },
+      { data: "x", has_more: false },
+      null,
+    ]) {
+      const walk = async () => {
+        for await (const _ of paginate(async () => ({ data: body as never, error: null, headers: {} }))) {
+          // drain
+        }
+      };
+      await expect(walk()).rejects.toMatchObject({
+        name: "application_error",
+        statusCode: null,
+        message: "The list page has no data array",
+      });
+    }
+  });
+
+  it("hands out a page whose item to continue from has no id, then throws, without asking again", async () => {
+    for (const [start, edge] of [
+      [{}, "last"],
+      [{ before: "z" }, "first"],
+    ] as const) {
+      for (const bad of [{}, { id: "" }, { id: 7 }, { id: null }]) {
+        let fetches = 0;
+        const page = edge === "last" ? [{ id: "a" }, bad] : [bad, { id: "a" }];
+        const seen: unknown[] = [];
+        const walk = async () => {
+          for await (const item of paginate(async () => {
+            fetches++;
+            return { data: { data: page as never, has_more: true }, error: null, headers: {} };
+          }, start)) {
+            seen.push(item);
+          }
+        };
+        await expect(walk()).rejects.toMatchObject({
+          name: "application_error",
+          message: `The ${edge} item of the list page has no id to continue from`,
+        });
+        expect(seen).toEqual(page);
+        expect(fetches).toBe(1);
+      }
+    }
+  });
+
   it("paginate() works with any page fetcher", async () => {
     const pages = [
       { data: [{ id: "a" }, { id: "b" }], has_more: true },

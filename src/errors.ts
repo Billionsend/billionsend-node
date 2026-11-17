@@ -73,8 +73,15 @@ export class RateLimitError extends BillionSendError {
   }
 }
 
-/** 5xx: the API failed to answer the request. */
-export class APIError extends BillionSendError {}
+/** 5xx: the API failed to answer the request. `retryAfter` is the server's hint in seconds. */
+export class APIError extends BillionSendError {
+  readonly retryAfter: number | null;
+
+  constructor(init: RateLimitErrorInit) {
+    super(init);
+    this.retryAfter = init.retryAfter ?? null;
+  }
+}
 
 /** The request never got an answer: DNS, connection, TLS or protocol failure. `statusCode` is `null`. */
 export class APIConnectionError extends BillionSendError {
@@ -163,5 +170,6 @@ export function errorFromResponse(
   const init = { message, name, statusCode: status, requestId: headers["x-request-id"] ?? null };
   if (status === 429)
     return new RateLimitError({ ...init, retryAfter: parseRetryAfter(headers["retry-after"]) });
+  if (status >= 500) return new APIError({ ...init, retryAfter: parseRetryAfter(headers["retry-after"]) });
   return new (errorClass(status))(init);
 }

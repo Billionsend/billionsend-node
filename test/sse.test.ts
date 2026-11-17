@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { APIConnectionError, type InboxStreamItem, PermissionDeniedError } from "../src/index.js";
+import {
+  APIConnectionError,
+  APIError,
+  type InboxStreamItem,
+  PermissionDeniedError,
+  RateLimitError,
+} from "../src/index.js";
 import { parseEventStream, type ServerSentEvent } from "../src/sse.js";
 import { ID, useContractMock } from "./helpers.js";
 
@@ -150,8 +156,9 @@ describe("inbox event streams", () => {
       for await (const event of stream) data.push(event.data);
     };
     const error = await run().catch((e: unknown) => e);
-    expect(error).toBeInstanceOf(APIConnectionError);
-    expect(error).toMatchObject({ message: expect.stringContaining("gave up after 1 reconnects") });
+    // The last reconnect got an answer: that answer is thrown, not "gave up".
+    expect(error).toBeInstanceOf(APIError);
+    expect(error).toMatchObject({ statusCode: 503, name: "unavailable" });
     expect(data).toEqual([{ n: 41 }, { n: 42 }]);
     const hits = mock.hitsFor("GET /inboxes/{inbox_id}/events");
     expect(hits.map((hit) => hit.headers["last-event-id"])).toEqual(["40", "41", "42"]);
@@ -303,5 +310,81 @@ describe("inbox event streams", () => {
       controller.abort();
     }
     expect(ids).toEqual(["2"]);
+  });
+});
+
+describe("reconnect counting", () => {
+  const drain = async (stream: AsyncIterable<InboxStreamItem> | null) => {
+    const seen: InboxStreamItem[] = [];
+    for await (const item of stream ?? []) seen.push(item);
+    return seen;
+  };
+  const quiet = (res: import("node:http").ServerResponse) => {
+    res.write("retry: 1\n: keepalive\n\n");
+    res.end();
+  };
+
+  it("keeps reconnecting a quiet stream the server closes, however often", async () => {
+    for (let i = 0; i < 12; i++) mock.stream("GET /inboxes/events", quiet);
+    mock.stream("GET /inboxes/events", (res) => {
+      res.write('id: 9\nevent: inbox.updated\ndata: {"type":"inbox.updated"}\n\n');
+      res.end();
+    });
+    const opened = await client().inboxes.events.stream(undefined, { maxReconnects: 2 });
+    const stream = opened.data;
+    if (!stream) throw new Error("no stream");
+    for await (const item of stream) {
+      expect(item.id).toBe("9");
+      stream.close();
+    }
+    expect(mock.hitsFor("GET /inboxes/events")).toHaveLength(13);
+  });
+
+  it("waits out a reconnect's Retry-After, then throws the API's answer when the reconnects run out", async () => {
+    mock.stream("GET /inboxes/events", quiet);
+    for (let i = 0; i < 2; i++)
+      mock.reply("GET /inboxes/events", {
+        status: 429,
+        headers: { "retry-after": "0.3" },
+        body: { statusCode: 429, name: "too_many_streams", message: "Too many streams" },
+      });
+    const opened = await client({ maxRetries: 0 }).inboxes.events.stream(undefined, { maxReconnects: 2 });
+    const started = Date.now();
+    const error = await drain(opened.data).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(RateLimitError);
+    expect(error).toMatchObject({ name: "too_many_streams", retryAfter: 0.3 });
+    // One wait of the stream's 1 ms retry, then one of the API's 300 ms.
+    expect(Date.now() - started).toBeGreaterThanOrEqual(290);
+    expect(mock.hitsFor("GET /inboxes/events")).toHaveLength(3);
+  });
+
+  it("throws a Retry-After longer than a minute at once", async () => {
+    mock.stream("GET /inboxes/events", quiet);
+    mock.reply("GET /inboxes/events", {
+      status: 503,
+      headers: { "retry-after": "120" },
+      body: { statusCode: 503, name: "unavailable", message: "Busy" },
+    });
+    const opened = await client({ maxRetries: 0 }).inboxes.events.stream(undefined, { maxReconnects: 5 });
+    const error = await drain(opened.data).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(APIError);
+    expect(error).toMatchObject({ statusCode: 503, retryAfter: 120 });
+    expect(mock.hitsFor("GET /inboxes/events")).toHaveLength(2);
+  });
+
+  it("gives up with an APIConnectionError when the API cannot be reached", async () => {
+    mock.stream("GET /inboxes/events", quiet);
+    let calls = 0;
+    const flaky: typeof fetch = (input, init) => {
+      calls++;
+      return calls === 1 ? fetch(input, init) : Promise.reject(new TypeError("fetch failed"));
+    };
+    const opened = await client({ maxRetries: 0, fetch: flaky }).inboxes.events.stream(undefined, {
+      maxReconnects: 2,
+    });
+    const error = await drain(opened.data).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(APIConnectionError);
+    expect(error).toMatchObject({ message: expect.stringContaining("gave up after 2 reconnects") });
+    expect(calls).toBe(3);
   });
 });

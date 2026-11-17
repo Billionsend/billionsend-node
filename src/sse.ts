@@ -1,6 +1,6 @@
 import type { Result, StreamConnection } from "./core.js";
-import { APIConnectionError } from "./errors.js";
-import { retryable, sleep } from "./retry.js";
+import { APIConnectionError, APIError, type BillionSendError, RateLimitError } from "./errors.js";
+import { MAX_RETRY_AFTER_MS, retryable, sleep } from "./retry.js";
 
 /** The event names an inbox stream carries: the inbox webhook events, and `email.received`. */
 export type InboxEventType =
@@ -91,7 +91,11 @@ export interface EventStreamOptions {
   lastEventId?: string;
   /** Reconnect with `Last-Event-ID` when the connection drops (default `true`). */
   reconnect?: boolean;
-  /** Reconnect attempts in a row before giving up (default 5). */
+  /**
+   * Reconnects that may fail in a row before giving up (default 5). A reconnect
+   * that opens the stream resets the count, so the server's scheduled closes
+   * never use it up.
+   */
   maxReconnects?: number;
   /** Wait before reconnecting, in milliseconds (default 1000; a server `retry` field overrides it). */
   reconnectDelayMs?: number;
@@ -213,9 +217,13 @@ export async function* parseEventStream(
  * or calling {@link EventStream.close}, closes the connection. When the
  * connection drops (the server also closes every stream about every ten
  * minutes) it reconnects with `Last-Event-ID` and the events in between are
- * replayed first, unless `reconnect` is false. After `maxReconnects` failures
- * in a row it throws an {@link APIConnectionError}; an error a retry cannot fix
- * (a revoked key, say) is thrown as its own `BillionSendError` class.
+ * replayed first, unless `reconnect` is false. A reconnect the API refuses
+ * with a `Retry-After` (a 429, a 5xx) waits that long, and one longer than 60
+ * seconds throws that error at once. After `maxReconnects` reconnects that
+ * fail in a row it throws the last one's error: the API's answer as its own
+ * class ({@link RateLimitError}, {@link APIError}, …), or an
+ * {@link APIConnectionError} when the API could not be reached. An error a
+ * retry cannot fix (a revoked key, say) is thrown at once as its own class.
  */
 export class EventStream implements AsyncIterable<InboxStreamItem> {
   #connection: StreamConnection | null;
@@ -277,6 +285,8 @@ export class EventStream implements AsyncIterable<InboxStreamItem> {
     const reconnect = this.#options.reconnect !== false;
     const maxReconnects = this.#options.maxReconnects ?? 5;
     let failures = 0;
+    // The last reconnect's failure, null when the stream itself dropped.
+    let lastError: BillionSendError | null = null;
     // The position a gap was last handed out for; the server repeats the gap
     // on every reconnect from that position until a newer event moves it.
     let gapAt: string | null | undefined;
@@ -291,7 +301,6 @@ export class EventStream implements AsyncIterable<InboxStreamItem> {
               this.#lastEventId,
             );
             for await (const event of events) {
-              failures = 0;
               if (event.event === STREAM_GAP_EVENT) {
                 if (gapAt === this.#lastEventId) continue;
                 gapAt = this.#lastEventId;
@@ -311,16 +320,20 @@ export class EventStream implements AsyncIterable<InboxStreamItem> {
           }
           connection.close();
           this.#connection = null;
+          lastError = null;
         }
         if (this.#closed || !reconnect) return;
 
         failures++;
         if (failures > maxReconnects) {
+          // The API's own answer says more than "gave up".
+          if (lastError !== null && lastError.statusCode !== null) throw lastError;
           throw new APIConnectionError(
             `The event stream disconnected; gave up after ${maxReconnects} reconnects`,
           );
         }
-        if (!(await sleep(this.#delayMs, this.#options.signal)) || this.#closed) return;
+        const hinted = retryAfterMs(lastError);
+        if (!(await sleep(hinted ?? this.#delayMs, this.#options.signal)) || this.#closed) return;
         const next = await this.#connect(this.#lastEventId);
         if (this.#closed) {
           next.data?.close();
@@ -328,12 +341,25 @@ export class EventStream implements AsyncIterable<InboxStreamItem> {
         }
         if (next.error !== null) {
           if (!retryable(next.error, false)) throw next.error;
+          const wait = retryAfterMs(next.error);
+          if (wait !== null && wait > MAX_RETRY_AFTER_MS) throw next.error;
+          lastError = next.error;
           continue;
         }
+        // Open again: only reconnects that fail in a row count, not the server
+        // closing a quiet stream every ten minutes or so.
         this.#connection = next.data;
+        failures = 0;
+        lastError = null;
       }
     } finally {
       this.close();
     }
   }
+}
+
+/** The `Retry-After` an API answer carried, in milliseconds; `null` without one. */
+function retryAfterMs(error: BillionSendError | null): number | null {
+  const seconds = error instanceof RateLimitError || error instanceof APIError ? error.retryAfter : null;
+  return seconds === null ? null : seconds * 1000;
 }
