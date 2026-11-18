@@ -56,7 +56,9 @@ function encodeBase64(bytes: Uint8Array): string {
 
 /** The key of a `whsec_` secret: canonical base64 of 24 to 64 bytes, as the dashboard and the API hand it out. */
 function secretKey(secret: string): Uint8Array<ArrayBuffer> {
-  const encoded = secret.startsWith(SECRET_PREFIX) ? secret.slice(SECRET_PREFIX.length) : null;
+  // A secret read from an environment variable or a file often carries a trailing newline.
+  const text = secret.trim();
+  const encoded = text.startsWith(SECRET_PREFIX) ? text.slice(SECRET_PREFIX.length) : null;
   const key = encoded === null ? null : decodeBase64(encoded);
   if (
     encoded === null ||
@@ -85,9 +87,7 @@ function bytesOf(payload: string | Uint8Array | ArrayBuffer): Uint8Array {
 
 function equal(a: Uint8Array, b: Uint8Array): boolean {
   if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= (a[i] ?? 0) ^ (b[i] ?? 0);
-  return diff === 0;
+  return a.reduce((diff, byte, i) => diff | (byte ^ (b[i] as number)), 0) === 0;
 }
 
 /**
@@ -118,9 +118,9 @@ export async function verifyWebhook(
   secret: string,
   options: VerifyWebhookOptions = {},
 ): Promise<WebhookEvent> {
-  const id = header(headers, "webhook-id");
-  const timestamp = header(headers, "webhook-timestamp");
-  const signature = header(headers, "webhook-signature");
+  const id = header(headers, "webhook-id")?.trim();
+  const timestamp = header(headers, "webhook-timestamp")?.trim();
+  const signature = header(headers, "webhook-signature")?.trim();
   if (!id || !timestamp || !signature) {
     throw new WebhookVerificationError(
       "Missing the webhook-id, webhook-timestamp or webhook-signature header",
@@ -144,7 +144,7 @@ export async function verifyWebhook(
   signed.set(body, prefix.length);
   const expected = new Uint8Array(await subtle.sign("HMAC", key, signed));
 
-  const matched = signature.split(" ").some((candidate) => {
+  const matched = signature.split(/\s+/).some((candidate) => {
     const comma = candidate.indexOf(",");
     if (comma === -1 || candidate.slice(0, comma) !== "v1") return false;
     const given = decodeBase64(candidate.slice(comma + 1));

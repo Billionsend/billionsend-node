@@ -127,3 +127,80 @@ describe("verifyWebhook", () => {
     expect(error).toMatchObject({ name: "webhook_verification_error", statusCode: null, requestId: null });
   });
 });
+
+describe("verifyWebhook: what a real deployment sends and stores", () => {
+  const ok = (headers: Record<string, string>, secret = VECTOR.secret, at = AT) =>
+    verifyWebhook(VECTOR.payload, headers, secret, { now: at });
+
+  it("accepts a timestamp exactly on the tolerance and refuses one second beyond, either way", async () => {
+    const edge = 300;
+    expect(await ok(headersOf(), VECTOR.secret, new Date(AT.getTime() + edge * 1000))).toBeTruthy();
+    expect(await ok(headersOf(), VECTOR.secret, new Date(AT.getTime() - edge * 1000))).toBeTruthy();
+    await failure(ok(headersOf(), VECTOR.secret, new Date(AT.getTime() + (edge + 1) * 1000)));
+    await failure(ok(headersOf(), VECTOR.secret, new Date(AT.getTime() - (edge + 1) * 1000)));
+    await failure(
+      verifyWebhook(VECTOR.payload, headersOf(), VECTOR.secret, {
+        now: new Date(AT.getTime() + 1000),
+        tolerance: 0,
+      }),
+    );
+  });
+
+  it("reads a secret that came out of an environment variable or a file with a trailing newline or spaces", async () => {
+    expect(await ok(headersOf(), `${VECTOR.secret}\n`)).toBeTruthy();
+    expect(await ok(headersOf(), `  ${VECTOR.secret} `)).toBeTruthy();
+  });
+
+  it("reads header values with surrounding or repeated whitespace, in any header-name case", async () => {
+    const padded = {
+      "Webhook-Id": ` ${VECTOR.id} `,
+      "WEBHOOK-TIMESTAMP": ` ${VECTOR.timestamp}\n`,
+      "webhook-Signature": `  v1,AAAA\t ${VECTOR.signature}  `,
+    };
+    expect(await ok(padded)).toBeTruthy();
+  });
+
+  it("refuses an empty signature header, a signature without a version and a signature of another length", async () => {
+    await failure(ok(headersOf("")));
+    await failure(ok(headersOf(VECTOR.signature.slice(3))));
+    await failure(ok(headersOf("v1,")));
+    await failure(ok(headersOf(`v1,${Buffer.alloc(16).toString("base64")}`)));
+  });
+
+  it("refuses a secret that lost its prefix or was altered, never mistaking it for a different key", async () => {
+    await failure(ok(headersOf(), VECTOR.secret.slice("whsec_".length)));
+    await failure(ok(headersOf(), `WHSEC_${VECTOR.secret.slice("whsec_".length)}`));
+    await failure(ok(headersOf(), ""));
+  });
+
+  it("checks the bytes it was given: a view into a larger buffer, an ArrayBuffer and a string agree", async () => {
+    const padded = new TextEncoder().encode(`xx${VECTOR.payload}yy`);
+    const view = padded.subarray(2, 2 + VECTOR.payload.length);
+    expect(await verifyWebhook(view, headersOf(), VECTOR.secret, { now: AT })).toEqual({ test: 2432232314 });
+    // non-ASCII bodies are signed as UTF-8
+    const text = '{"name":"Zoë 日本"}';
+    const sig = sign(VECTOR.secret, VECTOR.id, VECTOR.timestamp, text);
+    expect(await verifyWebhook(text, headersOf(sig), VECTOR.secret, { now: AT })).toEqual({
+      name: "Zoë 日本",
+    });
+    expect(
+      await verifyWebhook(new TextEncoder().encode(text), headersOf(sig), VECTOR.secret, { now: AT }),
+    ).toBeTruthy();
+  });
+
+  it("does not hand back an event for a body someone changed by one byte", async () => {
+    for (const body of [
+      VECTOR.payload.replace("2432232314", "2432232315"),
+      VECTOR.payload.replace(" ", ""),
+    ]) {
+      await failure(verifyWebhook(body, headersOf(), VECTOR.secret, { now: AT }));
+    }
+  });
+});
+
+describe("verifyWebhook: headers that are not there", () => {
+  it("names the missing headers when given an empty Headers object", async () => {
+    const error = await failure(verifyWebhook(VECTOR.payload, new Headers(), VECTOR.secret, { now: AT }));
+    expect(error.message).toMatch(/Missing the webhook-id/);
+  });
+});

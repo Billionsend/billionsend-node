@@ -122,7 +122,7 @@ export function parseRetryAfter(value: string | null | undefined, now: number = 
   return Number.isNaN(at) ? null : Math.max(0, (at - now) / 1000);
 }
 
-/** The error class for an HTTP status. */
+/** The error class for a 4xx status (a 429 and a 5xx carry their own fields: see {@link errorFromResponse}). */
 export function errorClass(status: number): typeof BillionSendError {
   switch (status) {
     case 400:
@@ -137,7 +137,7 @@ export function errorClass(status: number): typeof BillionSendError {
     case 409:
       return ConflictError;
     default:
-      return status >= 500 ? APIError : BillionSendError;
+      return BillionSendError;
   }
 }
 

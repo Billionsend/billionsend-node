@@ -34,6 +34,12 @@ export interface Reply {
   headers?: Record<string, string>;
   /** Wait before answering. */
   delayMs?: number;
+  /**
+   * A queued answer is checked against the document like a real one: its status must be one the
+   * operation declares (any 4xx / 5xx may carry the API's `ErrorResponse`) and its JSON body must
+   * validate. Set this only to answer something the document does not describe on purpose.
+   */
+  offContract?: boolean;
 }
 
 export type SseHandler = (res: ServerResponse, req: IncomingMessage) => void | Promise<void>;
@@ -67,6 +73,26 @@ const ROUTES: CompiledRoute[] = OPERATIONS.map((op) => {
     literals: segments.filter((s) => !s.startsWith("{")).length,
   };
 });
+
+/** Why a queued answer does not fit the document, or null when it does. */
+function queuedReplyProblem(op: Operation, reply: Reply): string | null {
+  if (reply.raw !== undefined || reply.body === undefined) return null;
+  const status = String(reply.status);
+  const declared = op.responses[status]?.content?.["application/json"]?.schema;
+  if (declared) {
+    const error = schemaErrors(
+      pointerOf(op, "responses", status, "content", "application/json", "schema"),
+      reply.body,
+    );
+    return error ? `(${status}) does not validate: ${error}` : null;
+  }
+  if (reply.status >= 400) {
+    // An error the operation does not list (a 5xx, a gateway's 429) still has the API's error shape.
+    const error = schemaErrors("/components/schemas/ErrorResponse", reply.body);
+    return error ? `(${status}) is not an ErrorResponse: ${error}` : null;
+  }
+  return `has status ${status}, which the operation does not declare`;
+}
 
 function isSse(op: Operation): boolean {
   return Object.values(op.responses).some((r) => r.content?.["text/event-stream"]);
@@ -308,6 +334,14 @@ export class ContractMock {
     const queued = this.#queue.get(op.key)?.shift();
     const reply = queued?.reply;
     if (reply) {
+      const problem = reply.offContract ? null : queuedReplyProblem(op, reply);
+      if (problem) {
+        this.violations.push(`${op.key}: the queued answer ${problem}`);
+        hit.status = 500;
+        res.writeHead(500, { "content-type": "application/json" });
+        res.end(JSON.stringify({ statusCode: 500, name: "bad_test_fixture", message: problem }));
+        return;
+      }
       if (reply.delayMs) await new Promise((done) => setTimeout(done, reply.delayMs));
       hit.status = reply.status;
       hit.response = reply.raw ?? reply.body;

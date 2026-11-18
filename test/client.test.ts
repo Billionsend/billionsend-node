@@ -14,7 +14,7 @@ import {
   ValidationError,
   VERSION,
 } from "../src/index.js";
-import { API_KEY, ID, useContractMock } from "./helpers.js";
+import { API_KEY, ID, okBody, useContractMock } from "./helpers.js";
 
 const { mock, client } = useContractMock();
 
@@ -216,7 +216,7 @@ describe("errors", () => {
   });
 
   it("times out", async () => {
-    mock.reply("GET /usage", { status: 200, body: {}, delayMs: 300 });
+    mock.reply("GET /usage", { status: 200, body: okBody("GET /usage"), delayMs: 300 });
     const result = await client({ timeoutMs: 50, maxRetries: 0 }).usage.get();
     expect(result.error).toBeInstanceOf(APITimeoutError);
     expect(result.error).toBeInstanceOf(APIConnectionError);
@@ -228,7 +228,7 @@ describe("errors", () => {
   });
 
   it("aborts with the caller's signal", async () => {
-    mock.reply("GET /usage", { status: 200, body: {}, delayMs: 300 });
+    mock.reply("GET /usage", { status: 200, body: okBody("GET /usage"), delayMs: 300 });
     const controller = new AbortController();
     setTimeout(() => controller.abort(), 30);
     const result = await client().usage.get({ signal: controller.signal });
@@ -347,7 +347,7 @@ describe("retries", () => {
   });
 
   it("retries a timed-out idempotent request", async () => {
-    mock.reply("GET /usage", { status: 200, body: {}, delayMs: 200 });
+    mock.reply("GET /usage", { status: 200, body: okBody("GET /usage"), delayMs: 200 });
     const result = await client({ timeoutMs: 100, maxRetries: 1 }).usage.get();
     expect(result.error).toBeNull();
     expect(mock.hitsFor("GET /usage")).toHaveLength(2);

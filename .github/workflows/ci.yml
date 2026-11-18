@@ -32,7 +32,7 @@ jobs:
           git diff --exit-code -- src/generated
       - run: pnpm typecheck
       - run: pnpm lint
-      - run: pnpm test
+      - run: pnpm test:coverage
       - run: pnpm build
       - name: Smoke test the built package (require and import)
         run: pnpm test:smoke

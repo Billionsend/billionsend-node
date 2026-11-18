@@ -3,10 +3,19 @@
 // A new operation in the snapshot without an entry here fails the build; so
 // does an SDK call that reaches an endpoint the snapshot does not have.
 import { describe, expect, it } from "vitest";
-import type { BillionSend, Result } from "../src/index.js";
-import { EventStream } from "../src/index.js";
+import {
+  AuthenticationError,
+  type BillionSend,
+  type BillionSendError,
+  ConflictError,
+  EventStream,
+  NotFoundError,
+  PermissionDeniedError,
+  type Result,
+  ValidationError,
+} from "../src/index.js";
 import { OPERATION_KEYS, operation, pointerOf, schemaErrors, successStatus } from "./contract/spec.js";
-import { ID, ID2, sampleBody, useContractMock } from "./helpers.js";
+import { API_KEY, ID, ID2, ID3, sampleBody, useContractMock } from "./helpers.js";
 
 type Call = (bs: BillionSend) => Promise<Result<unknown>>;
 
@@ -224,22 +233,22 @@ const CALLS: Record<string, Call> = {
   "PUT /inboxes/{inbox_id}/threads/{thread_id}/labels": (bs) =>
     bs.inboxes.threads.labels.set(ID, ID2, sampleBody("PUT /inboxes/{inbox_id}/threads/{thread_id}/labels")),
   "DELETE /inboxes/{inbox_id}/threads/{thread_id}/labels/{label_id}": (bs) =>
-    bs.inboxes.threads.labels.remove(ID, ID2, ID),
+    bs.inboxes.threads.labels.remove(ID, ID2, ID3),
   "GET /inboxes/{inbox_id}/threads/{thread_id}/emails": (bs) => bs.inboxes.threads.emails.list(ID, ID2),
   "GET /inboxes/{inbox_id}/threads/{thread_id}/emails/{email_id}": (bs) =>
-    bs.inboxes.threads.emails.get(ID, ID2, ID, { include_quarantined: true }),
+    bs.inboxes.threads.emails.get(ID, ID2, ID3, { include_quarantined: true }),
   "POST /inboxes/{inbox_id}/threads/{thread_id}/emails/{email_id}/reply": (bs) =>
     bs.inboxes.threads.emails.reply(
       ID,
       ID2,
-      ID,
+      ID3,
       sampleBody("POST /inboxes/{inbox_id}/threads/{thread_id}/emails/{email_id}/reply"),
     ),
   "POST /inboxes/{inbox_id}/threads/{thread_id}/emails/{email_id}/forward": (bs) =>
     bs.inboxes.threads.emails.forward(
       ID,
       ID2,
-      ID,
+      ID3,
       sampleBody("POST /inboxes/{inbox_id}/threads/{thread_id}/emails/{email_id}/forward"),
     ),
   "GET /inboxes/{inbox_id}/quarantine": (bs) => bs.inboxes.quarantine.list(ID),
@@ -261,6 +270,82 @@ const CALLS: Record<string, Call> = {
     bs.inboxes.events.stream({ types: "inbox.email.received" }, { reconnect: false }),
   "GET /inboxes/{inbox_id}/events": (bs) =>
     bs.inboxes.events.streamInbox(INBOX, undefined, { reconnect: false }),
+};
+
+/** What a call must send besides its (schema-built) body: the query, headers and a body that is not the sample. */
+interface Expectation {
+  query?: Record<string, string>;
+  headers?: Record<string, string>;
+  idempotencyKey?: string;
+  body?: unknown;
+}
+
+const batchItems = [send, { ...send, subject: "Second" }];
+const EXPECT: Record<string, Expectation> = {
+  "POST /emails": { body: send, idempotencyKey: "welcome-1" },
+  "POST /emails/batch": { body: batchItems },
+  "GET /emails": { query: { limit: "10" } },
+  "GET /emails/metrics": {
+    query: { metrics: "delivered,opened", dimensions: "period", granularity: "daily" },
+  },
+  "GET /emails/metrics/links": { query: { limit: "10" } },
+  "GET /emails/metrics/countries": { query: { domain_id: ID } },
+  "GET /emails/metrics/clients": { query: { broadcast_id: ID } },
+  "GET /emails/{email_id}/attachments": { query: { limit: "5" } },
+  "GET /emails/receiving": { query: { limit: "5", unread: "true" } },
+  "GET /emails/receiving/{id}": { query: { html_format: "cid" } },
+  "POST /emails/receiving/{id}/reply": { idempotencyKey: "r-1" },
+  "GET /logs": { query: { limit: "10" } },
+  "GET /webhooks/{id}/events": { query: { limit: "5" } },
+  "POST /contacts/batch": { query: { on_conflict: "skip" }, headers: { "x-batch-validation": "permissive" } },
+  "GET /contacts": { query: { limit: "2" } },
+  "GET /contacts/imports": { query: { status: "completed" } },
+  "GET /contacts/{id}/segments": { query: { limit: "5" } },
+  "DELETE /contacts/{id}": { query: { erase: "true" } },
+  "GET /segments/{id}/contacts": { query: { limit: "50" } },
+  "GET /broadcasts/{id}/recipients": { query: { type: "bounced" } },
+  "GET /broadcasts/{id}/clicked-links": { query: { limit: "5" } },
+  "POST /events/send": { idempotencyKey: "ev-1" },
+  "GET /events": { query: { limit: "10" } },
+  "GET /automations": { query: { status: "enabled" } },
+  "GET /automations/{id}/metrics": { query: { start_date: "2026-11-01" } },
+  "GET /automations/{id}/runs": { query: { status: "running" } },
+  "GET /suppressions": { query: { origin: "bounce" } },
+  "GET /unsubscribes": { query: { domain_id: ID } },
+  "GET /inboxes": { query: { kind: "agent", limit: "10" } },
+  "POST /inboxes/{inbox_id}/emails": { idempotencyKey: "s-1" },
+  "GET /inboxes/{inbox_id}/threads": { query: { folders: "inbox", read: "false" } },
+  "GET /inboxes/{inbox_id}/threads/search": { query: { query: "invoice", has_attachment: "true" } },
+  "GET /inboxes/{inbox_id}/threads/{thread_id}/emails/{email_id}": { query: { include_quarantined: "true" } },
+  "POST /inboxes/{inbox_id}/quarantine/{email_id}/release": { body: { trust_sender: true } },
+  "GET /inboxes/{inbox_id}/codes/latest": { query: { wait: "10", from: "example.com" } },
+  "GET /inboxes/{inbox_id}/drafts": { query: { limit: "20" } },
+  "POST /inboxes/{inbox_id}/drafts/{draft_id}/send": { idempotencyKey: "d-1" },
+  "GET /inboxes/events": { query: { types: "inbox.email.received" } },
+};
+
+/** The ids a call passes when they are not the three sample ids, in path order. */
+const PATH_ARGS: Record<string, string[]> = {
+  "GET /contacts/{id}": ["person@example.com"],
+  "GET /templates/{id}": ["welcome-email"],
+  "GET /events/{id_or_name}": ["order.paid"],
+  "GET /inboxes/{inbox_id}": [INBOX],
+  "GET /inboxes/{inbox_id}/events": [INBOX],
+};
+
+function expectedPath(template: string, args: string[]): string {
+  const rest = [...args];
+  return template.replace(/\{[^}]+\}/g, () => encodeURIComponent(rest.shift() ?? "?"));
+}
+
+const ERROR_STATUSES = [422, 404, 403, 401, 409, 400] as const;
+const ERROR_CLASS: Record<number, typeof BillionSendError> = {
+  422: ValidationError,
+  400: ValidationError,
+  404: NotFoundError,
+  403: PermissionDeniedError,
+  401: AuthenticationError,
+  409: ConflictError,
 };
 
 describe("operation coverage", () => {
@@ -307,7 +392,7 @@ describe("operation coverage", () => {
   });
 
   describe.each(Object.entries(CALLS))("%s", (key, call) => {
-    it("reaches the operation with a contract-valid request and returns its answer", async () => {
+    it("sends the request the document describes and returns its answer", async () => {
       const result = await call(client());
       expect(mock.violations).toEqual([]);
       expect(mock.hits.map((hit) => hit.key)).toEqual([key]);
@@ -316,7 +401,27 @@ describe("operation coverage", () => {
       if (!hit) throw new Error("no hit");
       const op = operation(key);
       const status = successStatus(op);
+      const expected = EXPECT[key] ?? {};
 
+      // The request: method, the path with each id in its own place, query, body and headers.
+      expect(hit.method).toBe(op.method);
+      expect(hit.url.pathname).toBe(expectedPath(op.path, PATH_ARGS[key] ?? [ID, ID2, ID3]));
+      expect(Object.fromEntries(hit.url.searchParams)).toEqual(expected.query ?? {});
+      if (op.requestBody?.content["application/json"] && hit.body !== undefined) {
+        expect(hit.body).toEqual("body" in expected ? expected.body : sampleBody(key));
+      }
+      // The document, not the SDK, says which operations take an Idempotency-Key.
+      const declaresKey = op.parameters.some((p) => p.in === "header" && p.name === "Idempotency-Key");
+      expect(hit.headers["idempotency-key"] !== undefined, "Idempotency-Key sent").toBe(declaresKey);
+      if (expected.idempotencyKey) expect(hit.headers["idempotency-key"]).toBe(expected.idempotencyKey);
+      for (const [name, value] of Object.entries(expected.headers ?? {})) {
+        expect(hit.headers[name], name).toBe(value);
+      }
+      // The document says which operations take no key (an empty `security`); only those go without one.
+      const keyless = op.security !== undefined && op.security.length === 0;
+      expect(hit.headers.authorization).toBe(keyless ? undefined : `Bearer ${API_KEY}`);
+
+      // The answer.
       if (result.data instanceof EventStream) {
         const events = [];
         for await (const event of result.data) events.push(event);
@@ -330,6 +435,7 @@ describe("operation coverage", () => {
         return;
       }
       expect(result.error).toBeNull();
+      // The SDK hands the parsed JSON over untouched (the mock's answer is built from the schema).
       expect(result.data).toEqual(hit.response);
       expect(result.headers?.["x-request-id"]).toBe("req_mock");
       expect(
@@ -339,6 +445,27 @@ describe("operation coverage", () => {
         ),
       ).toBeNull();
     });
+
+    // Every operation lists the refusals it can answer; the SDK turns the first one that is final into
+    // its error class with the API's own name, message, status and request id.
+    const refusal = ERROR_STATUSES.find((code) => operation(key).responses[String(code)]);
+    it.skipIf(
+      refusal === undefined ||
+        key.startsWith("GET /inboxes/events") ||
+        key === "GET /inboxes/{inbox_id}/events",
+    )(
+      `turns the ${refusal} the document lists into ${refusal ? ERROR_CLASS[refusal]?.name : "?"}`,
+      async () => {
+        if (refusal === undefined) return;
+        const body = { statusCode: refusal, name: `refused_${refusal}`, message: `Refused with ${refusal}` };
+        mock.reply(key, { status: refusal, body, headers: { "x-request-id": "req_fail" } });
+        const result = await call(client({ maxRetries: 0 }));
+        expect(result.data).toBeNull();
+        expect(result.error).toBeInstanceOf(ERROR_CLASS[refusal] as typeof BillionSendError);
+        expect(result.error?.toJSON()).toEqual({ ...body, requestId: "req_fail" });
+        expect(mock.hits).toHaveLength(1);
+      },
+    );
   });
 
   it("reached every operation of the snapshot, and nothing else", () => {

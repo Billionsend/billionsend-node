@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { type BillionSend, PermissionDeniedError, paginate } from "../src/index.js";
-import { operation, sampleResponse } from "./contract/spec.js";
-import { ID, useContractMock } from "./helpers.js";
+import { ID, listPage, useContractMock } from "./helpers.js";
 
 const { mock, client } = useContractMock();
 
@@ -11,26 +10,15 @@ const ids = [
   "0b8e3c6a-0000-4000-8000-000000000003",
 ];
 
-function contact(id: string) {
-  return {
-    id,
-    email: `${id.slice(-1)}@example.com`,
-    first_name: null,
-    last_name: null,
-    created_at: "2026-11-16T12:00:00.000Z",
-    unsubscribed: false,
-  };
-}
-
 describe("listAll", () => {
   it("walks forward with after = the last id until has_more is false", async () => {
     mock.reply("GET /contacts", {
       status: 200,
-      body: { object: "list", data: [contact(ids[0] as string), contact(ids[1] as string)], has_more: true },
+      body: listPage("GET /contacts", [ids[0] as string, ids[1] as string], true),
     });
     mock.reply("GET /contacts", {
       status: 200,
-      body: { object: "list", data: [contact(ids[2] as string)], has_more: false },
+      body: listPage("GET /contacts", [ids[2] as string], false),
     });
     const seen: string[] = [];
     for await (const item of client().contacts.listAll({ limit: 2 })) seen.push(item.id);
@@ -42,15 +30,11 @@ describe("listAll", () => {
   it("walks backward with before = the first id when started with before", async () => {
     mock.reply("GET /domains", {
       status: 200,
-      body: {
-        object: "list",
-        data: [{ ...domain(ids[1] as string) }, domain(ids[2] as string)],
-        has_more: true,
-      },
+      body: listPage("GET /domains", [ids[1] as string, ids[2] as string], true),
     });
     mock.reply("GET /domains", {
       status: 200,
-      body: { object: "list", data: [domain(ids[0] as string)], has_more: false },
+      body: listPage("GET /domains", [ids[0] as string], false),
     });
     const seen: string[] = [];
     for await (const item of client().domains.listAll({ before: ID })) seen.push(item.id);
@@ -62,7 +46,7 @@ describe("listAll", () => {
   it("stops early when the caller breaks out", async () => {
     mock.reply("GET /webhooks", {
       status: 200,
-      body: { object: "list", data: [webhook(ids[0] as string), webhook(ids[1] as string)], has_more: true },
+      body: listPage("GET /webhooks", [ids[0] as string, ids[1] as string], true),
     });
     for await (const item of client().webhooks.listAll()) {
       expect(item.id).toBe(ids[0]);
@@ -74,11 +58,11 @@ describe("listAll", () => {
   it("follows nested lists with their path parameters", async () => {
     mock.reply("GET /inboxes/{inbox_id}/threads/{thread_id}/emails", {
       status: 200,
-      body: { object: "list", has_more: true, data: [{ id: ids[0] }] },
+      body: listPage("GET /inboxes/{inbox_id}/threads/{thread_id}/emails", [ids[0] as string], true),
     });
     mock.reply("GET /inboxes/{inbox_id}/threads/{thread_id}/emails", {
       status: 200,
-      body: { object: "list", has_more: false, data: [{ id: ids[1] }] },
+      body: listPage("GET /inboxes/{inbox_id}/threads/{thread_id}/emails", [ids[1] as string], false),
     });
     const seen: string[] = [];
     for await (const email of client().inboxes.threads.emails.listAll("support@example.com", ID))
@@ -136,7 +120,7 @@ describe("listAll", () => {
       [{}, "last"],
       [{ before: "z" }, "first"],
     ] as const) {
-      for (const bad of [{}, { id: "" }, { id: 7 }, { id: null }]) {
+      for (const bad of [{}, { id: "" }, { id: 7 }, { id: null }, null, "text"]) {
         let fetches = 0;
         const page = edge === "last" ? [{ id: "a" }, bad] : [bad, { id: "a" }];
         const seen: unknown[] = [];
@@ -176,26 +160,6 @@ describe("listAll", () => {
   });
 });
 
-function domain(id: string) {
-  return {
-    id,
-    name: "example.com",
-    status: "verified",
-    created_at: "2026-11-16T12:00:00.000Z",
-    region: "us-east-1",
-  };
-}
-
-function webhook(id: string) {
-  return {
-    id,
-    endpoint: "https://example.com/hook",
-    created_at: "2026-11-16T12:00:00.000Z",
-    status: "enabled",
-    events: [],
-  };
-}
-
 describe("every listAll / searchAll helper", () => {
   const helpers: [string, (bs: BillionSend) => AsyncGenerator<{ id: string }, void, undefined>][] = [
     ["GET /emails", (bs) => bs.emails.listAll()],
@@ -234,14 +198,56 @@ describe("every listAll / searchAll helper", () => {
   ];
 
   it.each(helpers)("%s", async (key, iterate) => {
-    const page = sampleResponse(operation(key), "200") as { data: { id: string }[]; has_more: boolean };
-    const first = { ...page, has_more: true, data: [{ ...page.data[0], id: ids[0] }] };
-    const second = { ...page, has_more: false, data: [{ ...page.data[0], id: ids[1] }] };
-    mock.reply(key, { status: 200, body: first });
-    mock.reply(key, { status: 200, body: second });
+    mock.reply(key, { status: 200, body: listPage(key, [ids[0] as string], true) });
+    mock.reply(key, { status: 200, body: listPage(key, [ids[1] as string], false) });
     const seen: string[] = [];
     for await (const item of iterate(client())) seen.push(item.id);
     expect(seen).toEqual([ids[0], ids[1]]);
     expect(mock.hitsFor(key)[1]?.url.searchParams.get("after")).toBe(ids[0]);
+  });
+});
+
+describe("listAll: where it starts and how it fails", () => {
+  it("starts after the cursor it is given and passes the other parameters on every page", async () => {
+    mock.reply("GET /contacts", { status: 200, body: listPage("GET /contacts", [ids[0] as string], true) });
+    mock.reply("GET /contacts", { status: 200, body: listPage("GET /contacts", [ids[1] as string], false) });
+    for await (const _ of client().contacts.listAll({ limit: 1, after: ID })) {
+      // drain
+    }
+    const queries = mock.hitsFor("GET /contacts").map((hit) => Object.fromEntries(hit.url.searchParams));
+    expect(queries).toEqual([
+      { limit: "1", after: ID },
+      { limit: "1", after: ids[0] },
+    ]);
+  });
+
+  it("treats a null `before` as no cursor", async () => {
+    mock.reply("GET /contacts", { status: 200, body: listPage("GET /contacts", [], false) });
+    for await (const _ of client().contacts.listAll({ before: null as never })) {
+      // drain
+    }
+    expect([...(mock.hitsFor("GET /contacts")[0]?.url.searchParams.keys() ?? [])]).toEqual([]);
+  });
+
+  it("hands out the items of the pages before a failing one, then throws that page's error", async () => {
+    mock.reply("GET /contacts", { status: 200, body: listPage("GET /contacts", [ids[0] as string], true) });
+    mock.reply("GET /contacts", {
+      status: 403,
+      body: { statusCode: 403, name: "restricted_api_key", message: "Revoked meanwhile" },
+    });
+    const seen: string[] = [];
+    const walk = async () => {
+      for await (const contact of client({ maxRetries: 0 }).contacts.listAll()) seen.push(contact.id);
+    };
+    await expect(walk()).rejects.toMatchObject({ statusCode: 403, name: "restricted_api_key" });
+    expect(seen).toEqual([ids[0]]);
+  });
+
+  it("ends on a page that says there is more but has no items", async () => {
+    mock.reply("GET /contacts", { status: 200, body: listPage("GET /contacts", [], true) });
+    const seen: string[] = [];
+    for await (const contact of client().contacts.listAll()) seen.push(contact.id);
+    expect(seen).toEqual([]);
+    expect(mock.hitsFor("GET /contacts")).toHaveLength(1);
   });
 });

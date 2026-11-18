@@ -153,7 +153,7 @@ const { data: code } = await bs.inboxes.codes.latest("support@acme.dev", { from:
 - `InboxStreamEvent`: `{ id, event, data }`, where `event` is the webhook event name (`inbox.email.received`, `inbox.thread.created`, `inbox.draft.sent`, `email.received`, …) and `data` is `{ type, created_at, inbox_id, data }`, the webhook payload's metadata with the ids to read next (`thread_id`, `email_id`, `draft_id`).
 - `StreamGapEvent`: `{ id: null, event: "stream.gap", data: { reason } }` when the stream resumed from further back than the server keeps (24 hours): events may be missing, so read the lists again. One stream hands it out once per position.
 
-When the connection drops (the server also closes every stream about every ten minutes), the stream reconnects with `Last-Event-ID` and replays what it missed before the live events. `maxReconnects` (default 5) bounds the reconnects that fail in a row; one that opens the stream resets the count. A reconnect the API refuses with a `Retry-After` waits that long (longer than 60 seconds: that error is thrown at once). When the reconnects run out, the last one's error is thrown: the API's answer as its own class (`RateLimitError`, `APIError`), or an `APIConnectionError` when the API could not be reached; a refusal a retry cannot fix (a revoked key) is thrown at once. One inbox's stream ends after that inbox's `inbox.deleted` or `inbox.expired`.
+When the connection drops (the server also closes every stream about every ten minutes), the stream reconnects with `Last-Event-ID` and replays what it missed before the live events. A connection that delivers nothing, not even the server's keep-alive comment (sent every 15 seconds), for `idleTimeoutMs` (default 45 seconds, `0` turns it off) counts as dropped, so a connection that died silently cannot hang the loop. `maxReconnects` (default 5) bounds the reconnects that fail in a row; one that opens the stream resets the count. A reconnect the API refuses with a `Retry-After` waits that long (longer than 60 seconds: that error is thrown at once). When the reconnects run out, the last one's error is thrown: the API's answer as its own class (`RateLimitError`, `APIError`), or an `APIConnectionError` when the API could not be reached; a refusal a retry cannot fix (a revoked key) is thrown at once. One inbox's stream ends after that inbox's `inbox.deleted` or `inbox.expired`.
 
 ```ts
 const opened = await bs.inboxes.events.stream({ types: "inbox.email.received,inbox.thread.created" }, {
@@ -161,7 +161,7 @@ const opened = await bs.inboxes.events.stream({ types: "inbox.email.received,inb
 });
 if (opened.error) throw opened.error;
 for await (const item of opened.data) {
-  saved = opened.data.lastEventId;
+  saved = opened.data.lastEventId ?? undefined;
   // break, or opened.data.close(), ends the stream
 }
 ```
@@ -271,9 +271,11 @@ Method names are camelCase; request and response fields keep the API's snake_cas
 
 ```bash
 pnpm install
-pnpm typecheck && pnpm lint && pnpm test
+pnpm typecheck && pnpm lint && pnpm test:coverage   # fails below 95% lines and branches of the hand-written code
 pnpm build && pnpm test:smoke
 ```
+
+`pnpm test:e2e` runs the SDK against the live API, as a developer would (it needs `BILLIONSEND_E2E_API_KEY`, never runs in CI, and checks every real answer against the published OpenAPI document). It creates only objects named `sdk-e2e-node-…`, sends only to the simulator's success address and deletes what it made.
 
 The contract is `openapi/api.openapi.json`, a snapshot of the published OpenAPI document; its descriptions become the doc comments of the generated types. The tests run every SDK method against a local mock that validates each request and answers from that snapshot, and fail when an operation has no SDK method. When the API changes:
 

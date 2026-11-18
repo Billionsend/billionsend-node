@@ -10,6 +10,10 @@ The OpenAPI snapshot is now the document the API publishes (it had fallen behind
 - `emails.send` and `emails.batch` follow the new request schema (`from` and `subject` are optional, for a send that names a template); the batch bodies of `emails.batch` and `contacts.batch.create` are typed from the document now.
 - The inbox stream's `InboxEventType` is derived from the webhook event enum, so it includes `inbox.thread.assigned` and `inbox.thread.unassigned`.
 - The changed request and response schemas (contacts, domains, broadcasts, webhooks, templates, inboxes, usage) are regenerated; their types in `@billionsend/node` follow the document.
+- An inbox event stream drops a connection that delivered nothing (not even the server's 15-second keep-alive comment) for `idleTimeoutMs` (default 45 seconds, `0` turns it off) and reconnects from the last event id; a connection that died silently no longer hangs the loop.
+- `verifyWebhook` accepts a secret and header values with surrounding whitespace (a secret read from a file keeps its trailing newline).
+- An empty list in a query parameter is left out instead of sent as `key=`; a call whose `signal` is already aborted makes no request, whatever the `fetch` does with the signal.
+- `pnpm test:coverage` (at least 95% lines and branches of the hand-written code) and `pnpm test:e2e` (the live suite) are new; the contract mock now checks the answers a test queues against the document too.
 - `pnpm openapi:check` compares the snapshot with the published document and fails when they differ; CI runs it on every push and pull request and once a day.
 
 ## 0.1.1 (2026-11-17)

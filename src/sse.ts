@@ -84,6 +84,13 @@ export interface EventStreamOptions {
   maxReconnects?: number;
   /** Wait before reconnecting, in milliseconds (default 1000; a server `retry` field overrides it). */
   reconnectDelayMs?: number;
+  /**
+   * A connection that delivers nothing (not even the server's keep-alive
+   * comment, sent every 15 seconds) for this long is treated as dropped and
+   * reconnected, so a connection that died silently (a NAT or a proxy dropped
+   * it) cannot hang the loop forever. Default 45000; `0` turns it off.
+   */
+  idleTimeoutMs?: number;
   /** Timeout for each connection attempt until the stream opens (defaults to the client's `timeoutMs`). */
   timeoutMs?: number;
   /** Retries of the first connection on 429, 5xx and network failures (defaults to the client's `maxRetries`). */
@@ -95,20 +102,25 @@ export type Connect = (lastEventId: string | null) => Promise<Result<StreamConne
 
 interface ParserHooks {
   onRetry(ms: number): void;
+  /** Bytes arrived (an event, a comment or a keep-alive). */
+  onActivity?(): void;
 }
+
+/** The default `idleTimeoutMs`: three of the server's 15-second keep-alives. */
+export const DEFAULT_IDLE_TIMEOUT_MS = 45_000;
 
 const LINE_BREAK = /\r\n|\r|\n/;
 
 /** Parses a `text/event-stream` body (UTF-8) into events, following the WHATWG rules. */
 export async function* parseEventStream(
   body: ReadableStream<Uint8Array>,
-  hooks: ParserHooks = { onRetry() {} },
+  hooks: ParserHooks,
   initialId: string | null = null,
 ): AsyncGenerator<ServerSentEvent, void, undefined> {
   const reader = body.getReader();
+  // `TextDecoder` drops a leading byte-order mark itself (`ignoreBOM` is false).
   const decoder = new TextDecoder("utf-8");
   let buffer = "";
-  let first = true;
   let lastId = initialId;
   let eventName = "";
   let dataLines: string[] = [];
@@ -182,11 +194,8 @@ export async function* parseEventStream(
         // An event not ended by a blank line is discarded, as the spec says.
         return;
       }
+      hooks.onActivity?.();
       buffer += decoder.decode(value, { stream: true });
-      if (first && buffer.length > 0) {
-        if (buffer.charCodeAt(0) === 0xfeff) buffer = buffer.slice(1);
-        first = false;
-      }
       for (const line of takeLines(false)) {
         const event = processLine(line);
         if (event) yield event;
@@ -279,10 +288,17 @@ export class EventStream implements AsyncIterable<InboxStreamItem> {
       while (!this.#closed) {
         const connection = this.#connection;
         if (connection !== null && connection.response.body !== null) {
+          const idleMs = this.#options.idleTimeoutMs ?? DEFAULT_IDLE_TIMEOUT_MS;
+          let idle: ReturnType<typeof setTimeout> | undefined;
+          const arm = () => {
+            clearTimeout(idle);
+            if (idleMs > 0) idle = setTimeout(() => connection.close(), idleMs);
+          };
+          arm();
           try {
             const events = parseEventStream(
               connection.response.body,
-              { onRetry: (ms) => (this.#delayMs = ms) },
+              { onRetry: (ms) => (this.#delayMs = ms), onActivity: arm },
               this.#lastEventId,
             );
             for await (const event of events) {
@@ -302,6 +318,8 @@ export class EventStream implements AsyncIterable<InboxStreamItem> {
             }
           } catch {
             // The connection dropped; fall through to reconnect.
+          } finally {
+            clearTimeout(idle);
           }
           connection.close();
           this.#connection = null;

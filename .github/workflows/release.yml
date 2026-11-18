@@ -38,7 +38,7 @@ jobs:
           git diff --exit-code -- src/generated
       - run: pnpm typecheck
       - run: pnpm lint
-      - run: pnpm test
+      - run: pnpm test:coverage
       - run: pnpm build
       - run: pnpm test:smoke
       - run: pnpm check:exports

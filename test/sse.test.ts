@@ -204,7 +204,8 @@ describe("inbox event streams", () => {
   });
 
   it("refuses an answer that is not an event stream", async () => {
-    mock.reply("GET /inboxes/events", { status: 200, body: { hello: "world" } });
+    // A JSON 200 for a stream operation is off the document on purpose: a proxy answering in its place.
+    mock.reply("GET /inboxes/events", { status: 200, body: { hello: "world" }, offContract: true });
     const opened = await client().inboxes.events.stream();
     expect(opened.error).toMatchObject({ statusCode: 200, name: "application_error" });
   });
@@ -386,5 +387,109 @@ describe("reconnect counting", () => {
     expect(error).toBeInstanceOf(APIConnectionError);
     expect(error).toMatchObject({ message: expect.stringContaining("gave up after 2 reconnects") });
     expect(calls).toBe(3);
+  });
+});
+
+describe("edges of the parser and the stream object", () => {
+  it("dispatches an event whose closing blank line is a lone CR at the very end", async () => {
+    const events = await parse(["id: 1\ndata: last\n\r"]);
+    expect(events.map((e) => e.data)).toEqual(["last"]);
+  });
+
+  it("answers `response` while open and null once closed", async () => {
+    mock.stream("GET /inboxes/events", (res) => {
+      res.write("id: 1\ndata: {}\n\n");
+    });
+    const opened = await client().inboxes.events.stream({}, { reconnect: false });
+    const stream = opened.data;
+    if (!stream) throw new Error("no stream");
+    expect(stream.response?.status).toBe(200);
+    stream.close();
+    expect(stream.response).toBeNull();
+  });
+
+  it("ends quietly when close() is called while a reconnect is still being opened", async () => {
+    mock.stream("GET /inboxes/events", (res) => {
+      res.write("retry: 5\nid: 1\ndata: {}\n\n");
+      res.end();
+    });
+    // The reconnect's answer comes late; the caller leaves before it does.
+    mock.reply("GET /inboxes/events", {
+      status: 200,
+      raw: ": late\n\n",
+      headers: { "content-type": "text/event-stream" },
+      delayMs: 300,
+    });
+    const opened = await client().inboxes.events.stream({}, { reconnectDelayMs: 5 });
+    const stream = opened.data;
+    if (!stream) throw new Error("no stream");
+    const seen: string[] = [];
+    setTimeout(() => stream.close(), 120);
+    for await (const item of stream) seen.push(item.id ?? "");
+    expect(seen).toEqual(["1"]);
+  });
+});
+
+describe("more edges of the parser", () => {
+  it("ignores an id that contains a NUL character, keeping the previous one", async () => {
+    const events = await parse(["id: 1\ndata: a\n\nid: 2\u00003\ndata: b\n\n"]);
+    expect(events.map((e) => e.id)).toEqual(["1", "1"]);
+  });
+
+  it("discards an event the stream ended in the middle of, and strips a byte-order mark", async () => {
+    expect(await parse(["data: unfinished"])).toEqual([]);
+    expect((await parse(["﻿data: x\n\n"])).map((e) => e.data)).toEqual(["x"]);
+  });
+
+  it("hands an event with no id an empty one", async () => {
+    mock.stream("GET /inboxes/events", (res) => {
+      res.write('event: inbox.email.received\ndata: {"type":"inbox.email.received"}\n\n');
+      res.end();
+    });
+    const opened = await client().inboxes.events.stream({}, { reconnect: false });
+    const items: InboxStreamItem[] = [];
+    for await (const item of opened.data ?? []) items.push(item);
+    expect(items.map((i) => i.id)).toEqual([""]);
+  });
+
+  it("ends quietly when close() comes during the wait before a reconnect", async () => {
+    mock.stream("GET /inboxes/events", (res) => {
+      res.write("id: 1\ndata: {}\n\n");
+      res.end();
+    });
+    const opened = await client().inboxes.events.stream({}, { reconnectDelayMs: 150 });
+    const stream = opened.data;
+    if (!stream) throw new Error("no stream");
+    setTimeout(() => stream.close(), 40);
+    const seen: string[] = [];
+    for await (const item of stream) seen.push(item.id ?? "");
+    expect(seen).toEqual(["1"]);
+    expect(mock.hitsFor("GET /inboxes/events")).toHaveLength(1);
+  });
+
+  it("refuses a 200 without a content type, and one that is not an event stream, naming what it got", async () => {
+    mock.reply("GET /inboxes/events", {
+      status: 200,
+      raw: "",
+      headers: { "content-type": "" },
+      offContract: true,
+    });
+    const none = await client().inboxes.events.stream();
+    expect(none.error?.message).toBe("Expected an event stream, got no content type");
+    mock.reply("GET /inboxes/events", {
+      status: 200,
+      raw: "<p>",
+      headers: { "content-type": "text/html" },
+      offContract: true,
+    });
+    const html = await client().inboxes.events.stream();
+    expect(html.error?.message).toBe("Expected an event stream, got text/html");
+  });
+});
+
+describe("the last bytes of a stream", () => {
+  it("dispatches nothing for a final lone CR that closes no event, and skips an empty first chunk before a BOM", async () => {
+    expect(await parse(["id: 5\n\r"])).toEqual([]);
+    expect((await parse([new Uint8Array(0), "﻿data: x\n\n"])).map((e) => e.data)).toEqual(["x"]);
   });
 });

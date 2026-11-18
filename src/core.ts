@@ -159,7 +159,8 @@ function queryString(query: object | undefined): string {
     if (value === undefined || value === null) continue;
     if (Array.isArray(value)) {
       // The document's list parameters are comma-separated in one key (style form, explode false).
-      params.append(key, value.map(String).join(","));
+      // An empty list names nothing: it is left out, as `domain_id=` would be refused as an empty id.
+      if (value.length > 0) params.append(key, value.map(String).join(","));
     } else {
       params.append(key, String(value));
     }
@@ -195,11 +196,6 @@ export class Core {
     }
     this.#fetch = fetchImpl;
     this.#headers = lowerCaseKeys(options.headers);
-  }
-
-  /** Whether an API key is configured. */
-  get hasApiKey(): boolean {
-    return this.#apiKey !== undefined;
   }
 
   /** Calls one operation and parses its JSON answer. */
@@ -289,6 +285,8 @@ export class Core {
     signal: AbortSignal | undefined,
     stream: boolean,
   ): Promise<Attempt> {
+    // A caller that already gave up gets no request, whatever the fetch implementation does with the signal.
+    if (signal?.aborted) return { result: failure(applicationError("Request was aborted")) };
     const controller = new AbortController();
     let timedOut = false;
     const timer = setTimeout(() => {
@@ -296,8 +294,7 @@ export class Core {
       controller.abort();
     }, timeoutMs);
     const onAbort = () => controller.abort();
-    if (signal?.aborted) controller.abort();
-    else signal?.addEventListener("abort", onAbort, { once: true });
+    signal?.addEventListener("abort", onAbort, { once: true });
     const release = () => {
       clearTimeout(timer);
       signal?.removeEventListener("abort", onAbort);
