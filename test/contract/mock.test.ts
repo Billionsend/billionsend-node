@@ -55,13 +55,7 @@ describe("contract mock", () => {
       "takes none",
     ],
     ["a missing body", "POST", "/emails", { headers: json }, "request body is missing"],
-    [
-      "a body that breaks the schema",
-      "POST",
-      "/emails",
-      { headers: json, body: { to: "x" } },
-      "request body",
-    ],
+    ["a body that breaks the schema", "POST", "/emails", { headers: json, body: { to: 5 } }, "request body"],
     [
       "a body on an operation without one",
       "POST",

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.0 (2026-11-19)
+
+The OpenAPI snapshot is now the document the API publishes (it had fallen behind), and the SDK follows it. `usage.get()` answers the new report (`emails.daily`, `emails.monthly`, `contacts`, `domains`, …) instead of `limits.emails_per_day`.
+
+- Removed: `webhooks.rotate` (the API no longer has `POST /webhooks/{id}/rotate`; use `webhooks.rotateSigningSecret`, `POST /webhooks/{id}/signing-secret/rotate`) and `unsubscribes.delete` (a recipient's opt-out can no longer be deleted by the customer).
+- New operations, named after their `operationId`: `automations` (`list`, `get`, `create`, `update`, `remove`, `validate`, `duplicate`, `simulate`, `stop`, `metrics`, `runs.list`, `runs.get`, `runs.cancel`), `events` (`list`, `get`, `create`, `update`, `remove`, `send`), `contacts.imports` (`list`, `get`, `create`), `contacts.segments.list`, `domains.claims` (`create`, `get`, `verify`), `emails.share` and `emails.unshare`, `emails.attachments` (`list`, `get`), `emails.metrics.links`, `emails.metrics.countries` and `emails.metrics.clients` (`emails.metrics(params)` stays the time series), `broadcasts.recipients` and `broadcasts.clickedLinks`, `logs` (`list`, `get`), `oauthGrants` (`list`, `revoke`), `webhooks.events` (`list`, `get`, `replay`, `attempts.list`), `webhooks.rotateSigningSecret`, `apiKeys.update` and `inboxes.agent.update`. Every cursor list has its `listAll` iterator (`recipientsAll`, `clickedLinksAll` for the two broadcast lists).
+- `contacts.imports.create` uploads a CSV as `multipart/form-data`: pass `file` (a string, `Blob` or `File`) with `column_map`, `segments` and `topics` as objects; the SDK JSON-encodes them. The client's request layer takes a `FormData` body for such operations.
+- `emails.send` and `emails.batch` follow the new request schema (`from` and `subject` are optional, for a send that names a template); the batch bodies of `emails.batch` and `contacts.batch.create` are typed from the document now.
+- The inbox stream's `InboxEventType` is derived from the webhook event enum, so it includes `inbox.thread.assigned` and `inbox.thread.unassigned`.
+- The changed request and response schemas (contacts, domains, broadcasts, webhooks, templates, inboxes, usage) are regenerated; their types in `@billionsend/node` follow the document.
+- `pnpm openapi:check` compares the snapshot with the published document and fails when they differ; CI runs it on every push and pull request and once a day.
+
 ## 0.1.1 (2026-11-17)
 
 - An inbox event stream counts only the reconnects that fail in a row toward `maxReconnects`: each reconnect that opens the stream resets the count. A quiet inbox, whose stream the server closes every ten minutes or so with only keep-alive comments in between, no longer gives up after an hour.

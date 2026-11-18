@@ -37,6 +37,50 @@ export class Broadcasts extends Resource {
     return this.core.request("delete", "/broadcasts/{id}", { path: { id }, options });
   }
 
+  /** `GET /broadcasts/{id}/recipients`: the recipients with the given outcome (`type` is required). */
+  recipients(
+    id: string,
+    params: QueryParams<"/broadcasts/{id}/recipients", "get">,
+    options?: RequestOptions,
+  ) {
+    return this.core.request("get", "/broadcasts/{id}/recipients", {
+      path: { id },
+      query: params,
+      options,
+    });
+  }
+
+  /** Every recipient of a broadcast, fetched page by page. */
+  recipientsAll(
+    id: string,
+    params: QueryParams<"/broadcasts/{id}/recipients", "get">,
+    options?: RequestOptions,
+  ): AsyncGenerator<ListItem<"/broadcasts/{id}/recipients">, void, undefined> {
+    return paginate((cursor) => this.recipients(id, { ...params, ...cursor }, options), params);
+  }
+
+  /** `GET /broadcasts/{id}/clicked-links` */
+  clickedLinks(
+    id: string,
+    params?: QueryParams<"/broadcasts/{id}/clicked-links", "get">,
+    options?: RequestOptions,
+  ) {
+    return this.core.request("get", "/broadcasts/{id}/clicked-links", {
+      path: { id },
+      query: params,
+      options,
+    });
+  }
+
+  /** Every link clicked in a broadcast, fetched page by page. */
+  clickedLinksAll(
+    id: string,
+    params?: QueryParams<"/broadcasts/{id}/clicked-links", "get">,
+    options?: RequestOptions,
+  ): AsyncGenerator<ListItem<"/broadcasts/{id}/clicked-links">, void, undefined> {
+    return paginate((cursor) => this.clickedLinks(id, { ...params, ...cursor }, options), params);
+  }
+
   /** `POST /broadcasts/{id}/send` */
   send(id: string, payload: RequestBody<"/broadcasts/{id}/send", "post">, options?: RequestOptions) {
     return this.core.request("post", "/broadcasts/{id}/send", { path: { id }, body: payload, options });

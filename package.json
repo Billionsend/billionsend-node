@@ -1,6 +1,6 @@
 {
   "name": "@billionsend/node",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Node.js and TypeScript SDK for the BillionSend email API",
   "keywords": [
     "billionsend",
@@ -60,7 +60,8 @@
     "test:smoke": "node test/smoke/smoke.cjs && node test/smoke/smoke.mjs",
     "check:exports": "attw --pack . --profile node16",
     "generate": "openapi-typescript openapi/api.openapi.json --output src/generated/openapi.ts --root-types --root-types-no-schema-prefix --default-non-nullable false && biome format --write src/generated/openapi.ts",
-    "openapi:sync": "node scripts/sync-openapi.mjs"
+    "openapi:sync": "node scripts/sync-openapi.mjs",
+    "openapi:check": "node scripts/sync-openapi.mjs --check"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",

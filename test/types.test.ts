@@ -7,11 +7,13 @@ import type {
   GetDomainResponse,
   Inbox,
   InboxDraft,
+  InboxEventType,
   InboxSentEmail,
   InboxStreamItem,
   Result,
   SendEmailRequest,
   SendEmailResponse,
+  UsageResponse,
 } from "../src/index.js";
 
 type Data<T> = T extends Promise<Result<infer D>> ? D : never;
@@ -24,10 +26,27 @@ describe("types", () => {
     expectTypeOf<Data<ReturnType<BillionSend["inboxes"]["create"]>>>().toEqualTypeOf<Inbox>();
   });
 
+  it("types usage as the emails / contacts / domains report", () => {
+    type Usage = Data<ReturnType<BillionSend["usage"]["get"]>>;
+    expectTypeOf<Usage>().toEqualTypeOf<UsageResponse>();
+    expectTypeOf<Usage["emails"]["daily"]["limit"]>().toEqualTypeOf<number | null>();
+    expectTypeOf<Usage["emails"]["daily"]["resets_at"]>().toEqualTypeOf<string>();
+    expectTypeOf<Usage["emails"]["monthly"]["overage_enabled"]>().toEqualTypeOf<boolean>();
+    // the old limits.emails_per_day shape is gone
+    expectTypeOf<Usage>().not.toHaveProperty("limits");
+  });
+
   it("unions the answers of operations with several 2xx bodies", () => {
     expectTypeOf<Data<ReturnType<BillionSend["inboxes"]["send"]>>>().toEqualTypeOf<
       InboxSentEmail | InboxDraft
     >();
+  });
+
+  it("follows the webhook event enum for inbox stream events", () => {
+    expectTypeOf<"inbox.thread.assigned">().toMatchTypeOf<InboxEventType>();
+    expectTypeOf<"inbox.thread.unassigned">().toMatchTypeOf<InboxEventType>();
+    expectTypeOf<"email.received">().toMatchTypeOf<InboxEventType>();
+    expectTypeOf<"email.sent">().not.toMatchTypeOf<InboxEventType>();
   });
 
   it("narrows errors by class", () => {

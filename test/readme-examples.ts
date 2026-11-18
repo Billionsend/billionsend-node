@@ -17,6 +17,7 @@ export async function readmeExamples(
   id: string,
   request: Request,
   saved: string | undefined,
+  csvText: string,
 ) {
   const bs = new BillionSend("bs_...");
 
@@ -84,6 +85,15 @@ export async function readmeExamples(
     wait: 30,
   });
   console.log(code?.code);
+
+  const started = await bs.contacts.imports.create({
+    file: csvText,
+    column_map: { email: "Email", first_name: "First Name" },
+    on_conflict: "skip",
+  });
+  if (started.error) throw started.error;
+  const done = await bs.contacts.imports.get(started.data.id);
+  console.log(done.data?.status);
 
   const signup = await new BillionSend().agent.signup({
     human_email: "owner@acme.dev",

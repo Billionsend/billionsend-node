@@ -11,8 +11,112 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get email metrics */
+    /**
+     * Get email metrics
+     * @description Delivery statistics for a date range, by period, domain, email or broadcast: counts and rates for sent, delivered, bounced, complained, opened and clicked. Needs a full access key.
+     */
     get: operations["emails.metrics"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/emails/metrics/links": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get clicks by link
+     * @description Clicks in a date range by the link that was clicked, with people and machines counted apart. Needs a full access key.
+     */
+    get: operations["emails.metrics.links"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/emails/metrics/countries": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get opens and clicks by country
+     * @description Opens and clicks in a date range by the reader's country, with people and machines counted apart. Needs a full access key.
+     */
+    get: operations["emails.metrics.countries"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/emails/metrics/clients": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get opens by mail client
+     * @description Opens in a date range by the mail client that fetched the images. Needs a full access key.
+     */
+    get: operations["emails.metrics.clients"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/contacts/imports": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List contact imports
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones. Ten per page unless `limit` says otherwise; `status` filters.
+     */
+    get: operations["contacts.imports.list"];
+    put?: never;
+    /**
+     * Create a contact import
+     * @description Uploads a CSV (`multipart/form-data`; `column_map`, `segments` and `topics` are JSON-encoded strings) and imports it in the background: poll Retrieve a contact import for `status` and `counts`. A row with an invalid address, an address that can never receive mail, or a value that does not fit its column type fails; with the plan's contact cap reached, the rows that do not fit fail. A file that marks a row unsubscribed only opts that contact out; an import never subscribes anyone who unsubscribed. At most 5 imports can be queued or running per team.
+     */
+    post: operations["contacts.imports.create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/contacts/imports/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve a contact import */
+    get: operations["contacts.imports.get"];
     put?: never;
     post?: never;
     delete?: never;
@@ -72,7 +176,7 @@ export interface paths {
     get?: never;
     put?: never;
     /**
-     * Delete in bulk
+     * Delete contacts in bulk
      * @description Deletes up to 1000 contacts by id or by email address in one request and lists the rows actually deleted; unknown ids or addresses are skipped. Emails stay in the log; `erase: true` also scrubs each address from email history, event payloads and API logs, like DELETE /contacts/{id}?erase=true.
      */
     post: operations["contacts.batch.remove"];
@@ -92,7 +196,7 @@ export interface paths {
     get?: never;
     put?: never;
     /**
-     * Create in bulk
+     * Create contacts in bulk
      * @description Creates up to 1000 contacts in one request. Each item is a CreateContactRequest. `on_conflict` decides what happens to an email that already belongs to a contact — `error` (default), `skip`, or `upsert`. An upsert updates `first_name`/`last_name` only when provided, merges `properties` (provided keys overwrite), adds `segments` and upserts `topics`. `unsubscribed: true` opts the contact out; `unsubscribed: false` on an already unsubscribed contact is ignored — a batch never re-subscribes anyone, that stays an explicit PATCH /contacts/{id}. The `x-batch-validation` header picks strict (default, all-or-nothing) or permissive (valid subset written, failures listed in `errors`).
      */
     post: operations["contacts.batch.create"];
@@ -162,6 +266,26 @@ export interface paths {
     patch: operations["contacts.topics.update"];
     trace?: never;
   };
+  "/contacts/{id}/segments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List contact segments
+     * @description The segments the contact is in: an explicit member row, or a match of the segment's saved filter (the rule `GET /segments/{id}/contacts` uses). Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
+    get: operations["contacts.segments.list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/contacts/{id}/segments/{segmentId}": {
     parameters: {
       query?: never;
@@ -189,7 +313,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Create a contact */
+    /** Create a contact in an audience */
     post: operations["audiences.contacts.create"];
     delete?: never;
     options?: never;
@@ -204,15 +328,15 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Retrieve a contact */
+    /** Retrieve a contact in an audience */
     get: operations["audiences.contacts.get"];
     put?: never;
     post?: never;
-    /** Delete a contact */
+    /** Delete a contact from an audience */
     delete: operations["audiences.contacts.delete"];
     options?: never;
     head?: never;
-    /** Update a contact */
+    /** Update a contact in an audience */
     patch: operations["audiences.contacts.update"];
     trace?: never;
   };
@@ -354,6 +478,46 @@ export interface paths {
     head?: never;
     /** Update a broadcast */
     patch: operations["broadcasts.update"];
+    trace?: never;
+  };
+  "/broadcasts/{id}/recipients": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List broadcast recipients
+     * @description The recipients of a broadcast that had one outcome: `type` (required) is sent, delivered, opened, clicked, bounced, complained, unsubscribed or suppressed. `email` narrows to one address; `bounce_type` (permanent, transient or undetermined) narrows bounces. Read from the delivery records, newest recipient first. Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
+    get: operations["broadcasts.recipients"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/broadcasts/{id}/clicked-links": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List broadcast clicked links
+     * @description The links recipients clicked in a broadcast, most clicked first, from the statistics (the same counts as `GET /emails/metrics/links`). Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
+    get: operations["broadcasts.clickedLinks"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/broadcasts/{id}/send": {
@@ -504,6 +668,66 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/domains/claim": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Claim a domain
+     * @description Starts taking over a domain another team already holds (creating it answers 409 "domain already registered"). The response carries a TXT record to publish at the domain; then call Verify Domain Claim. Once the record is seen and the holder's safety checks pass (`blocked_reason`), the holder's domain is removed and the team gets the domain as a new one with its own DKIM key: fetch it with Retrieve Domain under the claim's `domain_id`, publish its records and verify it. Nothing of the holder's data comes with it. A live claim for the same name is returned as it stands; a claim lasts 7 days.
+     */
+    post: operations["domains.claims.create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/domains/{id}/claim": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve a domain claim
+     * @description The claim for a placeholder domain id, as it stands. Poll it until `status` is `completed`.
+     */
+    get: operations["domains.claims.get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/domains/{id}/claim/verify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Verify a domain claim
+     * @description Looks for the TXT record, runs the safety checks and, when they pass, transfers the domain: the answer is the claim as it stands, `completed` when the transfer went through. A claim held back (`blocked`) is looked at again every few minutes by BillionSend; calling again checks at once.
+     */
+    post: operations["domains.claims.verify"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api-keys": {
     parameters: {
       query?: never;
@@ -542,7 +766,11 @@ export interface paths {
     delete: operations["apiKeys.delete"];
     options?: never;
     head?: never;
-    patch?: never;
+    /**
+     * Update an API key
+     * @description Renames the key. Its permission, domain and inbox scope never change: mint a new key for another scope. A key held to one domain updates only keys held to that same domain; any other key is not found.
+     */
+    patch: operations["apiKeys.update"];
     trace?: never;
   };
   "/webhooks": {
@@ -585,7 +813,7 @@ export interface paths {
     patch: operations["webhooks.update"];
     trace?: never;
   };
-  "/webhooks/{id}/rotate": {
+  "/webhooks/{id}/signing-secret/rotate": {
     parameters: {
       query?: never;
       header?: never;
@@ -598,7 +826,84 @@ export interface paths {
      * Rotate signing secret
      * @description BillionSend extension. Mints a new signing secret (or takes the one in signing_secret) and returns it. For overlap_hours the previous secret keeps signing too: every delivery in that window carries both signatures, space-separated in webhook-signature, so the receiver can switch at any point without a gap. A second rotation inside the window replaces the previous secret.
      */
-    post: operations["webhooks.rotate"];
+    post: operations["webhooks.rotateSigningSecret"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/webhooks/{id}/events": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List a webhook's events
+     * @description Every event the webhook was sent or is waiting to be sent, newest first. Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
+    get: operations["webhooks.events.list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/webhooks/{id}/events/{event_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve a webhook event */
+    get: operations["webhooks.events.get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/webhooks/{id}/events/{event_id}/replay": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Replay a webhook event
+     * @description Posts the event again: a new event with the same payload and the same webhook-id, queued like any other (signed, paced and retried the usual way). Returns the new event. Refused with 422 for a webhook that is disabled and for an event whose payload the retention window has emptied.
+     */
+    post: operations["webhooks.events.replay"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/webhooks/{id}/events/{event_id}/attempts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List an event's delivery attempts
+     * @description Every post made for the event, newest first. Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
+    get: operations["webhooks.events.attempts.list"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -614,7 +919,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Add in bulk */
+    /** Add suppressions in bulk */
     post: operations["suppressions.batch.add"];
     delete?: never;
     options?: never;
@@ -631,7 +936,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Remove in bulk */
+    /** Remove suppressions in bulk */
     post: operations["suppressions.batch.remove"];
     delete?: never;
     options?: never;
@@ -694,23 +999,6 @@ export interface paths {
     /** Record an unsubscribe */
     post: operations["unsubscribes.create"];
     delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/unsubscribes/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an unsubscribe */
-    delete: operations["unsubscribes.delete"];
     options?: never;
     head?: never;
     patch?: never;
@@ -784,6 +1072,287 @@ export interface paths {
     put?: never;
     /** Duplicate a template */
     post: operations["templates.duplicate"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/events": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List events
+     * @description The team's event definitions. Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
+    get: operations["events.list"];
+    put?: never;
+    /**
+     * Create an event
+     * @description Defines a custom event: its name and, optionally, a payload schema (a flat map from key to string, number, boolean or date). The definition is only used to check the payload of `events.send`; automations match an event by name whether or not it is defined.
+     */
+    post: operations["events.create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/events/send": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Send an event
+     * @description Records an event for a contact, given by `contact_id` or by `email` (exactly one). Every enabled automation whose trigger is this event name starts a run for the contact, and runs waiting for this event continue. The event is accepted whether or not it is defined or any automation matches; when it is defined with a schema, the payload is checked against it and each typed value is converted. A contact that does not exist yet is created when an automation needs it. Retry with the same `Idempotency-Key` and the same body to get the original answer instead of a second event.
+     */
+    post: operations["events.send"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/events/{id_or_name}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve an event
+     * @description By id or by name. A name with `/`, `%` or spaces goes through the path URL-encoded.
+     */
+    get: operations["events.get"];
+    put?: never;
+    post?: never;
+    /**
+     * Delete an event
+     * @description Removes the definition, and with it the payload check. Automations match by name, so they are not affected, and the name can still be sent.
+     */
+    delete: operations["events.remove"];
+    options?: never;
+    head?: never;
+    /**
+     * Update an event
+     * @description Replaces the payload schema; `null` clears it. The name cannot change. Runs already started are not affected: the schema is read only when an event is sent.
+     */
+    patch: operations["events.update"];
+    trace?: never;
+  };
+  "/automations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List automations
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones.
+     */
+    get: operations["automations.list"];
+    put?: never;
+    /**
+     * Create an automation
+     * @description Steps and connections are checked on every write; a draft may be incomplete. With status enabled the whole automation is checked, including that its templates, sender domains, topics and segments exist (422 with each problem and its JSON Pointer). An agent key can only write drafts (403).
+     */
+    post: operations["automations.create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/automations/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve an automation */
+    get: operations["automations.get"];
+    put?: never;
+    post?: never;
+    /**
+     * Remove an automation
+     * @description Removes the automation and its versions at once; runs still going are not executed any more, and its run history is deleted in the background.
+     */
+    delete: operations["automations.remove"];
+    options?: never;
+    head?: never;
+    /**
+     * Update an automation
+     * @description Name, status and/or steps with connections. Changing the steps adds a version; runs already going keep the version they started on. An enabled automation's steps cannot change (409): stop it first, or give status disabled in the same request, or duplicate it. Enabling checks the whole automation (422 with each problem and its JSON Pointer); an agent key cannot enable (403).
+     */
+    patch: operations["automations.update"];
+    trace?: never;
+  };
+  "/automations/{id}/duplicate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Duplicate an automation
+     * @description A new automation named "<name> (copy)", disabled, with the same steps and connections.
+     */
+    post: operations["automations.duplicate"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/automations/{id}/stop": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Stop an automation
+     * @description Sets the automation to disabled: no new runs start; runs already going finish. Stopping a stopped automation answers the same.
+     */
+    post: operations["automations.stop"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/automations/{id}/runs": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List the runs of an automation
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones. status keeps runs in any of the comma-separated statuses (running, completed, failed, cancelled).
+     */
+    get: operations["automations.runs.list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/automations/{id}/runs/{run_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve a run of an automation
+     * @description The run with every step of its automation's version: the steps that ran in the order they ran, with their output and error, then the rest as pending (still reachable) or skipped.
+     */
+    get: operations["automations.runs.get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/automations/validate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Validate an automation document
+     * @description BillionSend extension. Checks steps and connections without storing anything. Always answers 200 with every problem found: layer draft are the problems that stop a save (the same check as every write), layer enable are what stops enabling (a trigger, reachability, and that the templates, sender domains, topics and segments exist; reported only for a document that can be saved). Each has a JSON Pointer path into the submitted document, a stable code and a suggestion.
+     */
+    post: operations["automations.validate"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/automations/{id}/simulate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Simulate a run of an automation
+     * @description BillionSend extension. Works out one contact's pass through the automation's current steps without running anything: which way each step goes, when, and the mail it would send. The clock is the simulation's own: delays and waits move it, so a flow of days answers at once. Waits take the events given, in order. Nothing is sent, stored or counted. Send steps are checked against the published template, the sender domain, the topic, the recipient's opt-outs and the suppression list; the team's send quota, reputation holds and reviews are decided only when mail is really accepted. contact_update changes a copy of the contact for the steps after it. Works on a draft too, if it has a trigger.
+     */
+    post: operations["automations.simulate"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/automations/{id}/runs/{run_id}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Cancel a run of an automation
+     * @description BillionSend extension. Ends a running run as cancelled: its waiting step is skipped and nothing more happens for it. Mail the run already queued is not recalled. A run that is already completed, failed or cancelled answers 409.
+     */
+    post: operations["automations.runs.cancel"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/automations/{id}/metrics": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Metrics of an automation
+     * @description BillionSend extension. What the statistics store counted for the automation in a period (default the last seven UTC days): runs started, completed, failed and cancelled; the results of the mail it sent; and for every step of the current version the people who entered, finished, failed in and skipped it. Counts follow the sink loop within seconds.
+     */
+    get: operations["automations.metrics"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -875,11 +1444,94 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get usage */
+    /**
+     * Get usage
+     * @description What the team uses against what its plan allows: emails (the UTC day and the billing period), contacts, segments, broadcasts, domains and the API rate limit. BillionSend adds `plan`, `inboxes`, `webhook_endpoints`, `verification` and the period's overage fields. A limit nothing caps is null.
+     */
     get: operations["usage.get"];
     put?: never;
     post?: never;
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/logs": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List request logs
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones. Every authenticated request the team's keys and connected apps made, this one included; the bodies come with Retrieve a log.
+     */
+    get: operations["logs.list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/logs/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve a log
+     * @description One logged request with its JSON request and response bodies. Bodies were redacted when stored: html, text and attachment data are size markers, tokens and secrets are `[redacted]`. A caller acting as a person whose role lacks developer access gets null bodies; an API key always gets them.
+     */
+    get: operations["logs.get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/oauth/grants": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List OAuth grants
+     * @description Newest first, with cursor pagination: `after` takes the last id of a page and pages toward older items, `before` takes the first id and pages back toward newer ones. The apps connected to the team, MCP clients among them, that hold a grant in force.
+     */
+    get: operations["oauthGrants.list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/oauth/grants/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Revoke an OAuth grant
+     * @description Ends the grant with every token issued under it: access tokens stop working at once and the app has to ask for consent again. The grant's holder may revoke it; otherwise the caller needs owner or admin access, and an all-teams grant needs admin access to every team its holder belongs to. The grant is deleted, so it is not listed afterwards.
+     */
+    delete: operations["oauthGrants.revoke"];
     options?: never;
     head?: never;
     patch?: never;
@@ -914,7 +1566,7 @@ export interface paths {
     };
     /**
      * Stream one inbox's events
-     * @description BillionSend extension: the event stream of one inbox, as GET /inboxes/events, ending when the inbox is deleted or expires. An inbox-scoped key may stream its own inbox, without the events about held mail.
+     * @description BillionSend extension: the event stream of one inbox, as GET /inboxes/events, ending when the inbox is deleted or expires; it carries inbox.deleted and inbox.expired whatever types names. An inbox-scoped key may stream its own inbox, without the events about held mail.
      */
     get: operations["inboxes.events.streamInbox"];
     put?: never;
@@ -986,7 +1638,7 @@ export interface paths {
     };
     /**
      * Get agent settings
-     * @description Hosted-agent settings. BillionSend runs no agent of its own, so an inbox never has one.
+     * @description The instructions, tone and allowed actions saved for this inbox's agent; empty until a first update. BillionSend stores these settings and runs no agent of its own: your own agent reads them (an inbox-scoped key can read its inbox's) and acts on the inbox through the API or MCP.
      */
     get: operations["inboxes.agent.get"];
     put?: never;
@@ -994,7 +1646,11 @@ export interface paths {
     delete?: never;
     options?: never;
     head?: never;
-    patch?: never;
+    /**
+     * Update agent settings
+     * @description Saves the instructions, tone and allowed actions of this inbox's agent. Send at least one field; a field left out keeps its value, `null` clears instructions or tone, and `actions` replaces the list. BillionSend stores these settings and runs no agent of its own: your own agent reads them (an inbox-scoped key can read its inbox's) and acts on the inbox through the API or MCP. Needs a developer role; an inbox-scoped key cannot change them.
+     */
+    patch: operations["inboxes.agent.update"];
     trace?: never;
   };
   "/inboxes/{inbox_id}/safety": {
@@ -1401,7 +2057,7 @@ export interface paths {
     put?: never;
     /**
      * Send a draft
-     * @description Sends the draft from the inbox address; the body is optional and only ever holds `headers`, which are not supported yet (an empty value is fine), and an `Idempotency-Key` is accepted. Answers the sent email's id. A draft waiting for approval goes out only when a person or a team-wide full access key sends it (403 approval_required otherwise), and their send skips the inbox's rules but never the team's limits or the shared domain's rules. An agent's send of a draft runs the rules and may hold it (202).
+     * @description Sends the draft from the inbox address; the body is optional and only ever holds `headers`, which are not supported (an empty value is fine), and an `Idempotency-Key` is accepted. Answers the sent email's id. A draft waiting for approval goes out only when a person or a team-wide full access key sends it (403 approval_required otherwise), and their send skips the inbox's rules but never the team's limits or the shared domain's rules. An agent's send of a draft runs the rules and may hold it (202).
      */
     post: operations["inboxes.drafts.send"];
     delete?: never;
@@ -1543,7 +2199,10 @@ export interface paths {
      */
     get: operations["emails.list"];
     put?: never;
-    /** Send an email */
+    /**
+     * Send an email
+     * @description Queue one email for sending, now or at `scheduled_at` (up to 30 days ahead). `to`, `cc` and `bcc` together hold at most 50 recipients. Retry with the same `Idempotency-Key` and payload to get the original answer instead of a second email.
+     */
     post: operations["emails.send"];
     delete?: never;
     options?: never;
@@ -1560,7 +2219,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Send a batch of emails */
+    /**
+     * Send a batch of emails
+     * @description Queue up to 100 emails in one request. With `x-batch-validation: strict` (the default) one invalid email refuses the whole batch; with `permissive` the valid ones are queued and each invalid one is reported by its index.
+     */
     post: operations["emails.batch"];
     delete?: never;
     options?: never;
@@ -1640,7 +2302,7 @@ export interface paths {
     post?: never;
     /**
      * Delete a received email
-     * @description BillionSend extension: erases one received email now, its sealed content, inbox memberships and received secrets with it, and threads it leaves empty. Needs a full access key that is not scoped to an inbox; for an MCP token, the owner or admin role. Webhook payloads already sent keep their metadata until the payload retention strips them.
+     * @description BillionSend extension: erases one received email now, its sealed content, inbox memberships and received secrets with it, and threads it leaves empty. Needs a full access key that is not scoped to an inbox, from an owner, admin or developer. Webhook payloads already sent keep their metadata until the payload retention strips them.
      */
     delete: operations["emails.receiving.delete"];
     options?: never;
@@ -1708,6 +2370,70 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/emails/{email_id}/attachments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List attachments
+     * @description The attachments and inline parts of one sent email, each with a signed download link valid for one hour; all of them unless `limit` is given. Needs a full access key. The files come from the email's stored content, so they are gone once the content retention period removed it (the list is then empty).
+     */
+    get: operations["emails.attachments.list"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/emails/{email_id}/attachments/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get an attachment
+     * @description One attachment's metadata and a signed download link valid for one hour. Needs a full access key.
+     */
+    get: operations["emails.attachments.get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/emails/{id}/share": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Share an email
+     * @description Creates a public link to view one sent email: its header lines and its body, nothing else about the team or the email (no Bcc, no files to download). The link carries a random token, expires after `expires_in` (48 hours at most, and by default) and can be revoked earlier with `DELETE /emails/{id}/share`. Needs a full access key.
+     */
+    post: operations["emails.share"];
+    /**
+     * Revoke an email's share links
+     * @description Ends every live share link of one sent email at once. BillionSend extension; the links of other emails are not touched. Needs a full access key.
+     */
+    delete: operations["emails.unshare"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/emails/{id}/insights": {
     parameters: {
       query?: never;
@@ -1715,7 +2441,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get email insights */
+    /**
+     * Get email insights
+     * @description The check results and score for one email. Answers 404 when the email has no insights. BillionSend extension.
+     */
     get: operations["emails.insights"];
     put?: never;
     post?: never;
@@ -1732,7 +2461,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get deliverability */
+    /**
+     * Get deliverability
+     * @description The account deliverability score over the last 30 days, its content and outcome parts, your hard bounce and complaint rates, and your standing. BillionSend extension.
+     */
     get: operations["deliverability.get"];
     put?: never;
     post?: never;
@@ -1746,14 +2478,135 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    RotateWebhookSecretRequest: {
+      /** @description New secret to sign with: whsec_ followed by base64 of 24-64 bytes. Omit to mint one. */
+      signing_secret?: string;
+      /** @description Hours the previous secret keeps signing alongside the new one (default 24, max 72). Every delivery in the window carries both signatures, so a receiver holding either verifies; 0 drops the old secret at once. */
+      overlap_hours?: number;
+    };
     SendInboxDraftRequest: {
-      /** @description Not supported yet: only an empty value is accepted, anything else answers 422 */
+      /** @description Not supported: only an empty value is accepted, anything else answers 422 */
       headers?: unknown;
     };
     ErrorResponse: {
       statusCode: number;
       name: string;
       message: string;
+    };
+    LinkClicksResponse: {
+      /** @enum {string} */
+      object: "list";
+      start_date: string;
+      end_date: string;
+      has_more: boolean;
+      data: {
+        /** @description Scheme, host and path of the clicked URL */
+        link: string;
+        /** @description Clicks by people */
+        clicked: number;
+        /** @description Fetches by machines (security scanners, link previews) */
+        bot_clicked: number;
+      }[];
+    };
+    CountryEngagementResponse: {
+      /** @enum {string} */
+      object: "list";
+      start_date: string;
+      end_date: string;
+      has_more: boolean;
+      data: {
+        /** @description ISO 3166-1 alpha-2 code, or unknown */
+        country: string;
+        /** @description Opens by people */
+        opened: number;
+        /** @description Emails whose first open came from here */
+        unique_opened: number;
+        /** @description Pixel fetches by machines (scanners, prefetches) */
+        bot_opened: number;
+        /** @description Clicks by people */
+        clicked: number;
+        /** @description Emails whose first click came from here */
+        unique_clicked: number;
+        /** @description Link fetches by machines */
+        bot_clicked: number;
+      }[];
+    };
+    ClientEngagementResponse: {
+      /** @enum {string} */
+      object: "list";
+      start_date: string;
+      end_date: string;
+      has_more: boolean;
+      data: {
+        /**
+         * @description The mail client that fetched the open
+         * @enum {string}
+         */
+        client: "gmail" | "apple_mail" | "outlook" | "yahoo" | "thunderbird" | "other" | "unknown";
+        /** @description Opens by people */
+        opened: number;
+        /** @description Emails whose first open came from here */
+        unique_opened: number;
+        /** @description Pixel fetches by machines (scanners, prefetches) */
+        bot_opened: number;
+      }[];
+    };
+    CreateContactImportResponse: {
+      /** @enum {string} */
+      object: "contact_import";
+      /** Format: uuid */
+      id: string;
+    };
+    CreateContactImportForm: {
+      /**
+       * Format: binary
+       * @description The CSV file: a header row, then one contact per row. At most 20 MiB
+       */
+      file?: string;
+      /**
+       * @description JSON-encoded object, see the column map fields
+       * @example {"email":"Email","first_name":"First Name"}
+       */
+      column_map?: string;
+      /**
+       * @description What to do with an address the team already has: `upsert` (default) updates it from the file, `skip` leaves it alone
+       * @enum {string}
+       */
+      on_conflict?: "upsert" | "skip";
+      /**
+       * @description JSON-encoded array of segments every imported contact joins
+       * @example [{"id":"78e7a5c6-9a91-4c63-9d1f-3b9c0b5b9ab6"}]
+       */
+      segments?: string;
+      /**
+       * @description JSON-encoded array of topic subscriptions to set for every imported contact
+       * @example [{"id":"059ac693-2fc8-4c13-8b27-01350d638a17","subscription":"opt_in"}]
+       */
+      topics?: string;
+    };
+    ListContactImportsResponse: {
+      /** @enum {string} */
+      object: "list";
+      has_more: boolean;
+      data: components["schemas"]["ContactImport"][];
+    };
+    ContactImport: {
+      /** @enum {string} */
+      object: "contact_import";
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      status: "queued" | "in_progress" | "completed" | "failed";
+      created_at: string;
+      completed_at: string | null;
+      counts: {
+        /** @description Data rows read so far; the file's row count once completed */
+        total: number;
+        created: number;
+        updated: number;
+        skipped: number;
+        failed: number;
+      };
     };
     ContactIdResponse: {
       /** @enum {string} */
@@ -1818,15 +2671,7 @@ export interface components {
          * @description BillionSend extension: the verdict of the contact's last deep verification (POST /verifications); null while it was never verified
          * @enum {string|null}
          */
-        verification_status:
-          | "valid"
-          | "invalid"
-          | "risky"
-          | "catchall"
-          | "role"
-          | "disposable"
-          | "unknown"
-          | null;
+        verification_status: "valid" | "invalid" | "risky" | "catchall" | "role" | "disposable" | null;
         /** @description When the last deep verification finished; null while never verified */
         verified_at: string | null;
         /** @description Present with include=properties */
@@ -1963,15 +2808,7 @@ export interface components {
          * @description BillionSend extension: the verdict of the contact's last deep verification (POST /verifications); null while it was never verified
          * @enum {string|null}
          */
-        verification_status:
-          | "valid"
-          | "invalid"
-          | "risky"
-          | "catchall"
-          | "role"
-          | "disposable"
-          | "unknown"
-          | null;
+        verification_status: "valid" | "invalid" | "risky" | "catchall" | "role" | "disposable" | null;
         /** @description When the last deep verification finished; null while never verified */
         verified_at: string | null;
         /** @description Present with include=properties */
@@ -2034,15 +2871,7 @@ export interface components {
        * @description BillionSend extension: the verdict of the contact's last deep verification (POST /verifications); null while it was never verified
        * @enum {string|null}
        */
-      verification_status:
-        | "valid"
-        | "invalid"
-        | "risky"
-        | "catchall"
-        | "role"
-        | "disposable"
-        | "unknown"
-        | null;
+      verification_status: "valid" | "invalid" | "risky" | "catchall" | "role" | "disposable" | null;
       /** @description When the last deep verification finished; null while never verified */
       verified_at: string | null;
       /** @enum {string} */
@@ -2118,6 +2947,34 @@ export interface components {
       /** @enum {string} */
       subscription: "opt_in" | "opt_out";
     }[];
+    ListSegmentsResponse: {
+      /** @enum {string} */
+      object: "list";
+      data: {
+        /** @enum {string} */
+        object: "segment";
+        /** Format: uuid */
+        id: string;
+        name: string;
+        /**
+         * Format: uuid
+         * @description BillionSend extension: the domain the segment is bound to; null for a team-wide segment
+         */
+        domain_id: string | null;
+        filter: components["schemas"]["SegmentFilter"];
+        created_at: string;
+      }[];
+      has_more: boolean;
+    };
+    SegmentFilter: {
+      /** @enum {string} */
+      match: "all" | "any";
+      conditions: {
+        field: string;
+        op: string;
+        value: string | null;
+      }[];
+    } | null;
     AddContactSegmentResponse: {
       /** Format: uuid */
       id: string;
@@ -2192,15 +3049,6 @@ export interface components {
       filter: components["schemas"]["SegmentFilter"];
       created_at: string;
     };
-    SegmentFilter: {
-      /** @enum {string} */
-      match: "all" | "any";
-      conditions: {
-        field: string;
-        op: string;
-        value: string | null;
-      }[];
-    } | null;
     CreateSegmentRequest: {
       name: string;
       /**
@@ -2209,25 +3057,6 @@ export interface components {
        */
       domain_id?: string | null;
       filter?: components["schemas"]["SegmentFilter"];
-    };
-    ListSegmentsResponse: {
-      /** @enum {string} */
-      object: "list";
-      data: {
-        /** @enum {string} */
-        object: "segment";
-        /** Format: uuid */
-        id: string;
-        name: string;
-        /**
-         * Format: uuid
-         * @description BillionSend extension: the domain the segment is bound to; null for a team-wide segment
-         */
-        domain_id: string | null;
-        filter: components["schemas"]["SegmentFilter"];
-        created_at: string;
-      }[];
-      has_more: boolean;
     };
     GetSegmentResponse: {
       /** @enum {string} */
@@ -2290,18 +3119,19 @@ export interface components {
        * @description Segment to send to; omitted means every contact of the team
        */
       segment_id?: string;
-      /** @description Sender, "Name <user@domain>"; the domain must be one of the team's own verified domains when the broadcast is sent: sending from an address on the shared inbox domain answers 403 */
-      from: string;
-      /** @description Subject line; supports {{{FIRST_NAME|there}}} merge fields */
-      subject: string;
-      /** @description HTML body; include {{{UNSUBSCRIBE_URL}}} for the opt-out link */
+      /** @description Sender, "Name <user@domain>"; the domain must be one of the team's own verified domains when the broadcast is sent: sending from an address on the shared inbox domain answers 403. Required unless `template` supplies a default sender */
+      from?: string;
+      /** @description Subject line; supports {{{FIRST_NAME|there}}} merge fields. Required unless `template` supplies a default subject; given with a template, it replaces the template's */
+      subject?: string;
+      /** @description HTML body (not with `template`); put {{{UNSUBSCRIBE_URL}}} where the opt-out link goes. Without it (or {{{RESEND_UNSUBSCRIBE_URL}}}) a small Unsubscribe footer with the recipient's own link is added at the end when it is sent */
       html?: string;
-      /** @description Plain-text body; at least one of html/text is required */
+      /** @description Plain-text body; at least one of html/text is required. Without {{{UNSUBSCRIBE_URL}}} (or {{{RESEND_UNSUBSCRIBE_URL}}}) in it, a last line with the recipient's unsubscribe link is added when it is sent */
       text?: string;
-      /** @description Reply-To address or list */
+      /** @description Reply-To address or list; given with a template, it replaces the template's */
       reply_to?: string | string[];
-      /** @description Inbox preview (preheader) text */
+      /** @description Inbox preview (preheader) text; given with a template, it replaces the template's */
       preview_text?: string;
+      template?: components["schemas"]["SendTemplate"];
       /**
        * Format: uuid
        * @description Topic id; only contacts subscribed to it receive the broadcast
@@ -2311,6 +3141,15 @@ export interface components {
       send?: boolean;
       /** @description Deliver later (requires send: true): ISO 8601 with offset or relative like "in 1 hour" */
       scheduled_at?: string;
+    };
+    /** @description BillionSend extension: build the broadcast from a template's newest published version, as `POST /emails` does. The content is copied in when the broadcast is created, with the variables filled in; later edits of the template do not change the broadcast. Contact merge fields such as {{{FIRST_NAME|there}}} stay in the content and are filled per recipient when it is sent */
+    SendTemplate: {
+      /** @description Id or alias of the template; its newest published version is used */
+      id: string;
+      /** @description Values for the template's declared variables: a string of up to 2000 characters or a number, matching each variable's type. A declared variable left out takes its fallback_value; without one the send is a 422. Names the template does not declare are ignored */
+      variables?: {
+        [key: string]: string | number;
+      };
     };
     ListBroadcastsResponse: {
       /** @enum {string} */
@@ -2391,6 +3230,51 @@ export interface components {
       domain_id: string | null;
       html: string | null;
       text: string | null;
+    };
+    ListBroadcastRecipientsResponse: {
+      /** @enum {string} */
+      object: "list";
+      data: {
+        /**
+         * Format: uuid
+         * @description The id of the recipient's email (`GET /emails/{id}`)
+         */
+        id: string;
+        /** Format: uuid */
+        contact_id: string | null;
+        email: string;
+        /** @description With type=opened or clicked: the events */
+        count?: number;
+        /** @description With type=clicked: the links this recipient clicked. A click whose payload retention already cleared counts in `count` and names no link. */
+        clicked_links?: {
+          url: string;
+          clicks: number;
+        }[];
+        /**
+         * @description With type=bounced: the class of the bounce
+         * @enum {string}
+         */
+        bounce_type?: "permanent" | "transient" | "undetermined";
+      }[];
+      has_more: boolean;
+    };
+    ListBroadcastClickedLinksResponse: {
+      /** @enum {string} */
+      object: "list";
+      data: {
+        /**
+         * Format: uuid
+         * @description An opaque cursor for this row, not the id of any entity
+         */
+        id: string;
+        /** @description Scheme, host and path of the clicked link */
+        url: string;
+        /** @description Clicks by people */
+        clicks: number;
+        /** @description Different recipients who clicked this link: a recipient counts once per link, so one who clicked two links is in both rows */
+        unique_clicks: number;
+      }[];
+      has_more: boolean;
     };
     BroadcastIdResponse: {
       /** Format: uuid */
@@ -2518,6 +3402,8 @@ export interface components {
       region: string;
       open_tracking: boolean;
       click_tracking: boolean;
+      /** @description BillionSend extension: a recipient who unsubscribed from this domain, or from the whole team, gets no mail from it at all, transactional mail included. Turn this on to send this domain's transactional mail (no topic, not a broadcast) to them anyway. Default false. Broadcasts and topic mail always respect the unsubscribe. */
+      send_transactional_to_unsubscribed: boolean;
       tracking_subdomain: string | null;
       /**
        * @description BillionSend extension: where the tracking subdomain stands: pending (waiting for its CNAME and certificate), active (links go through it) or failed (did not activate within 72 hours; links use the shared host). null while no tracking_subdomain is set.
@@ -2550,9 +3436,9 @@ export interface components {
         logo_url: string | null;
       };
       capabilities: {
-        /** @description enabled; on the shared row, disabled while the instance pauses sending from the shared domain */
+        /** @description enabled; on the shared row, disabled while sending from the shared domain is paused */
         sending: string;
-        /** @description enabled while the domain receives mail; always disabled on an instance that does not */
+        /** @description enabled while the domain receives mail */
         receiving: string;
       };
       /** @description BillionSend extension: whether mail to an address without an inbox is stored (true) or refused at RCPT (false) */
@@ -2565,10 +3451,10 @@ export interface components {
        */
       sending_mode?: "open" | "reply_only" | "receive_only";
       /**
-       * @description BillionSend extension, on the shared row only: what holds sending below open: the team's plan or the instance; null when open
+       * @description BillionSend extension, on the shared row only: what holds sending below open: plan when the team's plan holds it, platform when the platform's sending switches do; null when open
        * @enum {string|null}
        */
-      sending_mode_reason?: "plan" | "instance" | null;
+      sending_mode_reason?: "plan" | "platform" | null;
       records: {
         /** @description Which record this is: DKIM, SPF (the MAIL FROM MX and TXT rows), DMARC, Tracking (the tracking subdomain's CNAME, present once a tracking subdomain is set), Unsubscribe (the unsubscribe subdomain's CNAME, present once an unsubscribe subdomain is set to a label other than the tracking one) or Receiving (the MX inbound mail needs, present while receiving is enabled; it reads verified only when it is among the domain's lowest-numbered MX records). Only the DKIM and SPF rows gate sending. */
         record: string;
@@ -2598,7 +3484,7 @@ export interface components {
     CreateDomainRequest: {
       name: string;
       /**
-       * @description SES region of the identity, one of the regions this deployment serves (the values listed here; the first is the default). Any other region is rejected with 422. A domain has one region, fixed when it is added.
+       * @description SES region of the identity, one of the regions this deployment serves (the values listed here). Without one, the team's default sending region from Settings is used, else the first listed. Any other region is rejected with 422. A domain has one region, fixed when it is added.
        * @enum {string}
        */
       region?: "us-east-1" | "eu-west-1" | "sa-east-1" | "ap-northeast-1";
@@ -2620,7 +3506,7 @@ export interface components {
          */
         sending?: "enabled" | "disabled";
         /**
-         * @description Inbound mail for every address at the domain (a catch-all), readable at /emails/receiving and announced by the email.received webhook. Enabling needs a verified domain on an instance that receives mail, and adds a Receiving MX record to records[]. A domain that already has mailboxes is best received on a subdomain (inbound.example.com): the Receiving MX would take their mail.
+         * @description Inbound mail for every address at the domain (a catch-all), readable at /emails/receiving and announced by the email.received webhook. Enabling needs a verified domain, and adds a Receiving MX record to records[]. A domain that already has mailboxes is best received on a subdomain (inbound.example.com): the Receiving MX would take their mail.
          * @enum {string}
          */
         receiving?: "enabled" | "disabled";
@@ -2638,6 +3524,8 @@ export interface components {
         region: string;
         open_tracking: boolean;
         click_tracking: boolean;
+        /** @description BillionSend extension: a recipient who unsubscribed from this domain, or from the whole team, gets no mail from it at all, transactional mail included. Turn this on to send this domain's transactional mail (no topic, not a broadcast) to them anyway. Default false. Broadcasts and topic mail always respect the unsubscribe. */
+        send_transactional_to_unsubscribed: boolean;
         tracking_subdomain: string | null;
         /**
          * @description BillionSend extension: where the tracking subdomain stands: pending (waiting for its CNAME and certificate), active (links go through it) or failed (did not activate within 72 hours; links use the shared host). null while no tracking_subdomain is set.
@@ -2670,9 +3558,9 @@ export interface components {
           logo_url: string | null;
         };
         capabilities: {
-          /** @description enabled; on the shared row, disabled while the instance pauses sending from the shared domain */
+          /** @description enabled; on the shared row, disabled while sending from the shared domain is paused */
           sending: string;
-          /** @description enabled while the domain receives mail; always disabled on an instance that does not */
+          /** @description enabled while the domain receives mail */
           receiving: string;
         };
         /** @description BillionSend extension: whether mail to an address without an inbox is stored (true) or refused at RCPT (false) */
@@ -2685,10 +3573,10 @@ export interface components {
          */
         sending_mode?: "open" | "reply_only" | "receive_only";
         /**
-         * @description BillionSend extension, on the shared row only: what holds sending below open: the team's plan or the instance; null when open
+         * @description BillionSend extension, on the shared row only: what holds sending below open: plan when the team's plan holds it, platform when the platform's sending switches do; null when open
          * @enum {string|null}
          */
-        sending_mode_reason?: "plan" | "instance" | null;
+        sending_mode_reason?: "plan" | "platform" | null;
       }[];
       has_more: boolean;
     };
@@ -2701,6 +3589,8 @@ export interface components {
       region: string;
       open_tracking: boolean;
       click_tracking: boolean;
+      /** @description BillionSend extension: a recipient who unsubscribed from this domain, or from the whole team, gets no mail from it at all, transactional mail included. Turn this on to send this domain's transactional mail (no topic, not a broadcast) to them anyway. Default false. Broadcasts and topic mail always respect the unsubscribe. */
+      send_transactional_to_unsubscribed: boolean;
       tracking_subdomain: string | null;
       /**
        * @description BillionSend extension: where the tracking subdomain stands: pending (waiting for its CNAME and certificate), active (links go through it) or failed (did not activate within 72 hours; links use the shared host). null while no tracking_subdomain is set.
@@ -2733,9 +3623,9 @@ export interface components {
         logo_url: string | null;
       };
       capabilities: {
-        /** @description enabled; on the shared row, disabled while the instance pauses sending from the shared domain */
+        /** @description enabled; on the shared row, disabled while sending from the shared domain is paused */
         sending: string;
-        /** @description enabled while the domain receives mail; always disabled on an instance that does not */
+        /** @description enabled while the domain receives mail */
         receiving: string;
       };
       /** @description BillionSend extension: whether mail to an address without an inbox is stored (true) or refused at RCPT (false) */
@@ -2748,10 +3638,10 @@ export interface components {
        */
       sending_mode?: "open" | "reply_only" | "receive_only";
       /**
-       * @description BillionSend extension, on the shared row only: what holds sending below open: the team's plan or the instance; null when open
+       * @description BillionSend extension, on the shared row only: what holds sending below open: plan when the team's plan holds it, platform when the platform's sending switches do; null when open
        * @enum {string|null}
        */
-      sending_mode_reason?: "plan" | "instance" | null;
+      sending_mode_reason?: "plan" | "platform" | null;
       /** @enum {string} */
       object: "domain";
       records: {
@@ -2789,6 +3679,8 @@ export interface components {
       tracking_subdomain?: string | null;
       /** @description BillionSend extension: DNS label of the domain's own unsubscribe host, e.g. "unsubscribe" for unsubscribe.<domain>. Optional: without one, unsubscribe links (and the List-Unsubscribe header) use the shared unsubscribe host. Setting it adds an Unsubscribe CNAME to records[] (point it at the given value, DNS only); its certificate is issued automatically once it resolves, the Unsubscribe record then reads verified, and unsubscribe links go through it from then on. The same label as tracking_subdomain is allowed: one host then serves both and records[] shows one row. A subdomain that does not activate within 72 hours reads failed; send the same unsubscribe_subdomain again to retry. Kept apart from tracking_subdomain because ad blockers filter tracking hosts by name. Empty string or null clears it. */
       unsubscribe_subdomain?: string | null;
+      /** @description BillionSend extension: a recipient who unsubscribed from this domain, or from the whole team, gets no mail from it at all, transactional mail included. Turn this on to send this domain's transactional mail (no topic, not a broadcast) to them anyway. Default false. Broadcasts and topic mail always respect the unsubscribe. */
+      send_transactional_to_unsubscribed?: boolean;
       /** @description BillionSend extension: this domain's own look for its unsubscribe pages. Fields not sent keep their value; null clears one, and a cleared field falls back to the team's default page. logo_url is read-only here: the logo is uploaded in the dashboard. */
       unsubscribe_page?: {
         /** @description Name shown on the page; max 80 characters */
@@ -2820,12 +3712,12 @@ export interface components {
          */
         sending?: "enabled" | "disabled";
         /**
-         * @description Inbound mail for every address at the domain (a catch-all), readable at /emails/receiving and announced by the email.received webhook. Enabling needs a verified domain on an instance that receives mail, and adds a Receiving MX record to records[]. A domain that already has mailboxes is best received on a subdomain (inbound.example.com): the Receiving MX would take their mail.
+         * @description Inbound mail for every address at the domain (a catch-all), readable at /emails/receiving and announced by the email.received webhook. Enabling needs a verified domain, and adds a Receiving MX record to records[]. A domain that already has mailboxes is best received on a subdomain (inbound.example.com): the Receiving MX would take their mail.
          * @enum {string}
          */
         receiving?: "enabled" | "disabled";
       };
-      /** @description BillionSend extension: store mail to addresses without an inbox (true) or refuse it at RCPT (false). Turning it on needs receiving enabled and, on BillionSend Cloud, a paid plan. */
+      /** @description BillionSend extension: store mail to addresses without an inbox (true) or refuse it at RCPT (false). Turning it on needs receiving enabled and a paid plan. */
       receiving_catch_all?: boolean;
     };
     RemoveDomainResponse: {
@@ -2835,6 +3727,70 @@ export interface components {
       id: string;
       /** @enum {boolean} */
       deleted: true;
+    };
+    DomainClaim: {
+      /** @enum {string} */
+      object: "domain_claim";
+      /**
+       * Format: uuid
+       * @description The claim's id
+       */
+      id: string;
+      name: string;
+      /**
+       * @description `pending` waits for the TXT record; `verified` means the proof was seen and the transfer is under way; `completed` means the domain is the team's; `blocked` means a safety check holds the transfer back (see `blocked_reason`); `expired`, `superseded` (another claim on the name completed), `canceled` and `failed` (see `failure_reason`) are the other ends
+       * @enum {string}
+       */
+      status:
+        | "pending"
+        | "verified"
+        | "completed"
+        | "blocked"
+        | "expired"
+        | "superseded"
+        | "canceled"
+        | "failed";
+      /**
+       * Format: uuid
+       * @description The placeholder domain id: the id to use in `/domains/{id}/claim` and, once the claim completed, the id of the new domain. No domain exists under it before then; `DELETE /domains/{id}` on it cancels a live claim
+       */
+      domain_id: string | null;
+      region: string | null;
+      record: {
+        /** @enum {string} */
+        type: "TXT";
+        /** @description The name to publish the record at: the claimed domain itself */
+        name: string;
+        value: string;
+        /** @enum {string} */
+        ttl: "Auto";
+      };
+      /**
+       * @description Why a verified claim is held back: `pending_scheduled_emails` (the holder still has mail queued or broadcasts unfinished on the domain), `recent_owner_activity` (mail was sent from it in the last 7 days), `grace_period` (the holder added it less than 24 hours ago). BillionSend looks again every few minutes until the claim expires
+       * @enum {string|null}
+       */
+      blocked_reason: "grace_period" | "recent_owner_activity" | "pending_scheduled_emails" | null;
+      /** @description Why a failed claim failed: `domain_already_yours`, `plan_domain_limit_reached`, `region_unavailable` or `transfer_failed` */
+      failure_reason: string | null;
+      created_at: string;
+      /** @description Seven days after the claim was created */
+      expires_at: string;
+    };
+    ClaimDomainRequest: {
+      name: string;
+      /**
+       * @description SES region of the identity, one of the regions this deployment serves (the values listed here). Without one, the team's default sending region from Settings is used, else the first listed. Any other region is rejected with 422. A domain has one region, fixed when it is added.
+       * @enum {string}
+       */
+      region?: "us-east-1" | "eu-west-1" | "sa-east-1" | "ap-northeast-1";
+      /** @default send */
+      custom_return_path?: string;
+      /** @description Inject a tracking pixel served from the tracking host and record email.opened events. Off by default. */
+      open_tracking?: boolean;
+      /** @description Rewrite links to redirect through the tracking host and record email.clicked events. Off by default. */
+      click_tracking?: boolean;
+      /** @description DNS label of the domain's own tracking host, e.g. "links" for links.<domain>. Optional: without one, tracked links use the shared tracking host. Setting it adds a Tracking CNAME to records[] (point it at the given value, DNS only); its certificate is issued automatically once it resolves, the Tracking record then reads verified, and links go through it from then on. A subdomain that does not activate within 72 hours reads failed; send the same tracking_subdomain again to retry. */
+      tracking_subdomain?: string;
     };
     CreateApiKeyResponse: {
       /** Format: uuid */
@@ -2876,6 +3832,15 @@ export interface components {
       }[];
       has_more: boolean;
     };
+    UpdateApiKeyResponse: {
+      /** @enum {string} */
+      object: "api_key";
+      /** Format: uuid */
+      id: string;
+    };
+    UpdateApiKeyRequest: {
+      name: string;
+    };
     RemoveApiKeyResponse: {
       /** @enum {string} */
       object: "api_key";
@@ -2915,18 +3880,25 @@ export interface components {
         | "contact.created"
         | "contact.updated"
         | "contact.deleted"
+        | "contact.topics.updated"
         | "contact.unsubscribed"
         | "contact.resubscribed"
-        | "contact.topic_opt_in"
-        | "contact.topic_opt_out"
         | "suppression.added"
         | "suppression.removed"
+        | "domain.created"
+        | "domain.updated"
+        | "domain.deleted"
+        | "topic.created"
+        | "topic.updated"
+        | "topic.deleted"
         | "inbox.created"
         | "inbox.updated"
         | "inbox.deleted"
         | "inbox.expired"
         | "inbox.thread.created"
         | "inbox.thread.folder.updated"
+        | "inbox.thread.assigned"
+        | "inbox.thread.unassigned"
         | "inbox.thread.labels.updated"
         | "inbox.email.received"
         | "inbox.email.sent"
@@ -2983,11 +3955,63 @@ export interface components {
       signing_secret: string;
       previous_secret_expires_at: string | null;
     };
-    RotateWebhookSecretRequest: {
-      /** @description New secret to sign with: whsec_ followed by base64 of 24-64 bytes. Omit to mint one. */
-      signing_secret?: string;
-      /** @description Hours the previous secret keeps signing alongside the new one (default 24, max 72). Every delivery in the window carries both signatures, so a receiver holding either verifies; 0 drops the old secret at once. */
-      overlap_hours?: number;
+    ListWebhookEventsResponse: {
+      /** @enum {string} */
+      object: "list";
+      data: {
+        /** Format: uuid */
+        id: string;
+        type: string;
+        created_at: string;
+        /**
+         * @description pending: not posted yet. attempting: posted at least once and will be posted again. failed: retries ran out. success: a 2xx came back.
+         * @enum {string}
+         */
+        status: "success" | "pending" | "failed" | "attempting";
+      }[];
+      has_more: boolean;
+    };
+    GetWebhookEventResponse: {
+      /** Format: uuid */
+      id: string;
+      type: string;
+      created_at: string;
+      /**
+       * @description pending: not posted yet. attempting: posted at least once and will be posted again. failed: retries ran out. success: a 2xx came back.
+       * @enum {string}
+       */
+      status: "success" | "pending" | "failed" | "attempting";
+      /** @enum {string} */
+      object: "webhook_event";
+      /** @description When the next post is due; null once the event succeeded or failed for good */
+      next_attempt_at: string | null;
+      /** @description The event as posted. After the retention window the payload's data is emptied and the event can no longer be replayed. */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
+    ReplayWebhookEventResponse: {
+      /** @enum {string} */
+      object: "webhook_event";
+      /**
+       * Format: uuid
+       * @description The new event: same payload and webhook-id, posted again
+       */
+      id: string;
+    };
+    ListWebhookEventAttemptsResponse: {
+      /** @enum {string} */
+      object: "list";
+      data: {
+        /** Format: uuid */
+        id: string;
+        /** @description The receiver's status; 0 when nothing answered (DNS, TLS, timeout) */
+        http_status_code: number;
+        /** @description The response body (first 1 KiB), or the failure code when nothing answered */
+        response: string;
+        sent_at: string;
+      }[];
+      has_more: boolean;
     };
     WebhookIdResponse: {
       /** @enum {string} */
@@ -3019,18 +4043,25 @@ export interface components {
         | "contact.created"
         | "contact.updated"
         | "contact.deleted"
+        | "contact.topics.updated"
         | "contact.unsubscribed"
         | "contact.resubscribed"
-        | "contact.topic_opt_in"
-        | "contact.topic_opt_out"
         | "suppression.added"
         | "suppression.removed"
+        | "domain.created"
+        | "domain.updated"
+        | "domain.deleted"
+        | "topic.created"
+        | "topic.updated"
+        | "topic.deleted"
         | "inbox.created"
         | "inbox.updated"
         | "inbox.deleted"
         | "inbox.expired"
         | "inbox.thread.created"
         | "inbox.thread.folder.updated"
+        | "inbox.thread.assigned"
+        | "inbox.thread.unassigned"
         | "inbox.thread.labels.updated"
         | "inbox.email.received"
         | "inbox.email.sent"
@@ -3074,6 +4105,20 @@ export interface components {
     };
     BatchRemoveSuppressionsResponse: {
       data: components["schemas"]["RemoveSuppressionResponse"][];
+      /** @description Matched entries that were left in place, with why */
+      not_removed: {
+        /** @enum {string} */
+        object: "suppression";
+        /** Format: uuid */
+        id: string;
+        /** @enum {string} */
+        origin: "bounce" | "complaint" | "manual";
+        /**
+         * @description A bounce or complaint entry is permanent and stays on the list
+         * @enum {string}
+         */
+        reason: "permanent";
+      }[];
     };
     RemoveSuppressionResponse: {
       /** @enum {string} */
@@ -3181,14 +4226,6 @@ export interface components {
        */
       domain_id?: string | null;
     };
-    RemoveUnsubscribeResponse: {
-      /** @enum {string} */
-      object: "unsubscribe";
-      /** Format: uuid */
-      id: string;
-      /** @enum {boolean} */
-      deleted: true;
-    };
     TemplateIdResponse: {
       /** @enum {string} */
       object: "template";
@@ -3205,12 +4242,20 @@ export interface components {
       text?: string | null;
       /** @description Case-sensitive handle, unique per team; GET /templates/{alias} resolves it */
       alias?: string | null;
-      /** @description Not supported yet: any value is a 422 */
+      /** @description Default sender; a send's own `from` replaces it. null clears it */
       from?: string | null;
-      /** @description Not supported yet: any value is a 422 */
+      /** @description Default Reply-To address or list; a send's own `reply_to` replaces it. null clears it */
       reply_to?: string | string[] | null;
-      /** @description Not supported yet: a non-empty list is a 422 */
-      variables?: unknown[];
+      /** @description The variables the content uses, up to 50; the list replaces the declared ones, [] clears them */
+      variables?: components["schemas"]["TemplateVariableInput"][];
+    };
+    TemplateVariableInput: {
+      /** @description The name the content writes as {{{KEY}}} */
+      key: string;
+      /** @enum {string} */
+      type: "string" | "number";
+      /** @description Used when a send gives no value, and of the variable's type; without one the variable is required */
+      fallback_value?: string | number | null;
     };
     ListTemplatesResponse: {
       /** @enum {string} */
@@ -3242,15 +4287,22 @@ export interface components {
       object: "template";
       /** Format: uuid */
       current_version_id: string;
-      from: null;
+      from: string | null;
       subject: string | null;
-      reply_to: null;
+      reply_to: string[] | null;
       html: string;
       text: string | null;
-      /** @description Always empty */
-      variables: unknown[];
+      variables: components["schemas"]["TemplateVariable"][];
       /** @enum {boolean} */
       has_unpublished_versions: false;
+    };
+    TemplateVariable: {
+      key: string;
+      /** @enum {string} */
+      type: "string" | "number";
+      fallback_value: string | number | null;
+      created_at: string;
+      updated_at: string;
     };
     UpdateTemplateRequest: {
       name?: string;
@@ -3260,12 +4312,12 @@ export interface components {
       text?: string | null;
       /** @description null clears the alias */
       alias?: string | null;
-      /** @description Not supported yet: any value is a 422 */
+      /** @description Default sender; a send's own `from` replaces it. null clears it */
       from?: string | null;
-      /** @description Not supported yet: any value is a 422 */
+      /** @description Default Reply-To address or list; a send's own `reply_to` replaces it. null clears it */
       reply_to?: string | string[] | null;
-      /** @description Not supported yet: a non-empty list is a 422 */
-      variables?: unknown[];
+      /** @description The variables the content uses, up to 50; the list replaces the declared ones, [] clears them */
+      variables?: components["schemas"]["TemplateVariableInput"][];
     };
     RemoveTemplateResponse: {
       /** @enum {string} */
@@ -3274,6 +4326,479 @@ export interface components {
       id: string;
       /** @enum {boolean} */
       deleted: true;
+    };
+    CreateEventResponse: {
+      /** @enum {string} */
+      object: "event";
+      /** Format: uuid */
+      id: string;
+    };
+    CreateEventRequest: {
+      /** @description Event name: 1-255 characters, case sensitive; the billionsend: prefix and the other system prefixes are reserved and refused. */
+      name: string;
+      /** @description Payload schema: a flat map from payload key to string, number, boolean or date. When set, events.send checks the payload against it and converts each typed value; keys not named pass unchanged. null clears it. */
+      schema?: {
+        [key: string]: "string" | "number" | "boolean" | "date";
+      } | null;
+    };
+    SendEventResponse: {
+      /** @enum {string} */
+      object: "event";
+      event: string;
+    };
+    SendEventRequest: {
+      /** @description Event name: 1-255 characters, case sensitive; the billionsend: prefix and the other system prefixes are reserved and refused. */
+      event: string;
+      /**
+       * Format: uuid
+       * @description The contact to run the event for. Give this or email.
+       */
+      contact_id?: string;
+      /**
+       * Format: email
+       * @description The contact's email address; the contact is created when an automation needs it. Give this or contact_id.
+       */
+      email?: string;
+      /** @description Event data the automations read as event.<key>: a JSON object, at most 32 KB and 8 levels deep. */
+      payload?: {
+        [key: string]: unknown;
+      };
+    };
+    ListEventsResponse: {
+      /** @enum {string} */
+      object: "list";
+      has_more: boolean;
+      data: {
+        /** Format: uuid */
+        id: string;
+        name: string;
+        schema: {
+          [key: string]: "string" | "number" | "boolean" | "date";
+        } | null;
+        created_at: string;
+        updated_at: string | null;
+      }[];
+    };
+    Event: {
+      /** @enum {string} */
+      object: "event";
+      /** Format: uuid */
+      id: string;
+      name: string;
+      schema: {
+        [key: string]: "string" | "number" | "boolean" | "date";
+      } | null;
+      created_at: string;
+      updated_at: string | null;
+    };
+    UpdateEventResponse: {
+      /** @enum {string} */
+      object: "event";
+      /** Format: uuid */
+      id: string;
+    };
+    UpdateEventRequest: {
+      /** @description Payload schema: a flat map from payload key to string, number, boolean or date. When set, events.send checks the payload against it and converts each typed value; keys not named pass unchanged. null clears it. */
+      schema: {
+        [key: string]: "string" | "number" | "boolean" | "date";
+      } | null;
+    };
+    RemoveEventResponse: {
+      /** @enum {string} */
+      object: "event";
+      /** Format: uuid */
+      id: string;
+      /** @enum {boolean} */
+      deleted: true;
+    };
+    AutomationIdResponse: {
+      /** @enum {string} */
+      object: "automation";
+      /** Format: uuid */
+      id: string;
+    };
+    CreateAutomationRequest: {
+      name: string;
+      /**
+       * @description Default disabled; an empty automation cannot be enabled
+       * @enum {string}
+       */
+      status?: "enabled" | "disabled";
+      /** @description The steps; give together with connections */
+      steps?: components["schemas"]["AutomationStep"][];
+      /** @description The connections between steps; give together with steps */
+      connections?: components["schemas"]["AutomationConnection"][];
+      /** @description BillionSend extension: canvas coordinates, { nodes: { <step key>: { x, y } } }, saved with the steps and read back by GET. Not part of the automation's meaning; give it together with steps. */
+      layout?: {
+        nodes: {
+          [key: string]: {
+            x: number;
+            y: number;
+          };
+        };
+      };
+    };
+    AutomationStep: {
+      /** @description Step key, 1-64 characters from A-Z a-z 0-9 _ . -; unique in the automation */
+      key: string;
+      /** @enum {string} */
+      type:
+        | "trigger"
+        | "delay"
+        | "send_email"
+        | "wait_for_event"
+        | "condition"
+        | "contact_update"
+        | "contact_delete"
+        | "add_to_segment";
+      /** @description By type. trigger: { event_name }. delay: { duration }, such as "1 hour" or "3 days", at most 30 days. send_email: { template: { id, variables? }, subject?, from?, reply_to?, topic_id? }. wait_for_event: { event_name, timeout?, filter_rule? }. condition: a rule, { type: "rule", field, operator, value? } or { type: "and" | "or", rules }. contact_update: { first_name?, last_name?, unsubscribed?, properties? }. contact_delete: {}. add_to_segment: { segment_id }. A value may be { "var": "event.x" }, "contact.x" or "wait_events.<event>.x" read when the step runs. */
+      config: {
+        [key: string]: unknown;
+      };
+    };
+    AutomationConnection: {
+      /** @description Key of the step the connection leaves */
+      from: string;
+      /** @description Key of the step it enters */
+      to: string;
+      /**
+       * @description default (any step); condition_met / condition_not_met (a condition step); event_received / timeout (a wait_for_event step). Omitted: default.
+       * @enum {string}
+       */
+      type?: "default" | "condition_met" | "condition_not_met" | "timeout" | "event_received";
+    };
+    ListAutomationsResponse: {
+      /** @enum {string} */
+      object: "list";
+      has_more: boolean;
+      data: {
+        /** Format: uuid */
+        id: string;
+        name: string;
+        /** @enum {string} */
+        status: "enabled" | "disabled";
+        created_at: string;
+        updated_at: string | null;
+      }[];
+    };
+    GetAutomationResponse: {
+      /** @enum {string} */
+      object: "automation";
+      /** Format: uuid */
+      id: string;
+      name: string;
+      /** @enum {string} */
+      status: "enabled" | "disabled";
+      created_at: string;
+      updated_at: string | null;
+      steps: {
+        key: string;
+        /** @enum {string} */
+        type:
+          | "trigger"
+          | "delay"
+          | "send_email"
+          | "wait_for_event"
+          | "condition"
+          | "contact_update"
+          | "contact_delete"
+          | "add_to_segment";
+        config: {
+          [key: string]: unknown;
+        };
+      }[];
+      connections: {
+        from: string;
+        to: string;
+        /** @enum {string} */
+        type: "default" | "condition_met" | "condition_not_met" | "timeout" | "event_received";
+      }[];
+      /** @description BillionSend extension: the canvas coordinates saved with the current version; absent when the canvas saved none */
+      layout?: {
+        nodes: {
+          [key: string]: {
+            x: number;
+            y: number;
+          };
+        };
+      };
+    };
+    UpdateAutomationRequest: {
+      name?: string;
+      /** @enum {string} */
+      status?: "enabled" | "disabled";
+      /** @description The steps; give together with connections */
+      steps?: components["schemas"]["AutomationStep"][];
+      /** @description The connections between steps; give together with steps */
+      connections?: components["schemas"]["AutomationConnection"][];
+      /** @description BillionSend extension: canvas coordinates, { nodes: { <step key>: { x, y } } }, saved with the steps and read back by GET. Not part of the automation's meaning; give it together with steps. */
+      layout?: {
+        nodes: {
+          [key: string]: {
+            x: number;
+            y: number;
+          };
+        };
+      };
+    };
+    RemoveAutomationResponse: {
+      /** @enum {string} */
+      object: "automation";
+      /** Format: uuid */
+      id: string;
+      /** @enum {boolean} */
+      deleted: true;
+    };
+    StopAutomationResponse: {
+      /** @enum {string} */
+      object: "automation";
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      status: "disabled";
+    };
+    ListAutomationRunsResponse: {
+      /** @enum {string} */
+      object: "list";
+      has_more: boolean;
+      data: {
+        /** Format: uuid */
+        id: string;
+        /** @enum {string} */
+        status: "running" | "completed" | "failed" | "cancelled";
+        started_at: string | null;
+        completed_at: string | null;
+        created_at: string;
+      }[];
+    };
+    GetAutomationRunResponse: {
+      /** @enum {string} */
+      object: "automation_run";
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      status: "running" | "completed" | "failed" | "cancelled";
+      started_at: string | null;
+      completed_at: string | null;
+      created_at: string;
+      steps: {
+        key: string;
+        /** @enum {string} */
+        type:
+          | "trigger"
+          | "delay"
+          | "send_email"
+          | "wait_for_event"
+          | "condition"
+          | "contact_update"
+          | "contact_delete"
+          | "add_to_segment";
+        /** @enum {string} */
+        status: "pending" | "running" | "completed" | "failed" | "skipped" | "waiting";
+        output: {
+          [key: string]: unknown;
+        } | null;
+        error: {
+          [key: string]: unknown;
+        } | null;
+        started_at: string | null;
+        completed_at: string | null;
+        created_at: string;
+      }[];
+    };
+    ValidateAutomationResponse: {
+      /** @enum {string} */
+      object: "automation_validation";
+      /** @description The document can be saved as a draft */
+      valid: boolean;
+      /** @description The document can also be enabled: one trigger, every step reachable, and the templates, sender domains, topics and segments it names exist. Enabling itself is a person's act in the dashboard. */
+      can_enable: boolean;
+      issues: components["schemas"]["AutomationIssue"][];
+    };
+    AutomationIssue: {
+      /**
+       * @description draft: the document cannot be saved as it is. enable: it can be saved but not enabled.
+       * @enum {string}
+       */
+      layer: "draft" | "enable";
+      /** @description JSON Pointer into the submitted document, such as /steps/2/config/duration */
+      path: string;
+      /** @description A stable code to switch on */
+      code: string;
+      /** @description What is wrong */
+      message: string;
+      /** @description What to change */
+      suggestion: string;
+    };
+    ValidateAutomationRequest: {
+      /** @description The steps, as automations.create takes them; nothing is stored */
+      steps: unknown[];
+      /** @description The connections between the steps */
+      connections: unknown[];
+    };
+    SimulateAutomationResponse: {
+      /** @enum {string} */
+      object: "automation_simulation";
+      /**
+       * @description How the run would end
+       * @enum {string}
+       */
+      status: "completed" | "failed";
+      started_at: string;
+      /** @description When the run would end, on the simulated clock */
+      ended_at: string;
+      contact: {
+        /**
+         * Format: uuid
+         * @description Null for a made-up contact
+         */
+        id: string | null;
+        existing: boolean;
+        email: string;
+        first_name: string | null;
+        last_name: string | null;
+        unsubscribed: boolean;
+        /** @description As the run left them: contact_update steps changed this copy only */
+        properties: {
+          [key: string]: string;
+        };
+      };
+      /** @description The steps in the order the run takes them */
+      steps: {
+        key: string;
+        /** @enum {string} */
+        type:
+          | "trigger"
+          | "delay"
+          | "send_email"
+          | "wait_for_event"
+          | "condition"
+          | "contact_update"
+          | "contact_delete"
+          | "add_to_segment";
+        /** @enum {string} */
+        status: "completed" | "skipped" | "failed";
+        started_at: string;
+        completed_at: string;
+        /**
+         * @description The connection type the run followed
+         * @enum {string|null}
+         */
+        outcome: "default" | "condition_met" | "condition_not_met" | "timeout" | "event_received" | null;
+        /** @description The step the run went to next; null when it ended */
+        next: string | null;
+        output: {
+          [key: string]: unknown;
+        } | null;
+        error: {
+          code: string;
+          message: string;
+          details?: {
+            [key: string]: unknown;
+          };
+        } | null;
+      }[];
+      /** @description The mail the run would send, with the time. A send step whose recipient has opted out or is suppressed is skipped and listed in steps only. */
+      emails: {
+        step_key: string;
+        at: string;
+        to: string;
+        from: string;
+        subject: string | null;
+        /** Format: uuid */
+        template_id: string;
+        topic_id: string | null;
+        variables: {
+          [key: string]: unknown;
+        };
+      }[];
+      /** @description Events given that no wait took, by their position in the request */
+      unused_events: {
+        index: number;
+        name: string;
+        reason: string;
+      }[];
+    };
+    SimulateAutomationRequest: {
+      /** @description The contact the run is for: a real one by id or email, with any of the other fields laid over it, or a made-up one (an email with no contact) to try a case. */
+      contact: {
+        /**
+         * Format: uuid
+         * @description A contact of the team; 404 when it is not one
+         */
+        id?: string;
+        /** @description A contact's email, or the address of a made-up contact when none matches */
+        email?: string;
+        first_name?: string | null;
+        last_name?: string | null;
+        unsubscribed?: boolean;
+        properties?: {
+          [key: string]: string;
+        };
+      };
+      /** @description The payload of the event that starts the run (what event.* reads) */
+      payload?: {
+        [key: string]: unknown;
+      };
+      /** @description Events to hand to the waits, in order: each wait_for_event takes the earliest one of its name that passes its filter_rule; an event is taken once. */
+      events?: {
+        name: string;
+        payload?: {
+          [key: string]: unknown;
+        };
+        /** @description When it arrives, as a duration after the run starts ("2 days"). Omitted: it arrives the moment the first wait for this name begins. An event counts for a wait only if it arrives from 5 seconds before the wait began until its timeout. */
+        after?: string;
+      }[];
+      /** @description When the run starts; default now */
+      start_at?: string;
+    };
+    CancelAutomationRunResponse: {
+      /** @enum {string} */
+      object: "automation_run";
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      status: "cancelled";
+    };
+    AutomationMetricsResponse: {
+      /** @enum {string} */
+      object: "automation_metrics";
+      /** Format: uuid */
+      automation_id: string;
+      start_date: string;
+      end_date: string;
+      runs: {
+        started: number;
+        completed: number;
+        failed: number;
+        cancelled: number;
+      };
+      /** @description Results of the mail the automation sent: accepted, sent, delivered, delayed, bounced, complained, suppressed, opened, unique_opened, clicked, unique_clicked, unsubscribed */
+      emails: {
+        [key: string]: number;
+      };
+      /** @description Every step of the current version, with zeros when nobody went through it */
+      steps: {
+        key: string;
+        /**
+         * @description Null for a step that only an earlier version of the automation had
+         * @enum {string|null}
+         */
+        type:
+          | "trigger"
+          | "delay"
+          | "send_email"
+          | "wait_for_event"
+          | "condition"
+          | "contact_update"
+          | "contact_delete"
+          | "add_to_segment"
+          | null;
+        entered: number;
+        completed: number;
+        failed: number;
+        skipped: number;
+      }[];
     };
     VerificationAvailabilityResponse: {
       /** @enum {string} */
@@ -3428,47 +4953,101 @@ export interface components {
     UsageResponse: {
       /** @enum {string} */
       object: "usage";
+      emails: {
+        /** @description The UTC day */
+        daily: {
+          /** @description Sends counted against `limit` this UTC day (receiving has its own allowance) */
+          used: number;
+          /** @description Daily cap of a daily plan (Free), or the operator's per-day ceiling on a monthly plan; null when nothing caps the day */
+          limit: number | null;
+          /** @description Emails accepted for sending so far this UTC day */
+          sent: number;
+          /** @description Messages received so far this UTC day */
+          received: number;
+          /** @description Next UTC midnight, when the daily counters reset */
+          resets_at: string;
+        };
+        /** @description The billing period of a monthly plan; the UTC calendar month on Free and on the system plan */
+        monthly: {
+          /** @description Sends counted against `limit` this period (receiving has its own allowance) */
+          used: number;
+          /** @description Emails a monthly plan includes per billing period; null on Free, whose daily cap bounds the month */
+          limit: number | null;
+          /** @description Emails accepted for sending so far this period */
+          sent: number;
+          /** @description Messages received so far this period */
+          received: number;
+          /** @description End of the billing period; the next UTC month start on Free and on the system plan */
+          resets_at: string;
+          /** @description BillionSend extension: start of the period the counts cover */
+          starts_at: string;
+          /** @description BillionSend extension: whether sends past `limit` bill overage instead of being refused; false on Free */
+          overage_enabled: boolean;
+          /** @description BillionSend extension: overage price per 1,000 emails in USD; null where there is no overage */
+          overage_usd_per_1k: number | null;
+        };
+      };
+      contacts: {
+        /** @description Contacts the team holds now */
+        used: number;
+        /** @description What the plan allows; null when the plan does not cap it */
+        limit: number | null;
+      };
+      segments: {
+        /** @description Segments the team holds now */
+        used: number;
+        /** @description What the plan allows; null when the plan does not cap it */
+        limit: number | null;
+      };
+      broadcasts: {
+        /** @description Broadcasts the team holds now */
+        used: number;
+        /** @description Broadcasts are not capped */
+        limit: null;
+      };
+      /** @description BillionSend meters no AI credits: always used 0 and no limit */
+      ai_credits: {
+        used: number;
+        limit: number | null;
+        next_increase_at: string | null;
+      };
+      /** @description The automation runs created in the period `emails.monthly` counts. BillionSend does not cap them: `limit` is always 9007199254740991 (Number.MAX_SAFE_INTEGER, the field being a required number), which means no limit. The emails automations send count against the plan's email quota as any email does */
+      automation_runs: {
+        used: number;
+        limit: number;
+        resets_at: string;
+      };
+      domains: {
+        /** @description Sending domains the team holds now */
+        used: number;
+        /** @description What the plan allows; null when the plan does not cap it */
+        limit: number | null;
+      };
+      /** @description Every key shares a larger team-wide budget as well */
+      rate_limit: {
+        /** @description Requests one API key may make in `duration` */
+        limit: number;
+        /** @description The window, `1m` */
+        duration: string;
+      };
       /**
-       * @description Effective plan; null on the instance's own (system) team
+       * @description BillionSend extension: effective plan; null for the instance's own team
        * @enum {string|null}
        */
       plan: "free" | "starter" | "pro" | "scale" | null;
-      limits: {
-        /** @description Daily cap (UTC day) on Free; null on monthly plans */
-        emails_per_day: number | null;
-        /** @description Emails included per billing period on Starter, Pro and Scale; null on Free */
-        emails_per_month: number | null;
-        /** @description null = unlimited */
-        domains: number | null;
-        /** @description Contacts the team may hold; null = unlimited */
-        contacts: number | null;
-        /** @description Inboxes the team may hold at once; null = unlimited */
-        inboxes: number | null;
-        /** @description Webhook endpoints the team may hold; null = unlimited */
-        webhook_endpoints: number | null;
+      inboxes: {
+        /** @description BillionSend extension: inboxes the team holds now */
+        used: number;
+        /** @description What the plan allows; null when the plan does not cap it */
+        limit: number | null;
       };
-      today: {
-        /** @description Emails accepted so far this UTC day */
-        emails_sent: number;
-        /** @description Next UTC midnight, when the daily counter resets */
-        resets_at: string;
+      webhook_endpoints: {
+        /** @description BillionSend extension: webhook endpoints the team holds now */
+        used: number;
+        /** @description What the plan allows; null when the plan does not cap it */
+        limit: number | null;
       };
-      /** @description Billing-period usage on monthly plans; null on daily plans */
-      period: {
-        /** @description Emails accepted so far this billing period */
-        emails_sent: number;
-        /** @description Emails the plan includes per period */
-        included: number;
-        /** @description Whether sends past `included` bill overage instead of being refused */
-        overage_enabled: boolean;
-        /** @description Overage price per 1,000 emails, in USD */
-        overage_usd_per_1k: number;
-        /** @description Billing period start */
-        starts_at: string;
-        /** @description Billing period end, when the counter resets */
-        ends_at: string;
-      } | null;
-      /** @description Deep verification of contacts this quota month (POST /verifications) */
+      /** @description BillionSend extension: deep verification of contacts this quota month */
       verification: {
         /** @description Addresses deep verification gave a definite verdict this quota month */
         verified: number;
@@ -3481,13 +5060,75 @@ export interface components {
         /** @description Price per 1,000 verified addresses past the credit, in cents */
         price_per_1k_cents: number;
       };
-      team: {
-        /** Format: uuid */
+    };
+    ListLogsResponse: {
+      /** @enum {string} */
+      object: "list";
+      data: {
+        /**
+         * Format: uuid
+         * @description The request id: the x-request-id header of that request
+         */
         id: string;
+        created_at: string;
+        /** @description The request path, without the query string */
+        endpoint: string;
+        /** @description HTTP method */
+        method: string;
+        response_status: number;
+        /** @description The caller's User-Agent header, cut to 512 characters; null when the request sent none */
+        user_agent: string | null;
+      }[];
+      has_more: boolean;
+    };
+    GetLogResponse: {
+      /** @enum {string} */
+      object: "log";
+      /**
+       * Format: uuid
+       * @description The request id: the x-request-id header of that request
+       */
+      id: string;
+      created_at: string;
+      /** @description The request path, without the query string */
+      endpoint: string;
+      /** @description HTTP method */
+      method: string;
+      response_status: number;
+      /** @description The caller's User-Agent header, cut to 512 characters; null when the request sent none */
+      user_agent: string | null;
+      /** @description The JSON request body as stored: content (html, text, attachment data) replaced by a size marker, secrets by [redacted], bodies over 64 KB by { truncated, bytes }; null when there was none or the caller's role may not read bodies */
+      request_body?: unknown;
+      /** @description The JSON response body, stored the same way */
+      response_body?: unknown;
+    };
+    ListOAuthGrantsResponse: {
+      /** @enum {string} */
+      object: "list";
+      data: components["schemas"]["OAuthGrant"][];
+      has_more: boolean;
+    };
+    OAuthGrant: {
+      /** @description The grant id */
+      id: string;
+      client_id: string;
+      scopes: string[];
+      created_at: string;
+      /** @description Always null here: a revoked grant is deleted and no longer listed */
+      revoked_at: string | null;
+      /** @description Always null here, as revoked_at */
+      revoked_reason: string | null;
+      client: {
         name: string;
+        logo_uri: string | null;
       };
-      /** @description Dashboard origin, for building links; null when unset */
-      app_url: string | null;
+    };
+    RevokeOAuthGrantResponse: {
+      /** @enum {string} */
+      object: "oauth_grant";
+      id: string;
+      revoked_at: string;
+      revoked_reason: string;
     };
     Inbox: {
       /** @enum {string} */
@@ -3528,7 +5169,7 @@ export interface components {
        * @description BillionSend extension: the id of a GET /domains row, instead of email_address. The team's subdomain of the shared domain (the row with shared: true) is the same as leaving email_address out; one of your verified domains needs username, the part before the @.
        */
       domain_id?: string;
-      /** @description BillionSend extension: with email_address omitted, the part before the @ of the shared-domain address, trimmed and lowercased: 1-64 letters, digits, dots, hyphens and underscores, starting and ending with a letter or digit, never cut short. Reserved names (postmaster, abuse, admin, security, support, noreply, no-reply, billing, hostmaster, webmaster, mailer-daemon, root, compared without dots, hyphens and underscores), the fwd- prefix and brand look-alikes answer 422, and one already in use 409. Where the instance reviews names, a chosen one is reviewed first: 503 with retry-after while that review is unavailable. Omitted: a random one. With a domain_id of one of your domains, it is the part before the @ there, required, under email_address's rule. */
+      /** @description BillionSend extension: with email_address omitted, the part before the @ of the shared-domain address, trimmed and lowercased: 1-64 letters, digits, dots, hyphens and underscores, starting and ending with a letter or digit, never cut short. Reserved names (postmaster, abuse, admin, security, support, noreply, no-reply, billing, hostmaster, webmaster, mailer-daemon, root, compared without dots, hyphens and underscores), the fwd- prefix and brand look-alikes answer 422, and one already in use 409. A chosen name is reviewed first: 503 with retry-after while that review is unavailable. Omitted: a random one. With a domain_id of one of your domains, it is the part before the @ there, required, under email_address's rule. */
       username?: string;
       /** @description Internal name, 1-320 characters, so any address fits. Defaults to email_address. */
       name?: string;
@@ -3561,7 +5202,7 @@ export interface components {
       /** @description Expose extracted codes and sign-in links */
       extract_codes?: boolean;
       /**
-       * @description What the inbox may send without a person's approval. On the shared domain "allowlist" answers 422, and so does "open" unless the instance lets the team start conversations there (paid plans only)
+       * @description What the inbox may send without a person's approval. On the shared domain "allowlist" answers 422, and so does "open" unless the team is on a paid plan and past its first sends
        * @enum {string}
        */
       send_policy?: "reply_only" | "allowlist" | "open";
@@ -3596,7 +5237,7 @@ export interface components {
     };
     UpdateInboxRequest: {
       name?: string;
-      /** @description "" removes it. On the shared domain a new one may not imitate a brand, and it is reviewed first where the instance reviews names (503 with retry-after while that review is unavailable). */
+      /** @description "" removes it. On the shared domain a new one may not imitate a brand, and it is reviewed first (503 with retry-after while that review is unavailable). */
       from_name?: string;
       /** @description BillionSend extension: a new lifetime counted from now, "1h" to "365d"; null never expires */
       expires_in?: string | null;
@@ -3612,9 +5253,35 @@ export interface components {
     InboxAgent: {
       /** @enum {string} */
       object: "inbox_agent";
-      instructions: null;
-      tone: null;
+      instructions: string | null;
+      /** @enum {string|null} */
+      tone: "concise_professional" | "concise_casual" | "expanded_professional" | "expanded_casual" | null;
       actions: (
+        | "draft_reply"
+        | "forward_thread"
+        | "add_labels"
+        | "assign_thread"
+        | "mark_as_spam"
+        | "archive"
+        | "move_to_trash"
+      )[];
+    };
+    UpdateInboxAgentResponse: {
+      /** @enum {string} */
+      object: "inbox_agent";
+      /** Format: uuid */
+      id: string;
+    };
+    UpdateInboxAgentRequest: {
+      /** @description What your agent should do with this inbox's mail, up to 10,000 characters; null clears it */
+      instructions?: string | null;
+      /**
+       * @description How replies should read; null clears it
+       * @enum {string|null}
+       */
+      tone?: "concise_professional" | "concise_casual" | "expanded_professional" | "expanded_casual" | null;
+      /** @description What your agent may do; replaces the list */
+      actions?: (
         | "draft_reply"
         | "forward_thread"
         | "add_labels"
@@ -3643,7 +5310,7 @@ export interface components {
       /** @description Expose extracted codes and sign-in links */
       extract_codes: boolean;
       /**
-       * @description What the inbox may send without a person's approval. On the shared domain "allowlist" answers 422, and so does "open" unless the instance lets the team start conversations there (paid plans only)
+       * @description What the inbox may send without a person's approval. On the shared domain "allowlist" answers 422, and so does "open" unless the team is on a paid plan and past its first sends
        * @enum {string}
        */
       send_policy: "reply_only" | "allowlist" | "open";
@@ -4051,7 +5718,7 @@ export interface components {
       reply_all?: boolean;
       /** @description BillionSend extension: hold the email as a draft that a person approves (202 with the Draft) */
       requires_approval?: boolean;
-      /** @description Not supported yet: only an empty value is accepted, anything else answers 422 */
+      /** @description Not supported: only an empty value is accepted, anything else answers 422 */
       headers?: unknown;
     };
     InboxForwardRequest: {
@@ -4080,7 +5747,7 @@ export interface components {
         | null;
       /** @description BillionSend extension: hold the email as a draft that a person approves (202 with the Draft) */
       requires_approval?: boolean;
-      /** @description Not supported yet: only an empty value is accepted, anything else answers 422 */
+      /** @description Not supported: only an empty value is accepted, anything else answers 422 */
       headers?: unknown;
     };
     InboxSendRequest: {
@@ -4107,7 +5774,7 @@ export interface components {
             path?: string;
           }[]
         | null;
-      /** @description Not supported yet: only an empty value is accepted, anything else answers 422 */
+      /** @description Not supported: only an empty value is accepted, anything else answers 422 */
       headers?: unknown;
       /** @description BillionSend extension: hold the email as a draft that a person approves (202 with the Draft) */
       requires_approval?: boolean;
@@ -4362,10 +6029,10 @@ export interface components {
     };
     SendEmailRequest: {
       /**
-       * @description Sender, "Name <user@domain>" or bare address; the domain must be verified for the team
+       * @description Sender, "Name <user@domain>" or bare address; the domain must be verified for the team. Required unless `template` supplies a default sender
        * @example Acme <onboarding@acme.dev>
        */
-      from: string;
+      from?: string;
       /**
        * @description Recipient address or list of up to 50
        * @example [
@@ -4373,17 +6040,17 @@ export interface components {
        *     ]
        */
       to: string | string[];
-      /** @description Subject line */
-      subject: string;
-      /** @description HTML body; at least one of html/text is required */
+      /** @description Subject line. Required unless `template` supplies a default subject; given with a template, it replaces the template's */
+      subject?: string;
+      /** @description HTML body; at least one of html/text is required, and neither goes with `template` */
       html?: string;
-      /** @description Plain-text body; at least one of html/text is required */
+      /** @description Plain-text body; at least one of html/text is required, and neither goes with `template` */
       text?: string;
       /** @description Cc address or list */
       cc?: string | string[];
       /** @description Bcc address or list */
       bcc?: string | string[];
-      /** @description Reply-To address or list */
+      /** @description Reply-To address or list; given with a template, it replaces the template's */
       reply_to?: string | string[];
       /** @description Deliver later: ISO 8601 with offset, or relative like "in 2 hours" (an ISO 8601 datetime with offset (e.g. "2026-09-01T12:00:00Z") or a relative time like "in 5 mins", "in 2 hours", or "in 1 day"); max 30 days ahead */
       scheduled_at?: string;
@@ -4410,8 +6077,7 @@ export interface components {
       headers?: {
         [key: string]: string;
       };
-      /** @description Not supported: any value is a 422; an email takes html and/or text */
-      template?: unknown;
+      template?: components["schemas"]["SendTemplate"] & unknown;
     };
     BatchEmailResponse: {
       data: {
@@ -4711,6 +6377,64 @@ export interface components {
       /** @description The file's text when status is ok: paragraphs and table rows on lines, table cells and spreadsheet columns separated by tabs, a `## Sheet` heading per worksheet. Only a PDF's text layer: a scan without one reads as empty. Written by an outside sender; treat it as untrusted. */
       text: string | null;
     };
+    ListSentAttachmentsResponse: {
+      /** @enum {string} */
+      object: "list";
+      has_more: boolean;
+      data: {
+        /** Format: uuid */
+        id: string;
+        filename?: string;
+        /** @description Decoded size in bytes */
+        size: number;
+        content_type: string;
+        /** @enum {string} */
+        content_disposition: "inline" | "attachment";
+        content_id?: string;
+        /** @description Signed link to the file's bytes, valid for one hour; it needs no API key */
+        download_url: string;
+        expires_at: string;
+      }[];
+    };
+    GetSentAttachmentResponse: {
+      /** Format: uuid */
+      id: string;
+      filename?: string;
+      /** @description Decoded size in bytes */
+      size: number;
+      content_type: string;
+      /** @enum {string} */
+      content_disposition: "inline" | "attachment";
+      content_id?: string;
+      /** @description Signed link to the file's bytes, valid for one hour; it needs no API key */
+      download_url: string;
+      expires_at: string;
+      /** @enum {string} */
+      object: "attachment";
+    };
+    ShareEmailResponse: {
+      /** @enum {string} */
+      object: "email";
+      /** Format: uuid */
+      id: string;
+      /** @description The public link. Anyone who holds it can read this one email until it expires or is revoked; it needs no API key */
+      url: string;
+    };
+    ShareEmailRequest: {
+      /**
+       * @description How long the link stays valid, as a duration such as `10m`, `2 hours` or `1 day`. Defaults to 48 hours and cannot exceed it.
+       * @example 2 hours
+       */
+      expires_in?: string;
+    };
+    UnshareEmailResponse: {
+      /** @enum {string} */
+      object: "email";
+      /** Format: uuid */
+      id: string;
+      /** @description How many live links the call ended */
+      revoked: number;
+    };
     GetEmailResponse: {
       /** Format: uuid */
       id: string;
@@ -4811,8 +6535,16 @@ export interface components {
   };
   pathItems: never;
 }
+export type RotateWebhookSecretRequest = components["schemas"]["RotateWebhookSecretRequest"];
 export type SendInboxDraftRequest = components["schemas"]["SendInboxDraftRequest"];
 export type ErrorResponse = components["schemas"]["ErrorResponse"];
+export type LinkClicksResponse = components["schemas"]["LinkClicksResponse"];
+export type CountryEngagementResponse = components["schemas"]["CountryEngagementResponse"];
+export type ClientEngagementResponse = components["schemas"]["ClientEngagementResponse"];
+export type CreateContactImportResponse = components["schemas"]["CreateContactImportResponse"];
+export type CreateContactImportForm = components["schemas"]["CreateContactImportForm"];
+export type ListContactImportsResponse = components["schemas"]["ListContactImportsResponse"];
+export type ContactImport = components["schemas"]["ContactImport"];
 export type ContactIdResponse = components["schemas"]["ContactIdResponse"];
 export type CreateContactRequest = components["schemas"]["CreateContactRequest"];
 export type BatchGetContactsResponse = components["schemas"]["BatchGetContactsResponse"];
@@ -4829,6 +6561,8 @@ export type ContactPreferencesLinkResponse = components["schemas"]["ContactPrefe
 export type ListContactTopicsResponse = components["schemas"]["ListContactTopicsResponse"];
 export type UpdateContactTopicsResponse = components["schemas"]["UpdateContactTopicsResponse"];
 export type UpdateContactTopicsRequest = components["schemas"]["UpdateContactTopicsRequest"];
+export type ListSegmentsResponse = components["schemas"]["ListSegmentsResponse"];
+export type SegmentFilter = components["schemas"]["SegmentFilter"];
 export type AddContactSegmentResponse = components["schemas"]["AddContactSegmentResponse"];
 export type RemoveContactSegmentResponse = components["schemas"]["RemoveContactSegmentResponse"];
 export type GetContactPropertyResponse = components["schemas"]["GetContactPropertyResponse"];
@@ -4838,16 +6572,17 @@ export type ContactPropertyIdResponse = components["schemas"]["ContactPropertyId
 export type UpdateContactPropertyRequest = components["schemas"]["UpdateContactPropertyRequest"];
 export type RemoveContactPropertyResponse = components["schemas"]["RemoveContactPropertyResponse"];
 export type SegmentResponse = components["schemas"]["SegmentResponse"];
-export type SegmentFilter = components["schemas"]["SegmentFilter"];
 export type CreateSegmentRequest = components["schemas"]["CreateSegmentRequest"];
-export type ListSegmentsResponse = components["schemas"]["ListSegmentsResponse"];
 export type GetSegmentResponse = components["schemas"]["GetSegmentResponse"];
 export type UpdateSegmentRequest = components["schemas"]["UpdateSegmentRequest"];
 export type RemoveSegmentResponse = components["schemas"]["RemoveSegmentResponse"];
 export type SendBroadcastResponse = components["schemas"]["SendBroadcastResponse"];
 export type CreateBroadcastRequest = components["schemas"]["CreateBroadcastRequest"];
+export type SendTemplate = components["schemas"]["SendTemplate"];
 export type ListBroadcastsResponse = components["schemas"]["ListBroadcastsResponse"];
 export type GetBroadcastResponse = components["schemas"]["GetBroadcastResponse"];
+export type ListBroadcastRecipientsResponse = components["schemas"]["ListBroadcastRecipientsResponse"];
+export type ListBroadcastClickedLinksResponse = components["schemas"]["ListBroadcastClickedLinksResponse"];
 export type BroadcastIdResponse = components["schemas"]["BroadcastIdResponse"];
 export type UpdateBroadcastRequest = components["schemas"]["UpdateBroadcastRequest"];
 export type RemoveBroadcastResponse = components["schemas"]["RemoveBroadcastResponse"];
@@ -4866,16 +6601,23 @@ export type ListDomainsResponse = components["schemas"]["ListDomainsResponse"];
 export type GetDomainResponse = components["schemas"]["GetDomainResponse"];
 export type UpdateDomainRequest = components["schemas"]["UpdateDomainRequest"];
 export type RemoveDomainResponse = components["schemas"]["RemoveDomainResponse"];
+export type DomainClaim = components["schemas"]["DomainClaim"];
+export type ClaimDomainRequest = components["schemas"]["ClaimDomainRequest"];
 export type CreateApiKeyResponse = components["schemas"]["CreateApiKeyResponse"];
 export type CreateApiKeyRequest = components["schemas"]["CreateApiKeyRequest"];
 export type ListApiKeysResponse = components["schemas"]["ListApiKeysResponse"];
+export type UpdateApiKeyResponse = components["schemas"]["UpdateApiKeyResponse"];
+export type UpdateApiKeyRequest = components["schemas"]["UpdateApiKeyRequest"];
 export type RemoveApiKeyResponse = components["schemas"]["RemoveApiKeyResponse"];
 export type CreateWebhookResponse = components["schemas"]["CreateWebhookResponse"];
 export type CreateWebhookRequest = components["schemas"]["CreateWebhookRequest"];
 export type ListWebhooksResponse = components["schemas"]["ListWebhooksResponse"];
 export type GetWebhookResponse = components["schemas"]["GetWebhookResponse"];
 export type RotateWebhookSecretResponse = components["schemas"]["RotateWebhookSecretResponse"];
-export type RotateWebhookSecretRequest = components["schemas"]["RotateWebhookSecretRequest"];
+export type ListWebhookEventsResponse = components["schemas"]["ListWebhookEventsResponse"];
+export type GetWebhookEventResponse = components["schemas"]["GetWebhookEventResponse"];
+export type ReplayWebhookEventResponse = components["schemas"]["ReplayWebhookEventResponse"];
+export type ListWebhookEventAttemptsResponse = components["schemas"]["ListWebhookEventAttemptsResponse"];
 export type WebhookIdResponse = components["schemas"]["WebhookIdResponse"];
 export type UpdateWebhookRequest = components["schemas"]["UpdateWebhookRequest"];
 export type RemoveWebhookResponse = components["schemas"]["RemoveWebhookResponse"];
@@ -4891,13 +6633,41 @@ export type GetSuppressionResponse = components["schemas"]["GetSuppressionRespon
 export type ListUnsubscribesResponse = components["schemas"]["ListUnsubscribesResponse"];
 export type UnsubscribeResponse = components["schemas"]["UnsubscribeResponse"];
 export type CreateUnsubscribeRequest = components["schemas"]["CreateUnsubscribeRequest"];
-export type RemoveUnsubscribeResponse = components["schemas"]["RemoveUnsubscribeResponse"];
 export type TemplateIdResponse = components["schemas"]["TemplateIdResponse"];
 export type CreateTemplateRequest = components["schemas"]["CreateTemplateRequest"];
+export type TemplateVariableInput = components["schemas"]["TemplateVariableInput"];
 export type ListTemplatesResponse = components["schemas"]["ListTemplatesResponse"];
 export type GetTemplateResponse = components["schemas"]["GetTemplateResponse"];
+export type TemplateVariable = components["schemas"]["TemplateVariable"];
 export type UpdateTemplateRequest = components["schemas"]["UpdateTemplateRequest"];
 export type RemoveTemplateResponse = components["schemas"]["RemoveTemplateResponse"];
+export type CreateEventResponse = components["schemas"]["CreateEventResponse"];
+export type CreateEventRequest = components["schemas"]["CreateEventRequest"];
+export type SendEventResponse = components["schemas"]["SendEventResponse"];
+export type SendEventRequest = components["schemas"]["SendEventRequest"];
+export type ListEventsResponse = components["schemas"]["ListEventsResponse"];
+export type Event = components["schemas"]["Event"];
+export type UpdateEventResponse = components["schemas"]["UpdateEventResponse"];
+export type UpdateEventRequest = components["schemas"]["UpdateEventRequest"];
+export type RemoveEventResponse = components["schemas"]["RemoveEventResponse"];
+export type AutomationIdResponse = components["schemas"]["AutomationIdResponse"];
+export type CreateAutomationRequest = components["schemas"]["CreateAutomationRequest"];
+export type AutomationStep = components["schemas"]["AutomationStep"];
+export type AutomationConnection = components["schemas"]["AutomationConnection"];
+export type ListAutomationsResponse = components["schemas"]["ListAutomationsResponse"];
+export type GetAutomationResponse = components["schemas"]["GetAutomationResponse"];
+export type UpdateAutomationRequest = components["schemas"]["UpdateAutomationRequest"];
+export type RemoveAutomationResponse = components["schemas"]["RemoveAutomationResponse"];
+export type StopAutomationResponse = components["schemas"]["StopAutomationResponse"];
+export type ListAutomationRunsResponse = components["schemas"]["ListAutomationRunsResponse"];
+export type GetAutomationRunResponse = components["schemas"]["GetAutomationRunResponse"];
+export type ValidateAutomationResponse = components["schemas"]["ValidateAutomationResponse"];
+export type AutomationIssue = components["schemas"]["AutomationIssue"];
+export type ValidateAutomationRequest = components["schemas"]["ValidateAutomationRequest"];
+export type SimulateAutomationResponse = components["schemas"]["SimulateAutomationResponse"];
+export type SimulateAutomationRequest = components["schemas"]["SimulateAutomationRequest"];
+export type CancelAutomationRunResponse = components["schemas"]["CancelAutomationRunResponse"];
+export type AutomationMetricsResponse = components["schemas"]["AutomationMetricsResponse"];
 export type VerificationAvailabilityResponse = components["schemas"]["VerificationAvailabilityResponse"];
 export type EstimateVerificationResponse = components["schemas"]["EstimateVerificationResponse"];
 export type EstimateVerificationRequest = components["schemas"]["EstimateVerificationRequest"];
@@ -4907,6 +6677,11 @@ export type StartVerificationRequest = components["schemas"]["StartVerificationR
 export type ListVerificationsResponse = components["schemas"]["ListVerificationsResponse"];
 export type VerificationRun = components["schemas"]["VerificationRun"];
 export type UsageResponse = components["schemas"]["UsageResponse"];
+export type ListLogsResponse = components["schemas"]["ListLogsResponse"];
+export type GetLogResponse = components["schemas"]["GetLogResponse"];
+export type ListOAuthGrantsResponse = components["schemas"]["ListOAuthGrantsResponse"];
+export type OAuthGrant = components["schemas"]["OAuthGrant"];
+export type RevokeOAuthGrantResponse = components["schemas"]["RevokeOAuthGrantResponse"];
 export type Inbox = components["schemas"]["Inbox"];
 export type CreateInboxRequest = components["schemas"]["CreateInboxRequest"];
 export type InboxSafetyPatch = components["schemas"]["InboxSafetyPatch"];
@@ -4914,6 +6689,8 @@ export type ListInboxesResponse = components["schemas"]["ListInboxesResponse"];
 export type UpdateInboxRequest = components["schemas"]["UpdateInboxRequest"];
 export type RemoveInboxResponse = components["schemas"]["RemoveInboxResponse"];
 export type InboxAgent = components["schemas"]["InboxAgent"];
+export type UpdateInboxAgentResponse = components["schemas"]["UpdateInboxAgentResponse"];
+export type UpdateInboxAgentRequest = components["schemas"]["UpdateInboxAgentRequest"];
 export type InboxSafety = components["schemas"]["InboxSafety"];
 export type ListInboxLabelsResponse = components["schemas"]["ListInboxLabelsResponse"];
 export type InboxLabel = components["schemas"]["InboxLabel"];
@@ -4963,6 +6740,11 @@ export type DeleteReceivedEmailResponse = components["schemas"]["DeleteReceivedE
 export type ListReceivedAttachmentsResponse = components["schemas"]["ListReceivedAttachmentsResponse"];
 export type GetReceivedAttachmentResponse = components["schemas"]["GetReceivedAttachmentResponse"];
 export type GetReceivedAttachmentTextResponse = components["schemas"]["GetReceivedAttachmentTextResponse"];
+export type ListSentAttachmentsResponse = components["schemas"]["ListSentAttachmentsResponse"];
+export type GetSentAttachmentResponse = components["schemas"]["GetSentAttachmentResponse"];
+export type ShareEmailResponse = components["schemas"]["ShareEmailResponse"];
+export type ShareEmailRequest = components["schemas"]["ShareEmailRequest"];
+export type UnshareEmailResponse = components["schemas"]["UnshareEmailResponse"];
 export type GetEmailResponse = components["schemas"]["GetEmailResponse"];
 export type EmailInsightsResponse = components["schemas"]["EmailInsightsResponse"];
 export type DeliverabilityResponse = components["schemas"]["DeliverabilityResponse"];
@@ -5083,6 +6865,453 @@ export interface operations {
       /** @description The statistics store is not answering; sending is unaffected. Retry shortly. */
       503: {
         headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.metrics.links": {
+    parameters: {
+      query?: {
+        start_date?: string;
+        end_date?: string;
+        domain_id?: string[];
+        broadcast_id?: string[];
+        /** @description Links to list, 1-100 (default 20) */
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Clicks in the range by the link that was clicked, most clicked first (BillionSend extension). A link is counted as its scheme, host and path: the query string and fragment are left out, so a link personalised per recipient is one row. `clicked` counts people; `bot_clicked` counts fetches by machines such as security scanners and link previews. Counts cover whole UTC hours like GET /emails/metrics, and clicks are counted by link from 2026-11-16 on. A key held to one domain always reads that domain only. */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LinkClicksResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The statistics store is not answering; sending is unaffected. Retry shortly. */
+      503: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.metrics.countries": {
+    parameters: {
+      query?: {
+        start_date?: string;
+        end_date?: string;
+        domain_id?: string[];
+        broadcast_id?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Opens and clicks in the range by the country the reader's address is registered in, most engaged first (BillionSend extension). `country` is an ISO 3166-1 alpha-2 code, or `unknown` when the address cannot be placed or the fetch came through a mail provider's image proxy (Gmail, Yahoo, Apple Mail Privacy Protection), whose address is the provider's, not the reader's. Only the country is kept, never the address. People's opens and clicks are counted apart from machines' (`bot_opened`, `bot_clicked`). Counts cover whole UTC hours like GET /emails/metrics, and opens and clicks are counted by country from 2026-11-16 on. IP geolocation by DB-IP (db-ip.com), CC BY 4.0. A key held to one domain always reads that domain only. */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CountryEngagementResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The statistics store is not answering; sending is unaffected. Retry shortly. */
+      503: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.metrics.clients": {
+    parameters: {
+      query?: {
+        start_date?: string;
+        end_date?: string;
+        domain_id?: string[];
+        broadcast_id?: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Opens in the range by the mail client that fetched the message's images, most opened first (BillionSend extension). `client` is one of `gmail`, `apple_mail`, `outlook`, `yahoo`, `thunderbird`, `other` (a web browser, which webmail and clients without markers look like) or `unknown` (no user agent). Clicks are not counted by client: a click arrives from the browser the client hands the link to. Only the client is kept, never the user agent. Counts cover whole UTC hours like GET /emails/metrics, and opens are counted by client from 2026-11-16 on. A key held to one domain always reads that domain only. */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClientEngagementResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The statistics store is not answering; sending is unaffected. Retry shortly. */
+      503: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.imports.list": {
+    parameters: {
+      query?: {
+        /** @description Page size, 1-100 (default 10) */
+        limit?: number;
+        after?: string;
+        before?: string;
+        status?: "queued" | "in_progress" | "completed" | "failed";
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Contact imports */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListContactImportsResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.imports.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["CreateContactImportForm"];
+      };
+    };
+    responses: {
+      /** @description Import queued */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CreateContactImportResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description A segment or topic that is not the team's */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The file or a field is not valid */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Too many imports queued or running, or the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.imports.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The import and its counts */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContactImport"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
@@ -5596,16 +7825,6 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description An agent acting for a role below owner and admin tried to lift the recipient's own whole-team opt-out */
-      403: {
-        headers: {
-          "X-Request-Id": components["headers"]["RequestId"];
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
       /** @description Not found */
       404: {
         headers: {
@@ -5783,6 +8002,78 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["UpdateContactTopicsResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "contacts.segments.list": {
+    parameters: {
+      query?: {
+        /** @description Page size, 1-100 (default 20) */
+        limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
+        after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
+        before?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Segments the contact is in */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListSegmentsResponse"];
         };
       };
       /** @description Missing, malformed, unknown or revoked API key */
@@ -6173,16 +8464,6 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
-        headers: {
-          "X-Request-Id": components["headers"]["RequestId"];
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description An agent acting for a role below owner and admin tried to lift the recipient's own whole-team opt-out */
-      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7277,6 +9558,174 @@ export interface operations {
       };
     };
   };
+  "broadcasts.recipients": {
+    parameters: {
+      query: {
+        /** @description Page size, 1-100 (default 20) */
+        limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
+        after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
+        before?: string;
+        /** @description The outcome to list recipients of; one `email_events` type */
+        type:
+          | "sent"
+          | "delivered"
+          | "opened"
+          | "clicked"
+          | "bounced"
+          | "complained"
+          | "unsubscribed"
+          | "suppressed";
+        /** @description Only the recipient with this address (matched without regard to case) */
+        email?: string;
+        /** @description Only bounces of this class; allowed only with type=bounced */
+        bounce_type?: "permanent" | "transient" | "undetermined";
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Recipients with the outcome */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListBroadcastRecipientsResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "broadcasts.clickedLinks": {
+    parameters: {
+      query?: {
+        /** @description Page size, 1-100 (default 20) */
+        limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
+        after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
+        before?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Clicked links */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListBroadcastClickedLinksResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The statistics store is not answering; sending is unaffected. Retry shortly. */
+      503: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
   "broadcasts.send": {
     parameters: {
       query?: never;
@@ -7983,7 +10432,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      /** @description Too many domain checks from this team; retry after the Retry-After seconds, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
           /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
@@ -8212,7 +10661,194 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Too many domain checks from this team; retry after the Retry-After seconds, or the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "domains.claims.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ClaimDomainRequest"];
+      };
+    };
+    responses: {
+      /** @description The claim */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DomainClaim"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Plan domain limit reached, an own tracking subdomain needs a paid plan, or the key is held to one domain */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The team already holds this domain */
+      409: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error, a reserved domain, or a domain nobody holds */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Too many domains created or claimed recently, or the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "domains.claims.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The claim */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DomainClaim"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found, or a domain other than the one the calling key is held to */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "domains.claims.verify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The claim after the check */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DomainClaim"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found, or a domain other than the one the calling key is held to */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Too many domain checks from this team; retry after the Retry-After seconds, or the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
           /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
@@ -8386,6 +11022,75 @@ export interface operations {
       };
       /** @description Not found */
       404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "apiKeys.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateApiKeyRequest"];
+      };
+    };
+    responses: {
+      /** @description API key renamed */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UpdateApiKeyResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8714,7 +11419,7 @@ export interface operations {
       };
     };
   };
-  "webhooks.rotate": {
+  "webhooks.rotateSigningSecret": {
     parameters: {
       query?: never;
       header?: never;
@@ -8737,6 +11442,289 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["RotateWebhookSecretResponse"];
+        };
+      };
+      /** @description Malformed JSON body */
+      400: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "webhooks.events.list": {
+    parameters: {
+      query?: {
+        /** @description Page size, 1-100 (default 20) */
+        limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
+        after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
+        before?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Events with their delivery status */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListWebhookEventsResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "webhooks.events.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Webhook id */
+        id: string;
+        /** @description Event id from the webhook's event list */
+        event_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The event with its payload */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetWebhookEventResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "webhooks.events.replay": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Webhook id */
+        id: string;
+        /** @description Event id from the webhook's event list */
+        event_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The new event */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReplayWebhookEventResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The event cannot be replayed */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "webhooks.events.attempts.list": {
+    parameters: {
+      query?: {
+        /** @description Page size, 1-100 (default 20) */
+        limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
+        after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
+        before?: string;
+      };
+      header?: never;
+      path: {
+        /** @description Webhook id */
+        id: string;
+        /** @description Event id from the webhook's event list */
+        event_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Attempts */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListWebhookEventAttemptsResponse"];
         };
       };
       /** @description Missing, malformed, unknown or revoked API key */
@@ -8853,7 +11841,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Exactly one of emails or ids (up to 1000 each); lists only the rows actually removed. Rows whose address was erased (GDPR/LGPD) keep blocking sends but are hidden from the list and from lookups by email; they are reachable by id only. */
+      /** @description Exactly one of emails or ids (up to 1000 each); lists the rows actually removed in data and the ones left in place in not_removed. A bounce or complaint entry is permanent and cannot be removed: it answers 403 permanent_suppression (a batch lists such entries in not_removed). Manual entries and addresses found invalid by verification can be removed. Rows whose address was erased (GDPR/LGPD) keep blocking sends but are hidden from the list and from lookups by email; they are reachable by id only. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9082,7 +12070,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description Suppression removed, by id or by email address; the address can receive mail again. Rows whose address was erased (GDPR/LGPD) keep blocking sends but are hidden from the list and from lookups by email; they are reachable by id only. */
+      /** @description Suppression removed, by id or by email address; the address can receive mail again. A bounce or complaint entry is permanent and cannot be removed: it answers 403 permanent_suppression (a batch lists such entries in not_removed). Manual entries and addresses found invalid by verification can be removed. Rows whose address was erased (GDPR/LGPD) keep blocking sends but are hidden from the list and from lookups by email; they are reachable by id only. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9094,6 +12082,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description A bounce or complaint entry, which is permanent */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9265,61 +12263,6 @@ export interface operations {
       };
     };
   };
-  "unsubscribes.delete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Opt-out removed: the address can receive marketing mail from that domain again (a team-wide opt-out lifts for every domain). Rows whose address was erased (GDPR/LGPD) keep blocking marketing mail but are hidden from the list; they are reachable by id only. */
-      200: {
-        headers: {
-          "X-Request-Id": components["headers"]["RequestId"];
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["RemoveUnsubscribeResponse"];
-        };
-      };
-      /** @description Missing, malformed, unknown or revoked API key */
-      401: {
-        headers: {
-          "X-Request-Id": components["headers"]["RequestId"];
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description Not found */
-      404: {
-        headers: {
-          "X-Request-Id": components["headers"]["RequestId"];
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
-      429: {
-        headers: {
-          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
-          "Retry-After"?: number;
-          "X-Request-Id": components["headers"]["RequestId"];
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-    };
-  };
   "templates.list": {
     parameters: {
       query?: {
@@ -9393,7 +12336,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Template created. Templates have no draft/publish cycle: every save is live, so status is always published. */
+      /** @description Template created. Every save through the API is live and publishes a new version, so status is always published. The dashboard editor keeps a working copy and publishes on request, with a version history. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9423,7 +12366,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Validation error, including from/reply_to/variables (not supported yet) */
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9459,7 +12402,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description Template by id or alias. Templates have no draft/publish cycle: every save is live, so status is always published. from, reply_to and variables are not supported yet and read as null, null and []. */
+      /** @description Template by id or alias. Every save through the API is live and publishes a new version, so status is always published. The dashboard editor keeps a working copy and publishes on request, with a version history. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9615,7 +12558,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Validation error, including from/reply_to/variables (not supported yet) */
+      /** @description Validation error */
       422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9651,7 +12594,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description No-op kept for SDK compatibility. Templates have no draft/publish cycle: every save is live, so status is always published. */
+      /** @description No-op kept for SDK compatibility. Every save through the API is live and publishes a new version, so status is always published. The dashboard editor keeps a working copy and publishes on request, with a version history. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9742,6 +12685,1266 @@ export interface operations {
         headers: {
           /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
           "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "events.list": {
+    parameters: {
+      query?: {
+        /** @description Page size, 1-100 (default 20) */
+        limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
+        after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Events */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListEventsResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "events.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateEventRequest"];
+      };
+    };
+    responses: {
+      /** @description Event defined */
+      201: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CreateEventResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description An event with this name already exists */
+      409: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "events.send": {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description 1 to 256 characters. A retry with the same key and the same body answers the original response instead of sending again; the same key with a different body answers 409 invalid_idempotent_request. */
+        "Idempotency-Key"?: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SendEventRequest"];
+      };
+    };
+    responses: {
+      /** @description Event accepted */
+      202: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SendEventResponse"];
+        };
+      };
+      /** @description Idempotency-Key is not 1 to 256 characters */
+      400: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description No such contact */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Idempotency conflict */
+      409: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "events.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description The event's id or its name */
+        id_or_name: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The event definition */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Event"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "events.remove": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description The event's id or its name */
+        id_or_name: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Event deleted */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveEventResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "events.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description The event's id or its name */
+        id_or_name: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateEventRequest"];
+      };
+    };
+    responses: {
+      /** @description Event updated */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UpdateEventResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.list": {
+    parameters: {
+      query?: {
+        /** @description Page size, 1-100 (default 20) */
+        limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
+        after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
+        before?: string;
+        status?: "enabled" | "disabled";
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Automations */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListAutomationsResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.create": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateAutomationRequest"];
+      };
+    };
+    responses: {
+      /** @description Automation created */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AutomationIdResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description An agent key tried to enable */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error, or an automation that cannot be enabled */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Automation id */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The automation with its current steps and connections */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetAutomationResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.remove": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Automation id */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Automation removed */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RemoveAutomationResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Automation id */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateAutomationRequest"];
+      };
+    };
+    responses: {
+      /** @description Automation updated */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AutomationIdResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description An agent key tried to enable */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The steps of an enabled automation cannot change */
+      409: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error, or an automation that cannot be enabled */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.duplicate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Automation id */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The copy */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AutomationIdResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The team already has the most automations it may */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.stop": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Automation id */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Automation stopped */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StopAutomationResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.runs.list": {
+    parameters: {
+      query?: {
+        /** @description Page size, 1-100 (default 20) */
+        limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
+        after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
+        before?: string;
+        /** @description Run statuses to keep, comma-separated: running, completed, failed, cancelled */
+        status?: string;
+      };
+      header?: never;
+      path: {
+        /** @description Automation id */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Runs */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListAutomationRunsResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.runs.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Automation id */
+        id: string;
+        /** @description Run id */
+        run_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The run */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetAutomationRunResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.validate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ValidateAutomationRequest"];
+      };
+    };
+    responses: {
+      /** @description The verdict and every problem */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ValidateAutomationResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The request itself is not valid */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.simulate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Automation id */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SimulateAutomationRequest"];
+      };
+    };
+    responses: {
+      /** @description The run, step by step */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SimulateAutomationResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The automation or the contact was not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error, or an automation with no trigger */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.runs.cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Automation id */
+        id: string;
+        /** @description Run id */
+        run_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The run, now cancelled */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CancelAutomationRunResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The run is not running */
+      409: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "automations.metrics": {
+    parameters: {
+      query?: {
+        /** @description Default: seven UTC days before end_date */
+        start_date?: string;
+        /** @description Default now; a date alone means the end of that UTC day */
+        end_date?: string;
+      };
+      header?: never;
+      path: {
+        /** @description Automation id */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The counts */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AutomationMetricsResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The statistics store is not available */
+      503: {
+        headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
         };
@@ -10082,7 +14285,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description Effective plan, its send, domain, contact, inbox and webhook endpoint limits, today's accepted send count (UTC day), on a monthly plan the billing period's usage, and this quota month's deep verification. BillionSend extension; plan, limits and period are null on the instance's own (system) team. */
+      /** @description Usage and limits of the team */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10104,6 +14307,276 @@ export interface operations {
       };
       /** @description Restricted API key */
       403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "logs.list": {
+    parameters: {
+      query?: {
+        /** @description Page size, 1-100 (default 20) */
+        limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
+        after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Request logs, without bodies */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListLogsResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "logs.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The logged request */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetLogResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "oauthGrants.list": {
+    parameters: {
+      query?: {
+        /** @description Page size, 1-100 (default 20) */
+        limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
+        after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
+        before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OAuth grants in force */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListOAuthGrantsResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "oauthGrants.revoke": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Grant revoked */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RevokeOAuthGrantResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description The caller may not revoke this grant */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10658,7 +15131,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description No hosted agent */
+      /** @description The agent settings */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10680,6 +15153,86 @@ export interface operations {
       };
       /** @description Not found */
       404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "inboxes.agent.update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description The inbox ID or its email address, such as support@example.com */
+        inbox_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateInboxAgentRequest"];
+      };
+    };
+    responses: {
+      /** @description Saved */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UpdateInboxAgentResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -13343,7 +17896,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description This instance does not offer agent signup, or the username can't be reviewed right now; retry-after says when to try again where it applies */
+      /** @description The username can't be reviewed right now; retry-after says when to try again */
       503: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -13998,7 +18551,7 @@ export interface operations {
         before?: string;
         /** @description BillionSend extension: hold the request up to this many seconds (0-50) until matching mail newer than the cursor arrives; an empty list with 200 when none did */
         wait?: number;
-        /** @description BillionSend extension: only mail received after this instant; with wait and no cursor it defaults to one minute before the request */
+        /** @description BillionSend extension: only mail received after this instant; with wait it means mail that became visible after it (delivered, or released from screening), and with no cursor it defaults to one minute before the request */
         since?: string;
         /** @description BillionSend extension: only mail delivered into this inbox */
         inbox_id?: string;
@@ -14430,6 +18983,298 @@ export interface operations {
       };
       /** @description The email carries malware */
       410: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.attachments.list": {
+    parameters: {
+      query?: {
+        /** @description Page size, 1-100 (default 20) */
+        limit?: number;
+        /** @description Cursor: id of the last item of the current page; returns the next page. Must be an id this list returned; there is no sentinel value. */
+        after?: string;
+        /** @description Cursor: id of the first item of the current page; returns the previous page; same rule as after. */
+        before?: string;
+      };
+      header?: never;
+      path: {
+        email_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Attachments */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ListSentAttachmentsResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.attachments.get": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        email_id: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Attachment */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GetSentAttachmentResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.share": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ShareEmailRequest"];
+      };
+    };
+    responses: {
+      /** @description The link */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShareEmailResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Validation error */
+      422: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
+      429: {
+        headers: {
+          /** @description Seconds until the request may be retried; sent with rate_limit_exceeded */
+          "Retry-After"?: number;
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "emails.unshare": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Links ended */
+      200: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UnshareEmailResponse"];
+        };
+      };
+      /** @description Missing, malformed, unknown or revoked API key */
+      401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;

@@ -1,25 +1,10 @@
 import type { Result, StreamConnection } from "./core.js";
 import { APIConnectionError, APIError, type BillionSendError, RateLimitError } from "./errors.js";
 import { MAX_RETRY_AFTER_MS, retryable, sleep } from "./retry.js";
+import type { WebhookEventType } from "./webhooks.js";
 
-/** The event names an inbox stream carries: the inbox webhook events, and `email.received`. */
-export type InboxEventType =
-  | "inbox.created"
-  | "inbox.updated"
-  | "inbox.deleted"
-  | "inbox.expired"
-  | "inbox.thread.created"
-  | "inbox.thread.folder.updated"
-  | "inbox.thread.labels.updated"
-  | "inbox.email.received"
-  | "inbox.email.sent"
-  | "inbox.email.quarantined"
-  | "inbox.draft.created"
-  | "inbox.draft.updated"
-  | "inbox.draft.sent"
-  | "inbox.draft.deleted"
-  | "inbox.draft.send_failed"
-  | "email.received";
+/** The event names an inbox stream carries: the inbox webhook events (`inbox.*`), and `email.received`. */
+export type InboxEventType = Extract<WebhookEventType, `inbox.${string}` | "email.received">;
 
 /**
  * The webhook payload's `data`: metadata only (never a body, code or link).

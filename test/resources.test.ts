@@ -71,6 +71,36 @@ describe("emails", () => {
   });
 });
 
+describe("emails: metrics breakdowns, attachments and sharing", () => {
+  it("reads the three breakdowns beside the time series", async () => {
+    await bs().emails.metrics.links({ limit: 5, domain_id: [ID, ID2] });
+    expect(Object.fromEntries(last("GET /emails/metrics/links").url.searchParams)).toEqual({
+      limit: "5",
+      domain_id: `${ID},${ID2}`,
+    });
+    await bs().emails.metrics.countries({ start_date: "2026-11-01" });
+    expect(last("GET /emails/metrics/countries").url.searchParams.get("start_date")).toBe("2026-11-01");
+    await bs().emails.metrics.clients({ broadcast_id: [ID] });
+    expect(last("GET /emails/metrics/clients").url.searchParams.get("broadcast_id")).toBe(ID);
+  });
+
+  it("lists and reads the attachments of a sent email", async () => {
+    await bs().emails.attachments.list(ID, { limit: 3 });
+    expect(last("GET /emails/{email_id}/attachments").url.pathname).toBe(`/emails/${ID}/attachments`);
+    await bs().emails.attachments.get(ID, ID2);
+    expect(last("GET /emails/{email_id}/attachments/{id}").url.pathname).toBe(
+      `/emails/${ID}/attachments/${ID2}`,
+    );
+  });
+
+  it("shares and unshares a sent email", async () => {
+    await bs().emails.share(ID, {});
+    expect(last("POST /emails/{id}/share").url.pathname).toBe(`/emails/${ID}/share`);
+    await bs().emails.unshare(ID);
+    expect(last("DELETE /emails/{id}/share").url.pathname).toBe(`/emails/${ID}/share`);
+  });
+});
+
 describe("emails.receiving", () => {
   it("long-polls the received list with filters", async () => {
     await bs().emails.receiving.list({
@@ -231,8 +261,8 @@ describe("webhooks, suppressions, unsubscribes, verifications, usage, deliverabi
       endpoint: "https://example.com/hooks",
       events: ["email.delivered", "email.bounced"],
     });
-    await bs().webhooks.rotate(ID, { overlap_hours: 24 });
-    expect(last("POST /webhooks/{id}/rotate").body).toEqual({ overlap_hours: 24 });
+    await bs().webhooks.rotateSigningSecret(ID, { overlap_hours: 24 });
+    expect(last("POST /webhooks/{id}/signing-secret/rotate").body).toEqual({ overlap_hours: 24 });
   });
 
   it("adds and removes suppressions in bulk", async () => {
@@ -386,5 +416,143 @@ describe("agent", () => {
     await bs().agent.status();
     await bs().agent.claimEmail();
     expect(last("POST /agent/claim-email").headers.authorization).toMatch(/^Bearer bs_/);
+  });
+});
+
+describe("usage", () => {
+  it("returns the report as the API's answer, with the daily and monthly emails blocks", async () => {
+    const { data, error } = await bs().usage.get();
+    expect(error).toBeNull();
+    expect(data?.object).toBe("usage");
+    expect(data?.emails.daily).toMatchObject({ used: expect.any(Number), resets_at: expect.any(String) });
+    expect(data?.emails.monthly).toHaveProperty("limit");
+  });
+});
+
+describe("contacts.imports", () => {
+  it("uploads the CSV as multipart with JSON-encoded settings", async () => {
+    await bs().contacts.imports.create({
+      file: "Email,First Name\nana@example.com,Ana\n",
+      column_map: { email: "Email", first_name: "First Name" },
+      on_conflict: "skip",
+      segments: [{ id: ID }],
+      topics: [{ id: ID2, subscription: "opt_in" }],
+    });
+    const hit = last("POST /contacts/imports");
+    expect(String(hit.headers["content-type"])).toMatch(/^multipart\/form-data; boundary=/);
+    expect(hit.body).toEqual({
+      file: "file:contacts.csv:37",
+      column_map: '{"email":"Email","first_name":"First Name"}',
+      on_conflict: "skip",
+      segments: JSON.stringify([{ id: ID }]),
+      topics: JSON.stringify([{ id: ID2, subscription: "opt_in" }]),
+    });
+  });
+
+  it("takes a Blob or File and text already encoded", async () => {
+    const file = new File(["email\nbo@example.com\n"], "people.csv", { type: "text/csv" });
+    await bs().contacts.imports.create({ file, column_map: '{"email":"email"}' });
+    expect(last("POST /contacts/imports").body).toEqual({
+      file: "file:people.csv:21",
+      column_map: '{"email":"email"}',
+    });
+  });
+
+  it("reads one import and the imports list by status", async () => {
+    await bs().contacts.imports.get(ID);
+    expect(last("GET /contacts/imports/{id}").url.pathname).toBe(`/contacts/imports/${ID}`);
+    await bs().contacts.imports.list({ status: "failed", limit: 5 });
+    expect(Object.fromEntries(last("GET /contacts/imports").url.searchParams)).toEqual({
+      status: "failed",
+      limit: "5",
+    });
+    await bs().contacts.segments.list(ID, { limit: 2 });
+    expect(last("GET /contacts/{id}/segments").url.pathname).toBe(`/contacts/${ID}/segments`);
+  });
+});
+
+describe("broadcasts: recipients and clicked links", () => {
+  it("lists recipients of one outcome and the clicked links", async () => {
+    await bs().broadcasts.recipients(ID, { type: "bounced", bounce_type: "permanent", limit: 10 });
+    const hit = last("GET /broadcasts/{id}/recipients");
+    expect(hit.url.pathname).toBe(`/broadcasts/${ID}/recipients`);
+    expect(Object.fromEntries(hit.url.searchParams)).toEqual({
+      type: "bounced",
+      bounce_type: "permanent",
+      limit: "10",
+    });
+    await bs().broadcasts.clickedLinks(ID);
+    expect(last("GET /broadcasts/{id}/clicked-links").url.pathname).toBe(`/broadcasts/${ID}/clicked-links`);
+  });
+});
+
+describe("webhooks: signing secret and event deliveries", () => {
+  it("replays an event and reads its attempts", async () => {
+    await bs().webhooks.events.list(ID, { limit: 3 });
+    expect(last("GET /webhooks/{id}/events").url.pathname).toBe(`/webhooks/${ID}/events`);
+    await bs().webhooks.events.get(ID, ID2);
+    expect(last("GET /webhooks/{id}/events/{event_id}").url.pathname).toBe(`/webhooks/${ID}/events/${ID2}`);
+    await bs().webhooks.events.replay(ID, ID2);
+    expect(last("POST /webhooks/{id}/events/{event_id}/replay").url.pathname).toBe(
+      `/webhooks/${ID}/events/${ID2}/replay`,
+    );
+    await bs().webhooks.events.attempts.list(ID, ID2);
+    expect(last("GET /webhooks/{id}/events/{event_id}/attempts").url.pathname).toBe(
+      `/webhooks/${ID}/events/${ID2}/attempts`,
+    );
+  });
+});
+
+describe("domains.claims, apiKeys.update, oauthGrants, logs, inboxes.agent.update", () => {
+  it("starts, reads and verifies a domain claim", async () => {
+    await bs().domains.claims.create({ name: "example.com" });
+    expect(last("POST /domains/claim").body).toEqual({ name: "example.com" });
+    await bs().domains.claims.get(ID);
+    expect(last("GET /domains/{id}/claim").url.pathname).toBe(`/domains/${ID}/claim`);
+    await bs().domains.claims.verify(ID);
+    expect(last("POST /domains/{id}/claim/verify").url.pathname).toBe(`/domains/${ID}/claim/verify`);
+  });
+
+  it("updates an API key, revokes a grant and reads a log entry", async () => {
+    await bs().apiKeys.update(ID, { name: "ci" });
+    expect(last("PATCH /api-keys/{id}").body).toEqual({ name: "ci" });
+    await bs().oauthGrants.revoke(ID);
+    expect(last("DELETE /oauth/grants/{id}").url.pathname).toBe(`/oauth/grants/${ID}`);
+    await bs().logs.get(ID);
+    expect(last("GET /logs/{id}").url.pathname).toBe(`/logs/${ID}`);
+  });
+
+  it("updates an inbox's agent settings", async () => {
+    await bs().inboxes.agent.update(ID, {});
+    expect(last("PATCH /inboxes/{inbox_id}/agent").url.pathname).toBe(`/inboxes/${ID}/agent`);
+  });
+});
+
+describe("events and automations", () => {
+  it("sends an event with an idempotency key and addresses events by id or name", async () => {
+    await bs().events.send({ event: "order.paid", email: "ana@example.com" }, { idempotencyKey: "ev-7" });
+    const hit = last("POST /events/send");
+    expect(hit.body).toEqual({ event: "order.paid", email: "ana@example.com" });
+    expect(hit.headers["idempotency-key"]).toBe("ev-7");
+    await bs().events.get("order.paid");
+    expect(last("GET /events/{id_or_name}").url.pathname).toBe("/events/order.paid");
+    await bs().events.remove("order.paid");
+    expect(last("DELETE /events/{id_or_name}").url.pathname).toBe("/events/order.paid");
+  });
+
+  it("runs the automation lifecycle: stop, simulate, runs and metrics", async () => {
+    await bs().automations.stop(ID);
+    expect(last("POST /automations/{id}/stop").url.pathname).toBe(`/automations/${ID}/stop`);
+    await bs().automations.runs.get(ID, ID2);
+    expect(last("GET /automations/{id}/runs/{run_id}").url.pathname).toBe(`/automations/${ID}/runs/${ID2}`);
+    await bs().automations.runs.cancel(ID, ID2);
+    expect(last("POST /automations/{id}/runs/{run_id}/cancel").url.pathname).toBe(
+      `/automations/${ID}/runs/${ID2}/cancel`,
+    );
+    await bs().automations.metrics(ID, { start_date: "2026-11-01", end_date: "2026-11-15" });
+    expect(Object.fromEntries(last("GET /automations/{id}/metrics").url.searchParams)).toEqual({
+      start_date: "2026-11-01",
+      end_date: "2026-11-15",
+    });
   });
 });

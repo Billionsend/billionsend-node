@@ -1,5 +1,15 @@
 import { type BillionSendOptions, Core } from "./core.js";
-import { Agent, ApiKeys, Deliverability, Domains, Usage, Webhooks } from "./resources/account.js";
+import {
+  Agent,
+  ApiKeys,
+  Deliverability,
+  Domains,
+  Logs,
+  OauthGrants,
+  Usage,
+  Webhooks,
+} from "./resources/account.js";
+import { Automations, Events } from "./resources/automations.js";
 import { Broadcasts, Templates } from "./resources/broadcasts.js";
 import { Audiences, ContactProperties, Contacts, Segments, Topics } from "./resources/contacts.js";
 import { Emails } from "./resources/emails.js";
@@ -35,6 +45,10 @@ export class BillionSend {
   readonly deliverability: Deliverability;
   readonly inboxes: Inboxes;
   readonly agent: Agent;
+  readonly automations: Automations;
+  readonly events: Events;
+  readonly logs: Logs;
+  readonly oauthGrants: OauthGrants;
 
   readonly #core: Core;
 
@@ -65,6 +79,10 @@ export class BillionSend {
     this.deliverability = new Deliverability(core);
     this.inboxes = new Inboxes(core);
     this.agent = new Agent(core);
+    this.automations = new Automations(core);
+    this.events = new Events(core);
+    this.logs = new Logs(core);
+    this.oauthGrants = new OauthGrants(core);
   }
 
   /** The API base URL this client calls. */

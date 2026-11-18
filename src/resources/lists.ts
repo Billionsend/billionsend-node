@@ -65,11 +65,6 @@ export class Unsubscribes extends Resource {
   ): AsyncGenerator<ListItem<"/unsubscribes">, void, undefined> {
     return paginate((cursor) => this.list({ ...params, ...cursor }, options), params);
   }
-
-  /** `DELETE /unsubscribes/{id}` */
-  delete(id: string, options?: RequestOptions) {
-    return this.core.request("delete", "/unsubscribes/{id}", { path: { id }, options });
-  }
 }
 
 export class Verifications extends Resource {

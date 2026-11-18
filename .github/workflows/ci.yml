@@ -3,6 +3,9 @@ name: CI
 on:
   push:
   pull_request:
+  schedule:
+    # Daily: the published API may have changed since the snapshot was taken.
+    - cron: "17 6 * * *"
 
 permissions:
   contents: read
@@ -41,6 +44,16 @@ jobs:
           name: dist
           path: dist
           retention-days: 3
+
+  snapshot:
+    name: OpenAPI snapshot matches the published API
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: node scripts/sync-openapi.mjs --check
 
   runtimes:
     name: Runtime smoke (Node ${{ matrix.node }})

@@ -1,15 +1,13 @@
 import type { RequestOptions } from "../core.js";
+import type { CreateContactImportForm } from "../generated/openapi.js";
 import { paginate } from "../pagination.js";
 import { type BatchRequestOptions, Resource } from "../resource.js";
 import type { ListItem, QueryParams, RequestBody } from "../types.js";
 
 export class ContactBatch extends Resource {
-  /**
-   * `POST /contacts/batch`: up to 1000 contacts, each shaped like {@link Contacts.create}'s payload.
-   * The API document leaves the items untyped; the endpoint validates each one as a contact.
-   */
+  /** `POST /contacts/batch`: up to 1000 contacts, each shaped like {@link Contacts.create}'s payload. */
   create(
-    payload: RequestBody<"/contacts", "post">[],
+    payload: RequestBody<"/contacts/batch", "post">,
     params?: QueryParams<"/contacts/batch", "post">,
     options?: BatchRequestOptions,
   ) {
@@ -52,7 +50,84 @@ export class ContactTopics extends Resource {
   }
 }
 
+/**
+ * What {@link ContactImports.create} uploads: the CSV and the import's settings.
+ * The endpoint takes `multipart/form-data` whose `column_map`, `segments` and
+ * `topics` parts are JSON text; here they are the objects themselves (or text
+ * you already encoded).
+ */
+export interface CreateContactImportParams {
+  /** The CSV: a header row, then one contact per row, at most 20 MiB. A string is the CSV text. */
+  file: Blob | string;
+  /** The file name sent with the upload (default `contacts.csv`; a `File` keeps its own name). */
+  filename?: string;
+  /** CSV column to contact field, such as `{ email: "Email", first_name: "First Name" }`. */
+  column_map?: Record<string, unknown> | string;
+  on_conflict?: CreateContactImportForm["on_conflict"];
+  /** Segments every imported contact joins, such as `[{ id: segmentId }]`. */
+  segments?: readonly Record<string, unknown>[] | string;
+  /** Topic subscriptions set for every imported contact, such as `[{ id: topicId, subscription: "opt_in" }]`. */
+  topics?: readonly Record<string, unknown>[] | string;
+}
+
+export class ContactImports extends Resource {
+  /** `POST /contacts/imports`: uploads a CSV and imports it in the background; poll {@link ContactImports.get}. */
+  create(params: CreateContactImportParams, options?: RequestOptions) {
+    const form = new FormData();
+    const { file, filename, column_map, on_conflict, segments, topics } = params;
+    const named =
+      typeof file !== "string" && "name" in file && typeof file.name === "string" && file.name !== "";
+    form.append(
+      "file",
+      typeof file === "string" ? new Blob([file], { type: "text/csv" }) : file,
+      filename ?? (named ? (file as File).name : "contacts.csv"),
+    );
+    const json = (value: unknown) => (typeof value === "string" ? value : JSON.stringify(value));
+    if (column_map !== undefined) form.append("column_map", json(column_map));
+    if (on_conflict !== undefined) form.append("on_conflict", on_conflict);
+    if (segments !== undefined) form.append("segments", json(segments));
+    if (topics !== undefined) form.append("topics", json(topics));
+    return this.core.request("post", "/contacts/imports", { form, options });
+  }
+
+  /** `GET /contacts/imports` */
+  list(params?: QueryParams<"/contacts/imports", "get">, options?: RequestOptions) {
+    return this.core.request("get", "/contacts/imports", { query: params, options });
+  }
+
+  /** Every contact import, fetched page by page. */
+  listAll(
+    params?: QueryParams<"/contacts/imports", "get">,
+    options?: RequestOptions,
+  ): AsyncGenerator<ListItem<"/contacts/imports">, void, undefined> {
+    return paginate((cursor) => this.list({ ...params, ...cursor }, options), params);
+  }
+
+  /** `GET /contacts/imports/{id}` */
+  get(id: string, options?: RequestOptions) {
+    return this.core.request("get", "/contacts/imports/{id}", { path: { id }, options });
+  }
+}
+
 export class ContactSegments extends Resource {
+  /** `GET /contacts/{id}/segments` */
+  list(contactId: string, params?: QueryParams<"/contacts/{id}/segments", "get">, options?: RequestOptions) {
+    return this.core.request("get", "/contacts/{id}/segments", {
+      path: { id: contactId },
+      query: params,
+      options,
+    });
+  }
+
+  /** Every segment a contact belongs to, fetched page by page. */
+  listAll(
+    contactId: string,
+    params?: QueryParams<"/contacts/{id}/segments", "get">,
+    options?: RequestOptions,
+  ): AsyncGenerator<ListItem<"/contacts/{id}/segments">, void, undefined> {
+    return paginate((cursor) => this.list(contactId, { ...params, ...cursor }, options), params);
+  }
+
   /** `POST /contacts/{id}/segments/{segmentId}` */
   add(contactId: string, segmentId: string, options?: RequestOptions) {
     return this.core.request("post", "/contacts/{id}/segments/{segmentId}", {
@@ -72,6 +147,7 @@ export class ContactSegments extends Resource {
 
 export class Contacts extends Resource {
   readonly batch: ContactBatch = new ContactBatch(this.core);
+  readonly imports: ContactImports = new ContactImports(this.core);
   readonly topics: ContactTopics = new ContactTopics(this.core);
   readonly segments: ContactSegments = new ContactSegments(this.core);
 

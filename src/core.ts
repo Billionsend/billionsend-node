@@ -87,6 +87,8 @@ export interface CallInit<P extends ApiPath, M extends HttpMethod> {
   path?: PathParams<P, M>;
   query?: QueryParams<P, M>;
   body?: RequestBody<P, M>;
+  /** The body of an operation that takes `multipart/form-data`; the content type, with its boundary, is set by `fetch`. */
+  form?: FormData;
   headers?: Record<string, string | undefined>;
   /** The operation honours `Idempotency-Key`: one is always sent, `idempotencyKey` or a new one. */
   idempotent?: boolean;
@@ -246,8 +248,11 @@ export class Core {
       ...lowerCaseKeys(options.headers),
       ...lowerCaseKeys(init.headers),
     };
-    let body: string | undefined;
-    if (init.body !== undefined) {
+    let body: string | FormData | undefined;
+    if (init.form !== undefined) {
+      body = init.form;
+      delete headers["content-type"];
+    } else if (init.body !== undefined) {
       body = JSON.stringify(init.body);
       headers["content-type"] = "application/json";
     }
@@ -279,7 +284,7 @@ export class Core {
     method: string,
     url: string,
     headers: Record<string, string>,
-    body: string | undefined,
+    body: string | FormData | undefined,
     timeoutMs: number,
     signal: AbortSignal | undefined,
     stream: boolean,

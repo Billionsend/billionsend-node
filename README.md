@@ -168,7 +168,7 @@ for await (const item of opened.data) {
 
 ## Verify webhooks
 
-Every webhook delivery is signed with the endpoint's `whsec_` secret (shown when you create the endpoint, and by `webhooks.rotate`). `verifyWebhook` checks the signature and the timestamp (within 5 minutes by default, so a captured delivery cannot be replayed) and returns the parsed event; anything wrong throws a `WebhookVerificationError`. Pass the body exactly as it arrived, before any JSON parsing:
+Every webhook delivery is signed with the endpoint's `whsec_` secret (shown when you create the endpoint, and by `webhooks.rotateSigningSecret`). `verifyWebhook` checks the signature and the timestamp (within 5 minutes by default, so a captured delivery cannot be replayed) and returns the parsed event; anything wrong throws a `WebhookVerificationError`. Pass the body exactly as it arrived, before any JSON parsing:
 
 ```ts
 import express from "express";
@@ -191,6 +191,21 @@ app.post("/webhooks/billionsend", express.raw({ type: "application/json" }), asy
 ```
 
 With the Fetch API (Next.js route handlers, Hono, Bun, Deno, workers) it is `await verifyWebhook(await request.text(), request.headers, secret)`. During a secret rotation a delivery carries a signature for each live secret, and either secret verifies it.
+
+## Import contacts from a CSV
+
+`contacts.imports.create` uploads a CSV (a string, a `Blob` or a `File`) and imports it in the background; poll the import for its `status` and `counts`. `column_map`, `segments` and `topics` are objects here; the SDK sends them as the JSON text the endpoint expects.
+
+```ts
+const started = await bs.contacts.imports.create({
+  file: csvText, // "Email,First Name\nana@acme.dev,Ana\n"
+  column_map: { email: "Email", first_name: "First Name" },
+  on_conflict: "skip",
+});
+if (started.error) throw started.error;
+
+const done = await bs.contacts.imports.get(started.data.id); // status: queued, in_progress, completed or failed
+```
 
 ## Agent sign-up
 
@@ -229,21 +244,25 @@ Every method takes a last `options` argument with `signal`, `headers`, `timeoutM
 
 | Property | Covers |
 | --- | --- |
-| `emails` | send, batch, list, get, update, cancel, delete, insights, metrics |
+| `emails` | send, batch, list, get, update, cancel, delete, insights, share, unshare, `metrics` (the time series; `metrics.links`, `metrics.countries`, `metrics.clients`), `attachments` (list, get) |
 | `emails.receiving` | received mail: list, get, delete, reply, forward, `attachments` (list, get, text) |
-| `domains` | create, list, get, update, delete, verify |
-| `apiKeys` | create, list, delete |
-| `contacts` | create, list, get, update, delete, preferences link, `batch`, `topics`, `segments` |
+| `domains` | create, list, get, update, delete, verify, `claims` (create, get, verify) |
+| `apiKeys` | create, list, update, delete |
+| `contacts` | create, list, get, update, delete, preferences link, `batch`, `imports` (create, list, get), `topics`, `segments` (list, add, remove) |
 | `audiences.contacts` | contacts addressed through an audience |
 | `contactProperties`, `segments`, `topics` | create, list, get, update, delete (segment contacts under `segments.contacts`) |
-| `broadcasts` | create, list, get, update, delete, send, duplicate, cancel |
+| `broadcasts` | create, list, get, update, delete, send, duplicate, cancel, recipients, clickedLinks |
 | `templates` | create, list, get, update, delete, publish, duplicate |
-| `webhooks` | create, list, get, update, delete, rotate |
+| `webhooks` | create, list, get, update, delete, rotateSigningSecret, `events` (list, get, replay, `attempts.list`) |
 | `suppressions` | create, list, get, delete, `batch` add / remove |
-| `unsubscribes` | create, list, delete |
+| `unsubscribes` | create, list |
 | `verifications` | availability, estimate, create, list, get |
 | `usage`, `deliverability` | get |
-| `inboxes` | create, list, get, update, delete, send, `agent`, `safety`, `labels`, `threads` (search, labels, emails, reply, forward), `quarantine`, `codes`, `drafts`, `events` |
+| `events` | custom events: create, list, get, update, remove, send |
+| `automations` | create, list, get, update, remove, validate, duplicate, simulate, stop, metrics, `runs` (list, get, cancel) |
+| `logs` | list, get |
+| `oauthGrants` | list, revoke |
+| `inboxes` | create, list, get, update, delete, send, `agent` (get, update), `safety`, `labels`, `threads` (search, labels, emails, reply, forward), `quarantine`, `codes`, `drafts`, `events` |
 | `agent` | signup, status, claimEmail |
 
 Method names are camelCase; request and response fields keep the API's snake_case names. All request and response types are exported, named after the API's schemas (`SendEmailRequest`, `Inbox`, …).
@@ -262,6 +281,7 @@ The contract is `openapi/api.openapi.json`, a snapshot of the published OpenAPI 
 pnpm openapi:sync               # or: pnpm openapi:sync --from path/to/api.openapi.json
 pnpm generate                   # regenerates src/generated/openapi.ts
 pnpm test                       # what fails is what the SDK has to follow
+pnpm openapi:check              # fails when the snapshot differs from the published document (CI runs it on every push and daily)
 ```
 
 ## Releasing

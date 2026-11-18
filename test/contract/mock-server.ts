@@ -151,7 +151,8 @@ export class ContractMock {
     const method = (req.method ?? "GET").toUpperCase();
     const chunks: Buffer[] = [];
     for await (const chunk of req) chunks.push(chunk as Buffer);
-    const rawBody = Buffer.concat(chunks).toString("utf8");
+    const rawBuffer = Buffer.concat(chunks);
+    const rawBody = rawBuffer.toString("utf8");
 
     const candidates = ROUTES.filter((route) => route.regex.test(url.pathname));
     const route = candidates
@@ -239,8 +240,29 @@ export class ContractMock {
     if (op.requestBody) {
       if (rawBody === "") {
         if (op.requestBody.required !== false) problems.push("request body is missing");
+      } else if (String(req.headers["content-type"] ?? "").startsWith("multipart/form-data")) {
+        if (!op.requestBody.content["multipart/form-data"]) {
+          problems.push("request body sent as multipart/form-data, which the operation does not take");
+        } else {
+          // A file part is checked as present and replaced by a marker; every other part is a string.
+          const form = await new Response(rawBuffer, {
+            headers: { "content-type": String(req.headers["content-type"]) },
+          }).formData();
+          const fields: Record<string, string> = {};
+          for (const [name, value] of form.entries()) {
+            fields[name] = typeof value === "string" ? value : `file:${value.name}:${value.size}`;
+          }
+          body = fields;
+          const error = schemaErrors(
+            pointerOf(op, "requestBody", "content", "multipart/form-data", "schema"),
+            fields,
+          );
+          if (error) problems.push(`request body: ${error}`);
+        }
       } else if (!String(req.headers["content-type"] ?? "").startsWith("application/json")) {
         problems.push(`request body sent as ${String(req.headers["content-type"])}`);
+      } else if (!op.requestBody.content["application/json"]) {
+        problems.push("request body sent as JSON, which the operation does not take");
       } else {
         try {
           body = JSON.parse(rawBody);

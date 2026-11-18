@@ -11,6 +11,19 @@ export class InboxAgentSettings extends Resource {
   get(inboxId: string, options?: RequestOptions) {
     return this.core.request("get", "/inboxes/{inbox_id}/agent", { path: { inbox_id: inboxId }, options });
   }
+
+  /** `PATCH /inboxes/{inbox_id}/agent` */
+  update(
+    inboxId: string,
+    payload: RequestBody<"/inboxes/{inbox_id}/agent", "patch">,
+    options?: RequestOptions,
+  ) {
+    return this.core.request("patch", "/inboxes/{inbox_id}/agent", {
+      path: { inbox_id: inboxId },
+      body: payload,
+      options,
+    });
+  }
 }
 
 export class InboxSafety extends Resource {

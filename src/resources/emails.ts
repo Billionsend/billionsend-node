@@ -1,7 +1,7 @@
-import type { IdempotentRequestOptions, RequestOptions } from "../core.js";
+import type { Core, IdempotentRequestOptions, RequestOptions, Result } from "../core.js";
 import { paginate } from "../pagination.js";
 import { type BatchSendOptions, idempotent, Resource } from "../resource.js";
-import type { ListItem, QueryParams, RequestBody } from "../types.js";
+import type { ListItem, QueryParams, RequestBody, ResponseBody } from "../types.js";
 
 export type SendEmailParams = RequestBody<"/emails", "post">;
 
@@ -98,19 +98,90 @@ export class ReceivedEmails extends Resource {
   }
 }
 
+export class EmailAttachments extends Resource {
+  /** `GET /emails/{email_id}/attachments` */
+  list(
+    emailId: string,
+    params?: QueryParams<"/emails/{email_id}/attachments", "get">,
+    options?: RequestOptions,
+  ) {
+    return this.core.request("get", "/emails/{email_id}/attachments", {
+      path: { email_id: emailId },
+      query: params,
+      options,
+    });
+  }
+
+  /** Every attachment of a sent email, fetched page by page. */
+  listAll(
+    emailId: string,
+    params?: QueryParams<"/emails/{email_id}/attachments", "get">,
+    options?: RequestOptions,
+  ): AsyncGenerator<ListItem<"/emails/{email_id}/attachments">, void, undefined> {
+    return paginate((cursor) => this.list(emailId, { ...params, ...cursor }, options), params);
+  }
+
+  /** `GET /emails/{email_id}/attachments/{id}` */
+  get(emailId: string, id: string, options?: RequestOptions) {
+    return this.core.request("get", "/emails/{email_id}/attachments/{id}", {
+      path: { email_id: emailId, id },
+      options,
+    });
+  }
+}
+
+/** `emails.metrics(params)` is the time series; its three breakdowns hang off the same name. */
+export interface EmailMetrics {
+  /** `GET /emails/metrics` */
+  (
+    params?: QueryParams<"/emails/metrics", "get">,
+    options?: RequestOptions,
+  ): Promise<Result<ResponseBody<"/emails/metrics", "get">>>;
+  /** `GET /emails/metrics/links`: the most clicked links. */
+  links(
+    params?: QueryParams<"/emails/metrics/links", "get">,
+    options?: RequestOptions,
+  ): Promise<Result<ResponseBody<"/emails/metrics/links", "get">>>;
+  /** `GET /emails/metrics/countries`: opens and clicks by country. */
+  countries(
+    params?: QueryParams<"/emails/metrics/countries", "get">,
+    options?: RequestOptions,
+  ): Promise<Result<ResponseBody<"/emails/metrics/countries", "get">>>;
+  /** `GET /emails/metrics/clients`: opens by mail client. */
+  clients(
+    params?: QueryParams<"/emails/metrics/clients", "get">,
+    options?: RequestOptions,
+  ): Promise<Result<ResponseBody<"/emails/metrics/clients", "get">>>;
+}
+
 export class Emails extends Resource {
   readonly receiving: ReceivedEmails = new ReceivedEmails(this.core);
+  readonly attachments: EmailAttachments = new EmailAttachments(this.core);
+  readonly metrics: EmailMetrics;
+
+  constructor(core: Core) {
+    super(core);
+    this.metrics = Object.assign(
+      (params?: QueryParams<"/emails/metrics", "get">, options?: RequestOptions) =>
+        core.request("get", "/emails/metrics", { query: params, options }),
+      {
+        links: (params?: QueryParams<"/emails/metrics/links", "get">, options?: RequestOptions) =>
+          core.request("get", "/emails/metrics/links", { query: params, options }),
+        countries: (params?: QueryParams<"/emails/metrics/countries", "get">, options?: RequestOptions) =>
+          core.request("get", "/emails/metrics/countries", { query: params, options }),
+        clients: (params?: QueryParams<"/emails/metrics/clients", "get">, options?: RequestOptions) =>
+          core.request("get", "/emails/metrics/clients", { query: params, options }),
+      },
+    );
+  }
 
   /** `POST /emails` */
   send(payload: SendEmailParams, options?: IdempotentRequestOptions) {
     return this.core.request("post", "/emails", { body: payload, ...idempotent(options) });
   }
 
-  /**
-   * `POST /emails/batch`: up to 100 emails, each shaped like {@link Emails.send}'s payload.
-   * The API document leaves the items untyped; the endpoint validates each one as a send.
-   */
-  batch(payload: SendEmailParams[], options?: BatchSendOptions) {
+  /** `POST /emails/batch`: up to 100 emails, each shaped like {@link Emails.send}'s payload. */
+  batch(payload: RequestBody<"/emails/batch", "post">, options?: BatchSendOptions) {
     return this.core.request("post", "/emails/batch", {
       body: payload,
       headers: { "x-batch-validation": options?.batchValidation },
@@ -156,8 +227,13 @@ export class Emails extends Resource {
     return this.core.request("get", "/emails/{id}/insights", { path: { id }, options });
   }
 
-  /** `GET /emails/metrics` */
-  metrics(params?: QueryParams<"/emails/metrics", "get">, options?: RequestOptions) {
-    return this.core.request("get", "/emails/metrics", { query: params, options });
+  /** `POST /emails/{id}/share` */
+  share(id: string, payload?: RequestBody<"/emails/{id}/share", "post">, options?: RequestOptions) {
+    return this.core.request("post", "/emails/{id}/share", { path: { id }, body: payload, options });
+  }
+
+  /** `DELETE /emails/{id}/share` */
+  unshare(id: string, options?: RequestOptions) {
+    return this.core.request("delete", "/emails/{id}/share", { path: { id }, options });
   }
 }

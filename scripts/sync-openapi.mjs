@@ -3,6 +3,8 @@
 //
 //   pnpm openapi:sync                      # fetch the published document
 //   pnpm openapi:sync --from <path>        # copy a local document instead
+//   pnpm openapi:check                     # write nothing; exit 1 when the snapshot differs
+//                                          # from the published document (CI runs it)
 //
 // The snapshot is the document as published, descriptions included: `pnpm
 // generate` turns them into the doc comments of the generated types. After
@@ -18,11 +20,12 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const target = resolve(root, "openapi/api.openapi.json");
 
 function parseArgs(argv) {
-  const args = { from: undefined, url: DEFAULT_URL };
+  const args = { check: false, from: undefined, url: DEFAULT_URL };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--from") args.from = argv[++i];
     else if (arg === "--url") args.url = argv[++i];
+    else if (arg === "--check") args.check = true;
     else throw new Error(`Unknown argument: ${arg}`);
   }
   if (args.from === "" || args.url === "") throw new Error("--from and --url need a value");
@@ -41,7 +44,19 @@ const doc = await load(args);
 if (typeof doc.openapi !== "string" || !doc.openapi.startsWith("3.1")) {
   throw new Error(`Expected an OpenAPI 3.1 document, got ${String(doc.openapi)}`);
 }
-await writeFile(target, `${JSON.stringify(doc, null, 2)}\n`);
+const text = `${JSON.stringify(doc, null, 2)}\n`;
+if (args.check) {
+  const current = await readFile(target, "utf8").catch(() => "");
+  if (current === text) {
+    console.log(`openapi/api.openapi.json matches ${args.from ?? args.url}`);
+    process.exit(0);
+  }
+  console.error(
+    `openapi/api.openapi.json differs from ${args.from ?? args.url}. Run \`pnpm openapi:sync && pnpm generate\`, then \`pnpm test\`: what fails is what the SDK has to follow.`,
+  );
+  process.exit(1);
+}
+await writeFile(target, text);
 
 let operations = 0;
 for (const item of Object.values(doc.paths ?? {})) {
