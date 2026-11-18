@@ -1,11 +1,5 @@
 # Changelog
 
-## Unreleased
-
-- An inbox event stream resumes from the position the server opens it at: a new stream starts with a block that carries only an `id`, and the stream now keeps it, so a connection the server closes on schedule (about every ten minutes) before its first event reconnects with that `Last-Event-ID` and loses nothing that arrived in between.
-- A successful reply with no body (a 204, an empty 200) comes back as `data: null` with no error, instead of a "not valid JSON" error.
-- A path parameter of `.` or `..` is refused before any request (a URL folds it into another route: `emails.get("..")` would have called `GET /`).
-
 ## 0.2.0 (2026-11-19)
 
 The OpenAPI snapshot is now the document the API publishes (it had fallen behind), and the SDK follows it. `usage.get()` answers the new report (`emails.daily`, `emails.monthly`, `contacts`, `domains`, …) instead of `limits.emails_per_day`.
@@ -19,6 +13,10 @@ The OpenAPI snapshot is now the document the API publishes (it had fallen behind
 - An inbox event stream drops a connection that delivered nothing (not even the server's 15-second keep-alive comment) for `idleTimeoutMs` (default 45 seconds, `0` turns it off) and reconnects from the last event id; a connection that died silently no longer hangs the loop.
 - `verifyWebhook` accepts a secret and header values with surrounding whitespace (a secret read from a file keeps its trailing newline).
 - An empty list in a query parameter is left out instead of sent as `key=`; a call whose `signal` is already aborted makes no request, whatever the `fetch` does with the signal.
+- An inbox event stream resumes from the position the server opens it at: a new stream starts with a block that carries only an `id`, and the stream now keeps it, so a connection the server closes on schedule (about every ten minutes) before its first event reconnects with that `Last-Event-ID` and loses nothing that arrived in between.
+- A successful reply with no body (a 204, an empty 200) comes back as `data: null` with no error, instead of a "not valid JSON" error.
+- A path parameter of `.` or `..` is refused before any request (a URL folds it into another route: `emails.get("..")` would have called `GET /`).
+- An API key is read without the whitespace around it (a key read from a file or the environment ends in a newline, which would otherwise break the `Authorization` header); a blank key counts as none, so the environment's key is used, and without one the call fails with `missing_api_key` before any request.
 - `pnpm test:coverage` (at least 95% lines and branches of the hand-written code) and `pnpm test:e2e` (the live suite) are new; the contract mock now checks the answers a test queues against the document too.
 - `pnpm openapi:check` compares the snapshot with the published document and fails when they differ; CI runs it on every push and pull request and once a day.
 

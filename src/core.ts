@@ -40,7 +40,10 @@ export type Result<T> =
   | { data: null; error: BillionSendError; headers: ResponseHeaders | null };
 
 export interface BillionSendOptions {
-  /** The API key (`bs_...`). Defaults to the `BILLIONSEND_API_KEY` environment variable. */
+  /**
+   * The API key (`bs_...`), without the whitespace around it (a key read from a file ends in a newline);
+   * a blank one counts as none. Defaults to the `BILLIONSEND_API_KEY` environment variable.
+   */
   apiKey?: string;
   /** Defaults to `BILLIONSEND_BASE_URL`, then `https://api.billionsend.com`. */
   baseUrl?: string;
@@ -110,6 +113,12 @@ function readEnv(name: string): string | undefined {
   const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env;
   const value = env?.[name];
   return value === undefined || value === "" ? undefined : value;
+}
+
+/** A key without the whitespace a file or `echo` leaves around it; a blank one is no key. */
+function cleanKey(key: string | undefined): string | undefined {
+  const trimmed = key?.trim();
+  return trimmed === undefined || trimmed === "" ? undefined : trimmed;
 }
 
 function failure(error: BillionSendError, headers: ResponseHeaders | null = null): Result<never> {
@@ -192,7 +201,7 @@ export class Core {
   readonly #headers: Record<string, string>;
 
   constructor(options: BillionSendOptions) {
-    this.#apiKey = options.apiKey ?? readEnv("BILLIONSEND_API_KEY");
+    this.#apiKey = cleanKey(options.apiKey) ?? cleanKey(readEnv("BILLIONSEND_API_KEY"));
     this.baseUrl = (options.baseUrl ?? readEnv("BILLIONSEND_BASE_URL") ?? DEFAULT_BASE_URL).replace(
       /\/+$/,
       "",

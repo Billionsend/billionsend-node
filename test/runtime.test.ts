@@ -120,6 +120,42 @@ describe("configuration", () => {
     expect(calls).toHaveLength(0);
   });
 
+  it("trims whitespace around an API key (a key read from a file ends in a newline) and sees a blank one as missing", async () => {
+    vi.stubEnv("BILLIONSEND_API_KEY", "  bs_env\n");
+    const fromEnv = scripted([json(200, usage)], { apiKey: undefined });
+    await fromEnv.bs.usage.get();
+    expect(fromEnv.calls[0]?.headers.get("authorization")).toBe("Bearer bs_env");
+
+    for (const key of ["bs_option\n", " \tbs_option\r\n", "bs_option "]) {
+      const { bs, calls } = scripted([json(200, usage)], { apiKey: key });
+      await bs.usage.get();
+      expect(calls[0]?.headers.get("authorization")).toBe("Bearer bs_option");
+    }
+    // The string form of the constructor reads the key the same way.
+    const seen: Headers[] = [];
+    vi.stubGlobal("fetch", async (_url: unknown, init?: RequestInit) => {
+      seen.push(new Headers(init?.headers));
+      return json(200, usage);
+    });
+    await new BillionSend("bs_string\n").usage.get();
+    expect(seen[0]?.get("authorization")).toBe("Bearer bs_string");
+    vi.unstubAllGlobals();
+
+    // A blank option is no key: the environment's key is used, and without one nothing is sent.
+    const blank = scripted([json(200, usage)], { apiKey: " \n" });
+    await blank.bs.usage.get();
+    expect(blank.calls[0]?.headers.get("authorization")).toBe("Bearer bs_env");
+
+    vi.stubEnv("BILLIONSEND_API_KEY", " \n");
+    for (const apiKey of [undefined, "", "   ", "\n"]) {
+      const none = scripted([json(200, usage)], { apiKey });
+      const result = await none.bs.usage.get();
+      expect(result.error).toBeInstanceOf(AuthenticationError);
+      expect(result.error?.name).toBe("missing_api_key");
+      expect(none.calls).toHaveLength(0);
+    }
+  });
+
   it("works where there is no process object (a browser or an edge runtime)", async () => {
     vi.stubGlobal("process", undefined);
     const { bs, calls } = scripted([json(200, usage)]);
