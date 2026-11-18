@@ -30,6 +30,9 @@ const KNOWN_DOC_GAPS: Record<string, string> = {
     "a sending_access key is refused with 403 restricted_api_key; the document lists no 403 here",
 };
 
+/** The operations that send mail, whose recipients are checked before the request leaves. */
+const SENDING = new Set(["POST /emails", "POST /emails/batch"]);
+
 const METHODS_THAT_READ = new Set(["GET", "HEAD"]);
 
 // Operations that make a new object or only read (so no id of ours is in their path).
@@ -109,6 +112,8 @@ export class Live {
   readonly refused: string[] = [];
   readonly knownGaps: string[] = [];
   readonly owned = new Set<string>();
+  /** Every address this run added to a suppression list (lower case); mail to one of them is refused. */
+  readonly suppressed = new Set<string>();
   mails = 0;
   teardown = false;
   #queue: Promise<void> = Promise.resolve();
@@ -188,6 +193,12 @@ export class Live {
   }
 
   #guardBody(key: string, raw: BodyInit | null | undefined): void {
+    // A request that sends mail is read strictly: a body that is not JSON text, or an item that is not
+    // an object, cannot be shown safe, so it is refused rather than let through unread.
+    if (SENDING.has(key)) {
+      this.#guardSend(key, raw);
+      return;
+    }
     if (typeof raw !== "string") return;
     let body: unknown;
     try {
@@ -196,22 +207,9 @@ export class Live {
       return;
     }
     const items = Array.isArray(body) ? body : [body];
-    if (key === "POST /emails" || key === "POST /emails/batch" || key === "POST /broadcasts") {
+    if (key === "POST /broadcasts") {
       for (const item of items as Record<string, unknown>[]) {
         if (item.from !== SENDER) this.#refuse(`${key}: from is not the E2E sender`);
-        if (key === "POST /broadcasts") continue;
-        for (const field of ["to", "cc", "bcc"] as const) {
-          const value = item[field];
-          const list = value === undefined ? [] : Array.isArray(value) ? value : [value];
-          for (const address of list as string[]) {
-            if (!RECIPIENT.test(address))
-              this.#refuse(`${key}: ${address} is not a simulator success address`);
-          }
-        }
-      }
-      if (key !== "POST /broadcasts") {
-        this.mails += items.length;
-        if (this.mails > MAX_MAILS) this.#refuse(`more than ${MAX_MAILS} mails`);
       }
     }
     if (key === "POST /events/send" || key === "POST /contacts") {
@@ -225,13 +223,63 @@ export class Live {
         if (!this.owned.has(v)) this.#refuse(`${key} names ${v}, not made by this run`);
       }
     }
-    if (key === "POST /suppressions" || key === "POST /contacts/batch") {
+    if (
+      key === "POST /suppressions" ||
+      key === "POST /suppressions/batch/add" ||
+      key === "POST /contacts/batch"
+    ) {
       const emails =
         key === "POST /suppressions"
           ? [(body as { email: string }).email]
-          : (items as { email: string }[]).map((i) => i.email);
-      for (const e of emails) if (!RECIPIENT.test(e)) this.#refuse(`${key}: ${e} is not a simulator address`);
+          : key === "POST /suppressions/batch/add"
+            ? ((body as { emails?: string[] }).emails ?? [])
+            : (items as { email: string }[]).map((i) => i.email);
+      for (const e of emails) {
+        if (typeof e !== "string" || !RECIPIENT.test(e)) {
+          this.#refuse(`${key}: ${String(e)} is not a simulator address`);
+        }
+      }
+      // From here on no mail may go to these, whatever happens to the suppression itself.
+      if (key !== "POST /contacts/batch") for (const e of emails) this.suppressed.add(e.toLowerCase());
     }
+  }
+
+  /**
+   * The two rules on mail: a recipient (to, cc, bcc) is only `success@simulator.amazonses.com` or a
+   * `+` alias of it (never `bounce@`, `complaint@`, `suppressionlist@` or a real address), and never
+   * an address this run added to a suppression list.
+   */
+  #guardSend(key: string, raw: BodyInit | null | undefined): void {
+    if (typeof raw !== "string")
+      this.#refuse(`${key}: the body is not JSON text, so its recipients cannot be checked`);
+    let body: unknown;
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      this.#refuse(`${key}: the body is not valid JSON, so its recipients cannot be checked`);
+    }
+    const items: unknown[] = Array.isArray(body) ? body : [body];
+    for (const item of items) {
+      if (typeof item !== "object" || item === null || Array.isArray(item)) {
+        this.#refuse(`${key}: an item is not an object, so its recipients cannot be checked`);
+      }
+      const message = item as Record<string, unknown>;
+      if (message.from !== SENDER) this.#refuse(`${key}: from is not the E2E sender`);
+      for (const field of ["to", "cc", "bcc"] as const) {
+        const value = message[field];
+        const list = value === undefined ? [] : Array.isArray(value) ? value : [value];
+        for (const address of list) {
+          if (typeof address !== "string" || !RECIPIENT.test(address)) {
+            this.#refuse(`${key}: ${String(address)} is not a simulator success address`);
+          }
+          if (this.suppressed.has(address.toLowerCase())) {
+            this.#refuse(`${key}: ${address} was added to a suppression list by this run`);
+          }
+        }
+      }
+    }
+    this.mails += items.length;
+    if (this.mails > MAX_MAILS) this.#refuse(`more than ${MAX_MAILS} mails`);
   }
 
   async #check(method: string, url: URL, response: Response): Promise<void> {
