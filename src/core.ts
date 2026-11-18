@@ -31,7 +31,10 @@ export const DEFAULT_MAX_RETRIES = 2;
 /** Response headers, with lower-case names. */
 export type ResponseHeaders = Record<string, string>;
 
-/** What every method resolves to. It never rejects: failures come back in `error`. */
+/**
+ * What every method resolves to. It never rejects: failures come back in `error`. A successful reply with
+ * no body (a 204) has `data: null`; no operation of the published API answers that way today.
+ */
 export type Result<T> =
   | { data: T; error: null; headers: ResponseHeaders }
   | { data: null; error: BillionSendError; headers: ResponseHeaders | null };
@@ -138,18 +141,28 @@ function lowerCaseKeys(headers: Record<string, string | undefined> | undefined):
   return out;
 }
 
-/** Fills `{name}` placeholders, or explains which parameter is missing or empty. */
+/**
+ * Fills `{name}` placeholders, or explains which parameter is missing, empty or a dot segment (`.` and
+ * `..` are not ids, and a URL folds them into another route: `/emails/..` is `/`).
+ */
 function fillPath(template: string, params: Record<string, unknown> | undefined): string | BillionSendError {
   let missing: string | undefined;
+  let dotted: string | undefined;
   const filled = template.replace(/\{([^}]+)\}/g, (_, name: string) => {
     const value = params?.[name];
     if (value === undefined || value === null || String(value) === "") {
       missing ??= name;
       return "";
     }
-    return encodeURIComponent(String(value));
+    const text = String(value);
+    if (text === "." || text === "..") dotted ??= name;
+    return encodeURIComponent(text);
   });
-  return missing === undefined ? filled : applicationError(`Missing path parameter "${missing}"`);
+  if (missing !== undefined) return applicationError(`Missing path parameter "${missing}"`);
+  if (dotted !== undefined) {
+    return applicationError(`Invalid path parameter "${dotted}": "." and ".." are not ids`);
+  }
+  return filled;
 }
 
 function queryString(query: object | undefined): string {
@@ -337,6 +350,9 @@ export class Core {
       const text = await response.text();
       release();
       if (response.ok) {
+        // A success with no body (a 204) has nothing to parse: it is not a JSON error.
+        if (text.trim() === "")
+          return { result: { data: null as never, error: null, headers: responseHeaders } };
         try {
           return { result: { data: JSON.parse(text), error: null, headers: responseHeaders } };
         } catch {

@@ -43,6 +43,7 @@ export async function readmeExamples(
   if (agentStream.error) throw agentStream.error;
   for await (const item of agentStream.data) {
     if (item.event === "stream.gap") continue;
+    if (item.event !== "inbox.email.received") continue;
     const { thread_id, email_id } = item.data.data;
     if (!thread_id || !email_id) continue;
     const email = await bs.inboxes.threads.emails.get(inboxId, thread_id, email_id);

@@ -104,6 +104,11 @@ interface ParserHooks {
   onRetry(ms: number): void;
   /** Bytes arrived (an event, a comment or a keep-alive). */
   onActivity?(): void;
+  /**
+   * A block with an `id` and no data ended: the position the stream is at (a new stream opens with one),
+   * which moves the resume position though nothing is dispatched.
+   */
+  onId?(id: string): void;
 }
 
 /** The default `idleTimeoutMs`: three of the server's 15-second keep-alives. */
@@ -125,6 +130,7 @@ export async function* parseEventStream(
   let eventName = "";
   let dataLines: string[] = [];
   let hasData = false;
+  let idPending = false;
 
   function* takeLines(final: boolean): Generator<string> {
     while (true) {
@@ -142,8 +148,11 @@ export async function* parseEventStream(
     if (line === "") {
       if (!hasData) {
         eventName = "";
+        if (idPending && lastId !== null) hooks.onId?.(lastId);
+        idPending = false;
         return undefined;
       }
+      idPending = false;
       const raw = dataLines.join("\n");
       let data: unknown = raw;
       try {
@@ -171,7 +180,10 @@ export async function* parseEventStream(
         hasData = true;
         break;
       case "id":
-        if (!value.includes("\u0000")) lastId = value;
+        if (!value.includes("\u0000")) {
+          lastId = value;
+          idPending = true;
+        }
         break;
       case "retry":
         if (/^\d+$/.test(value)) hooks.onRetry(Number(value));
@@ -298,7 +310,13 @@ export class EventStream implements AsyncIterable<InboxStreamItem> {
           try {
             const events = parseEventStream(
               connection.response.body,
-              { onRetry: (ms) => (this.#delayMs = ms), onActivity: arm },
+              {
+                onRetry: (ms) => (this.#delayMs = ms),
+                onActivity: arm,
+                // An id-only block (the position a new stream opens at) counts: a connection that ends
+                // before its first event must still resume from it.
+                onId: (id) => (this.#lastEventId = id),
+              },
               this.#lastEventId,
             );
             for await (const event of events) {

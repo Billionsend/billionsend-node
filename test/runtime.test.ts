@@ -175,6 +175,42 @@ describe("building a request", () => {
     expect(calls).toHaveLength(0);
   });
 
+  it("leaves an unset optional field out of the body (the API refuses null) and sends an explicit null as written", async () => {
+    const { bs, calls } = scripted([json(200, okBody("POST /emails")), json(200, okBody("POST /emails"))]);
+    await bs.emails.send({
+      from: "a@example.com",
+      to: ["b@example.com"],
+      subject: "s",
+      text: "t",
+      reply_to: undefined,
+      headers: undefined,
+    });
+    expect(Object.keys(JSON.parse(String(calls[0]?.body)))).toEqual(["from", "to", "subject", "text"]);
+    await bs.emails.send({
+      from: "a@example.com",
+      to: ["b@example.com"],
+      subject: "s",
+      text: "t",
+      reply_to: null as never,
+    });
+    expect(JSON.parse(String(calls[1]?.body)).reply_to).toBeNull();
+  });
+
+  it("refuses a path parameter of `.` or `..`, which a URL would fold into another route, before any request", async () => {
+    const { bs, calls } = scripted([json(200, usage)]);
+    for (const id of [".", ".."]) {
+      const result = await bs.templates.get(id);
+      expect(result.data).toBeNull();
+      expect(result.error).toMatchObject({ name: "application_error" });
+      expect(result.error?.message).toContain('"id"');
+    }
+    expect(calls).toHaveLength(0);
+    // Dots inside an id are fine.
+    await bs.templates.get("...");
+    await bs.templates.get("a..b");
+    expect(calls).toHaveLength(2);
+  });
+
   it("encodes query values: booleans, zero, lists, special characters; leaves out undefined, null and empty lists", async () => {
     const { bs, calls } = scripted([json(200, okBody("GET /inboxes/{inbox_id}/threads"))]);
     await bs.inboxes.threads.list("inbox", {
@@ -425,20 +461,22 @@ describe("errors", () => {
     expect(result.error).toMatchObject({ statusCode: 418, name: "teapot" });
   });
 
-  it("reports a 2xx without a JSON body as an error that names the status", async () => {
-    for (const answer of [
-      new Response(null, { status: 204 }),
-      new Response("", { status: 200 }),
-      new Response("<p>", { status: 200 }),
-    ]) {
+  it("answers a successful reply with no body (a 204, an empty 200) with null data and no error", async () => {
+    for (const answer of [new Response(null, { status: 204 }), new Response("  \n", { status: 200 })]) {
       const result = await scripted([answer]).bs.usage.get();
+      expect(result.error).toBeNull();
       expect(result.data).toBeNull();
-      expect(result.error).toMatchObject({
-        name: "application_error",
-        message: "The response body is not valid JSON",
-      });
-      expect(result.error?.statusCode).toBe(answer.status);
     }
+  });
+
+  it("reports a 2xx whose body is not JSON as an error that names the status", async () => {
+    const result = await scripted([new Response("<p>", { status: 200 })]).bs.usage.get();
+    expect(result.data).toBeNull();
+    expect(result.error).toMatchObject({
+      name: "application_error",
+      message: "The response body is not valid JSON",
+      statusCode: 200,
+    });
   });
 
   it("describes a failed fetch, with its cause, and never rejects", async () => {

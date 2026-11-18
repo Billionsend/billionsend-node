@@ -165,6 +165,39 @@ describe("inbox event streams", () => {
     expect(hits.every((hit) => hit.url.searchParams.get("types") === "inbox.email.received")).toBe(true);
   });
 
+  it("resumes from the cursor the server opened with when the stream ends before any event", async () => {
+    // A new stream opens with `retry:` and an id-only block (the position it started at); the server
+    // also closes a quiet stream on schedule. The reconnect must carry that position, or what arrived
+    // between the two connections is lost for good.
+    mock.stream("GET /inboxes/{inbox_id}/events", (res) => {
+      res.write("retry: 10\n\nid: 9.1.1790000000\n\n");
+      res.end();
+    });
+    mock.stream("GET /inboxes/{inbox_id}/events", (res) => {
+      res.write("id: 9.2.1790000001\n\n");
+      res.end();
+    });
+    mock.stream("GET /inboxes/{inbox_id}/events", (res) => {
+      res.write('id: 9.3.1790000002\nevent: inbox.deleted\ndata: {"type":"inbox.deleted"}\n\n');
+      res.end();
+    });
+    const opened = await client().inboxes.events.streamInbox("support@example.com", undefined, {
+      reconnectDelayMs: 5,
+    });
+    const stream = opened.data;
+    if (!stream) throw new Error("no stream");
+    const events: unknown[] = [];
+    for await (const event of stream) events.push(event.event);
+    expect(events).toEqual(["inbox.deleted"]);
+    const hits = mock.hitsFor("GET /inboxes/{inbox_id}/events");
+    expect(hits.map((hit) => hit.headers["last-event-id"])).toEqual([
+      undefined,
+      "9.1.1790000000",
+      "9.2.1790000001",
+    ]);
+    expect(stream.lastEventId).toBe("9.3.1790000002");
+  });
+
   it("retries a reconnect refused with 503 and throws a refusal that retrying cannot fix", async () => {
     mock.stream("GET /inboxes/events", (res) => {
       res.write("retry: 1\nid: 1\ndata: {}\n\n");

@@ -13,6 +13,34 @@ const blocks = [...readme.matchAll(/```ts\n([\s\S]*?)```/g)].map((m) => {
   return body.split("\n").find((line) => line.trim() !== "") ?? "";
 });
 
+describe("README idempotency list", () => {
+  it("names every operation the API document gives an Idempotency-Key", () => {
+    const spec = JSON.parse(
+      readFileSync(new URL("../openapi/api.openapi.json", import.meta.url), "utf8"),
+    ) as {
+      paths: Record<string, Record<string, { operationId?: string; parameters?: { name?: string }[] }>>;
+    };
+    const paragraph = readme.split("\n").find((line) => line.startsWith("**Idempotency.**")) ?? "";
+    const keyed: string[] = [];
+    for (const methods of Object.values(spec.paths)) {
+      for (const op of Object.values(methods)) {
+        const takesKey = (op.parameters ?? []).some((p) => p.name?.toLowerCase() === "idempotency-key");
+        if (takesKey && op.operationId) keyed.push(op.operationId);
+      }
+    }
+    expect(keyed.length).toBeGreaterThan(5);
+    for (const id of keyed) {
+      const last = id.slice(id.lastIndexOf(".") + 1);
+      const parent = id.slice(0, id.lastIndexOf(".") + 1);
+      // The README writes `a.b.reply` / `forward` for two siblings.
+      const named =
+        paragraph.includes(`\`${id}\``) ||
+        (paragraph.includes(`\`${parent}`) && paragraph.includes(`\`${last}\``));
+      expect(named, id).toBe(true);
+    }
+  });
+});
+
 describe("README code blocks", () => {
   it("are exactly the blocks the live suite accounts for, in order", () => {
     expect(blocks).toEqual(README_BLOCKS.map((b) => b.start));

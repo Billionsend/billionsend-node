@@ -46,7 +46,7 @@ if (error) {
 }
 ```
 
-**Idempotency.** The sending operations (`emails.send`, `emails.batch`, `emails.receiving.reply` / `forward`, `inboxes.send`, `inboxes.drafts.send`, `inboxes.threads.emails.reply` / `forward`) always send an `Idempotency-Key` header. Without your own, each call gets a new random key and that call's retries reuse it, so a retry after a timeout cannot send twice. Pass your own key to make a send safe across calls and processes too; a repeat with the same key and payload returns the first result:
+**Idempotency.** The sending operations (`emails.send`, `emails.batch`, `events.send`, `emails.receiving.reply` / `forward`, `inboxes.send`, `inboxes.drafts.send`, `inboxes.threads.emails.reply` / `forward`) always send an `Idempotency-Key` header. Without your own, each call gets a new random key and that call's retries reuse it, so a retry after a timeout cannot send twice. Pass your own key to make a send safe across calls and processes too; a repeat with the same key and payload returns the first result:
 
 ```ts
 await bs.emails.send(message, { idempotencyKey: `welcome/${user.id}` });
@@ -122,6 +122,8 @@ for await (const item of opened.data) {
     // Resumed from too far back: events may be missing. Re-read the threads.
     continue;
   }
+  // `types` does not filter `inbox.deleted` and `inbox.expired`: they always arrive, without a thread.
+  if (item.event !== "inbox.email.received") continue;
   const { thread_id, email_id } = item.data.data;
   if (!thread_id || !email_id) continue;
 
