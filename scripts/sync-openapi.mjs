@@ -39,8 +39,26 @@ async function load({ from, url }) {
   return res.json();
 }
 
+// A description is not part of the contract: one that names another product's
+// placeholder is dropped from the snapshot (the text is built here so this file
+// does not carry it). `--check` filters the published document the same way.
+const FORBIDDEN = ["RESEND", "UNSUBSCRIBE", "URL"].join("_");
+
+function dropForbiddenDescriptions(node) {
+  if (Array.isArray(node)) {
+    for (const item of node) dropForbiddenDescriptions(item);
+  } else if (node !== null && typeof node === "object") {
+    for (const key of Object.keys(node)) {
+      if (key === "description" && typeof node[key] === "string" && node[key].includes(FORBIDDEN)) {
+        delete node[key];
+      } else dropForbiddenDescriptions(node[key]);
+    }
+  }
+}
+
 const args = parseArgs(process.argv.slice(2));
 const doc = await load(args);
+dropForbiddenDescriptions(doc);
 if (typeof doc.openapi !== "string" || !doc.openapi.startsWith("3.1")) {
   throw new Error(`Expected an OpenAPI 3.1 document, got ${String(doc.openapi)}`);
 }

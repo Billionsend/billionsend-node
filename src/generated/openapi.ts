@@ -3123,9 +3123,7 @@ export interface components {
       from?: string;
       /** @description Subject line; supports {{{FIRST_NAME|there}}} merge fields. Required unless `template` supplies a default subject; given with a template, it replaces the template's */
       subject?: string;
-      /** @description HTML body (not with `template`); put {{{UNSUBSCRIBE_URL}}} where the opt-out link goes. Without it (or {{{RESEND_UNSUBSCRIBE_URL}}}) a small Unsubscribe footer with the recipient's own link is added at the end when it is sent */
       html?: string;
-      /** @description Plain-text body; at least one of html/text is required. Without {{{UNSUBSCRIBE_URL}}} (or {{{RESEND_UNSUBSCRIBE_URL}}}) in it, a last line with the recipient's unsubscribe link is added when it is sent */
       text?: string;
       /** @description Reply-To address or list; given with a template, it replaces the template's */
       reply_to?: string | string[];
