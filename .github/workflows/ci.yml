@@ -50,9 +50,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      # The check uses Node built-ins only: no install, so no package manager cache
+      # (setup-node turns it on by itself from package.json's packageManager).
       - uses: actions/setup-node@v5
         with:
           node-version: 24
+          package-manager-cache: false
       - run: node scripts/sync-openapi.mjs --check
 
   runtimes:
