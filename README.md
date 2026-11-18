@@ -52,7 +52,7 @@ if (error) {
 await bs.emails.send(message, { idempotencyKey: `welcome/${user.id}` });
 ```
 
-**Retries.** Failures worth retrying are retried up to `maxRetries` times (default 2): `429`, `5xx`, timeouts and network errors, and the `409 concurrent_idempotent_requests` the API answers while the first attempt with the same key is still running. Only requests safe to repeat are retried: `GET`, `PUT`, `DELETE` and the sending operations above. The client waits as `retry-after` asks, or backs off exponentially (0.5 s, 1 s, 2 s … up to 8 s, with jitter); a `retry-after` over a minute is not waited for, and the error comes back instead.
+**Retries.** Failures worth retrying are retried up to `maxRetries` times (default 2): `429`, `5xx`, timeouts and network errors, and the `409 concurrent_idempotent_requests` the API answers while the first attempt with the same key is still running. A `429` is retried for every request, because the API answers it before it writes anything; the other failures (`5xx`, timeouts, network errors, the `409`) only for requests safe to repeat: `GET`, `PUT`, `DELETE` and the sending operations above. The client waits as `retry-after` asks, or backs off exponentially (0.5 s, 1 s, 2 s … up to 8 s, with jitter); a `retry-after` over a minute is not waited for, and the error comes back instead.
 
 ```ts
 const bs = new BillionSend({ apiKey: "bs_...", maxRetries: 4 });

@@ -283,6 +283,53 @@ describe("building a request", () => {
     expect(calls[0]?.body).toBe(JSON.stringify({ name: "example.com" }));
   });
 
+  it("refuses a header value HTTP cannot carry before any request, names only the header, and never retries it", async () => {
+    const secret = "welcome/订单-1";
+    const cases: [string, BillionSendOptions, Record<string, string>][] = [
+      ["idempotency-key", {}, { "Idempotency-Key": secret }],
+      ["idempotency-key", {}, { "Idempotency-Key": "abc\ndef" }],
+      ["idempotency-key", {}, { "Idempotency-Key": "abc\u0000def" }],
+      ["x-trace", {}, { "X-Trace": "tab\there\r" }],
+    ];
+    for (const [name, options, headers] of cases) {
+      const { bs, calls } = scripted([json(200, okBody("POST /emails"))], options);
+      const result = await bs.emails.send(
+        { from: "a@example.com", to: "b@example.com", subject: "s", text: "t" },
+        { headers },
+      );
+      expect(calls, name).toHaveLength(0);
+      expect(result.data).toBeNull();
+      expect(result.error).toBeInstanceOf(BillionSendError);
+      expect(result.error?.name).toBe("invalid_header");
+      expect(result.error?.message).toContain(name);
+      for (const value of Object.values(headers)) {
+        expect(result.error?.message).not.toContain(value.trim());
+      }
+    }
+  });
+
+  it("lets a header value of printable ASCII and tabs through", async () => {
+    const { bs, calls } = scripted([json(200, usage)]);
+    await bs.usage.get({ headers: { "X-Note": "a b\tc ~!" } });
+    expect(calls[0]?.headers.get("x-note")).toBe("a b\tc ~!");
+  });
+
+  it("refuses an API key that is not a valid header value without echoing it", async () => {
+    const { bs, calls } = scripted([json(200, usage)], { apiKey: "bs_te\nst-订单" });
+    const result = await bs.usage.get();
+    expect(calls).toHaveLength(0);
+    expect(result.error?.name).toBe("invalid_header");
+    expect(result.error?.message).not.toContain("bs_te");
+    expect(result.error?.message).not.toContain("订单");
+  });
+
+  it("refuses a header name HTTP cannot carry", async () => {
+    const { bs, calls } = scripted([json(200, usage)]);
+    const result = await bs.usage.get({ headers: { "X Bad": "1" } });
+    expect(calls).toHaveLength(0);
+    expect(result.error?.name).toBe("invalid_header");
+  });
+
   it("sends no body and no content type for a request without one", async () => {
     const { bs, calls } = scripted([json(200, usage)]);
     await bs.usage.get();
@@ -384,6 +431,63 @@ describe("retries and waits", () => {
     ); // PUT
     expect(await attempts((bs) => bs.domains.update("d", { open_tracking: true }))).toBe(1); // PATCH
     expect(await attempts((bs) => bs.domains.create({ name: "example.com" }))).toBe(1); // POST
+  });
+
+  it("repeats any request after a 429, a POST, PATCH and DELETE without a key included, and waits what Retry-After asks", async () => {
+    const limited = json(429, refused(429, "rate_limit_exceeded", "Slow down"), { "retry-after": "3" });
+    const calls: [string, (bs: BillionSend) => Promise<unknown>][] = [
+      ["POST", (bs) => bs.domains.create({ name: "example.com" })],
+      ["PATCH", (bs) => bs.domains.update("d", { open_tracking: true })],
+      ["DELETE", (bs) => bs.domains.delete("d")],
+    ];
+    for (const [method, call] of calls) {
+      const { bs, calls: made } = scripted([limited, json(200, okBody("GET /usage"))], {
+        maxRetries: 1,
+        timeoutMs: 987_654,
+      });
+      const { delays } = await waits(() => call(bs), 987_654);
+      expect(
+        made.map((c) => c.method),
+        method,
+      ).toEqual([method, method]);
+      expect(delays, method).toEqual([3000]);
+    }
+  });
+
+  it("gives up on a 429 that asks for over a minute, and on one retried maxRetries times, for a POST too", async () => {
+    const limited = (retryAfter: string) =>
+      json(429, refused(429, "rate_limit_exceeded"), { "retry-after": retryAfter });
+    const long = scripted([limited("61"), json(200, usage)], { timeoutMs: 987_654 });
+    const first = await waits(() => long.bs.domains.create({ name: "example.com" }), 987_654);
+    expect(first.value.error?.statusCode).toBe(429);
+    expect(long.calls).toHaveLength(1);
+
+    const always = scripted([limited("0")], { maxRetries: 2, timeoutMs: 987_654 });
+    const second = await waits(() => always.bs.domains.create({ name: "example.com" }), 987_654);
+    expect(second.value.error?.statusCode).toBe(429);
+    expect(always.calls).toHaveLength(3);
+  });
+
+  it("repeats a POST after a 429 that carries no Retry-After, backing off", async () => {
+    const { bs, calls } = scripted([json(429, refused(429, "rate_limit_exceeded")), json(200, usage)], {
+      timeoutMs: 987_654,
+    });
+    const { delays } = await waits(() => bs.domains.create({ name: "example.com" }), 987_654);
+    expect(calls).toHaveLength(2);
+    expect(delays).toHaveLength(1);
+    expect(delays[0]).toBeGreaterThanOrEqual(375);
+    expect(delays[0]).toBeLessThanOrEqual(500);
+  });
+
+  it("still does not repeat a POST or PATCH without a key after a 5xx", async () => {
+    for (const call of [
+      (bs: BillionSend) => bs.domains.create({ name: "example.com" }),
+      (bs: BillionSend) => bs.domains.update("d", { open_tracking: true }),
+    ]) {
+      const { bs, calls } = scripted([busy({ "retry-after": "0" }), json(200, usage)], { maxRetries: 2 });
+      expect(((await call(bs)) as { error: BillionSendError }).error.statusCode).toBe(503);
+      expect(calls).toHaveLength(1);
+    }
   });
 
   it("does not repeat a POST without a key after a network failure, but does repeat a keyed one", async () => {

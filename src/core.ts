@@ -150,6 +150,18 @@ function lowerCaseKeys(headers: Record<string, string | undefined> | undefined):
   return out;
 }
 
+const HEADER_NAME = /^[!#$%&'*+.^_`|~0-9a-z-]+$/;
+const HEADER_VALUE = /^[\t\x20-\x7e]*$/;
+
+/** The name of the first header the transport would refuse (a bad name or a value with non-ASCII or control characters), if any. */
+function invalidHeader(headers: Record<string, string>): string | undefined {
+  for (const [name, value] of Object.entries(headers)) {
+    if (!HEADER_NAME.test(name)) return JSON.stringify(name.replace(/[^\x20-\x7e]/g, "?"));
+    if (!HEADER_VALUE.test(value)) return name;
+  }
+  return undefined;
+}
+
 /**
  * Fills `{name}` placeholders, or explains which parameter is missing, empty or a dot segment (`.` and
  * `..` are not ids, and a URL folds them into another route: `/emails/..` is `/`).
@@ -281,15 +293,28 @@ export class Core {
     if (auth) headers.authorization = `Bearer ${this.#apiKey}`;
     else delete headers.authorization;
 
+    const invalid = invalidHeader(headers);
+    if (invalid !== undefined) {
+      return failure(
+        new BillionSendError({
+          name: "invalid_header",
+          message: `The ${invalid} header has a value HTTP cannot carry (only printable ASCII and tabs); nothing was sent`,
+        }),
+      );
+    }
+
     const keyed = headers["idempotency-key"] !== undefined;
-    const retryable = IDEMPOTENT_METHODS.has(method) || keyed;
+    const safeToRepeat = IDEMPOTENT_METHODS.has(method) || keyed;
     const maxRetries = options.maxRetries ?? this.maxRetries;
     const timeoutMs = options.timeoutMs ?? this.timeoutMs;
 
     for (let attempt = 0; ; attempt++) {
       const outcome = await this.#attempt(method, url, headers, body, timeoutMs, options.signal, stream);
       const error = outcome.result.error;
-      if (error === null || !retryable || attempt >= maxRetries || !retryableError(error, keyed)) {
+      // A 429 is answered before anything is written, so any request may be repeated after one;
+      // every other failure only when repeating it cannot do the work twice.
+      const mayRepeat = safeToRepeat || error?.statusCode === 429;
+      if (error === null || !mayRepeat || attempt >= maxRetries || !retryableError(error, keyed)) {
         return outcome.result;
       }
       const delay = retryDelayMs(attempt, outcome.retryAfter);

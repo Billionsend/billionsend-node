@@ -466,6 +466,25 @@ describe("operation coverage", () => {
         expect(mock.hits).toHaveLength(1);
       },
     );
+    // A 429 is answered before the API writes anything, so every operation is repeated after one, a
+    // POST or a PATCH without an Idempotency-Key included, and the SDK waits what Retry-After asks.
+    // (An event stream reconnects by its own rules: test/sse.test.ts.)
+    it.skipIf(key.startsWith("GET /inboxes/events") || key === "GET /inboxes/{inbox_id}/events")(
+      "repeats the request after a 429 with Retry-After",
+      async () => {
+        const body = { statusCode: 429, name: "rate_limit_exceeded", message: "Slow down" };
+        mock.reply(key, { status: 429, body, headers: { "retry-after": "0" } });
+        const result = await call(client({ maxRetries: 1 }));
+        expect(result.error, "the repeated request succeeds").toBeNull();
+        expect(mock.hits.map((hit) => hit.status)).toEqual([
+          429,
+          Number(successStatus(operation(key)) ?? 200),
+        ]);
+        expect(mock.hits.map((hit) => `${hit.method} ${hit.url.pathname}`)).toEqual(
+          Array(2).fill(`${operation(key).method} ${mock.hits[0]?.url.pathname}`),
+        );
+      },
+    );
   });
 
   it("reached every operation of the snapshot, and nothing else", () => {

@@ -4771,7 +4771,7 @@ export interface components {
         failed: number;
         cancelled: number;
       };
-      /** @description Results of the mail the automation sent: accepted, sent, delivered, delayed, bounced, complained, suppressed, opened, unique_opened, clicked, unique_clicked, unsubscribed */
+      /** @description Results of the mail the automation sent (how many it accepted is its send_email steps' completed count): sent, delivered, delayed, bounced, complained, suppressed, opened, unique_opened, clicked, unique_clicked, unsubscribed */
       emails: {
         [key: string]: number;
       };
