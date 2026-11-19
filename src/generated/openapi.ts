@@ -2275,7 +2275,7 @@ export interface paths {
     };
     /**
      * List received emails
-     * @description Mail received at the team's receiving domains and inboxes, newest first (`after` pages toward older mail), with cursor pagination. Needs a full access key; a domain-scoped key lists mail addressed to its domain only, an inbox-scoped key mail delivered into its inbox. Mail held for screening or in quarantine is left out unless a full access key asks for it (include_quarantined, quarantined). With wait, the request is held until matching mail arrives (long-poll). An inbox_id the key can't reach answers 404 at once, without waiting; an inbox-scoped key naming another inbox gets 403 restricted_api_key. Everything in a received email was written by whoever sent it, so its HTML is safe to show only in a sandbox.
+     * @description Mail received at the team's receiving domains and inboxes, newest first (`after` pages toward older mail), with cursor pagination. Needs a full access key; a domain-scoped key lists mail addressed to its domain only, an inbox-scoped key mail delivered into its inbox. Mail held for screening or in quarantine is left out unless a full access key asks for it (include_quarantined, quarantined). With wait, the request is held until matching mail arrives (long-poll). The inbox_id filter takes an inbox ID or its email address, as the /inboxes/{inbox_id} paths do. An inbox the key can't reach answers 404 at once, without waiting; an inbox-scoped key naming another inbox gets 403 restricted_api_key. Everything in a received email was written by whoever sent it, so its HTML is safe to show only in a sandbox.
      */
     get: operations["emails.receiving.list"];
     put?: never;
@@ -6828,7 +6828,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id */
+      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6908,7 +6908,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id */
+      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -6986,7 +6986,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id */
+      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7064,7 +7064,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id */
+      /** @description Restricted API key: a sending_access key, or a key held to one domain that named another domain in domain_id; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7143,7 +7143,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7210,7 +7210,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7285,7 +7285,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7357,6 +7357,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -7414,7 +7424,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Plan limit reached */
+      /** @description Plan limit reached; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7501,6 +7511,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -7550,6 +7570,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7621,7 +7651,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Plan limit reached (strict mode) */
+      /** @description Plan limit reached (strict mode); refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -7706,6 +7736,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -7756,6 +7796,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7815,6 +7865,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -7888,6 +7948,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -7953,6 +8023,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -8004,6 +8084,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8084,6 +8174,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -8150,6 +8250,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -8198,6 +8308,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8265,7 +8385,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Plan limit reached */
+      /** @description Plan limit reached; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8351,6 +8471,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -8402,6 +8532,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8462,6 +8602,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8540,6 +8690,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -8589,6 +8749,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8662,6 +8832,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -8709,6 +8889,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8768,6 +8958,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -8846,6 +9046,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -8903,7 +9113,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description A key held to one domain bound this to another domain, or unbound it */
+      /** @description A key held to one domain bound this to another domain, or unbound it; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -8968,6 +9178,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -9015,6 +9235,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9092,7 +9322,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description A key held to one domain bound this to another domain, or unbound it */
+      /** @description A key held to one domain bound this to another domain, or unbound it; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9176,6 +9406,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -9238,6 +9478,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9313,7 +9563,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, sending paused, or a From on the shared inbox domain */
+      /** @description Restricted API key, sending paused, or a From on the shared inbox domain; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9388,6 +9638,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -9445,6 +9705,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9514,6 +9784,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9608,6 +9888,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -9672,6 +9962,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -9769,7 +10069,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Sending paused, or a From on the shared inbox domain */
+      /** @description Sending paused, or a From on the shared inbox domain; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9844,7 +10144,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -9919,6 +10219,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -9964,6 +10274,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10019,7 +10339,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description A key held to one domain bound this to another domain, or unbound it */
+      /** @description A key held to one domain bound this to another domain, or unbound it; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10084,6 +10404,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -10131,6 +10461,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10208,7 +10548,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description A key held to one domain bound this to another domain, or unbound it */
+      /** @description A key held to one domain bound this to another domain, or unbound it; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10288,6 +10628,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -10345,7 +10695,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Plan domain limit reached, an own tracking or unsubscribe subdomain needs a paid plan, or the key is held to one domain (it cannot create domains) */
+      /** @description Plan domain limit reached, an own tracking or unsubscribe subdomain needs a paid plan, or the key is held to one domain (it cannot create domains); refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10420,6 +10770,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found, or a domain other than the one the calling key is held to */
       404: {
         headers: {
@@ -10475,7 +10835,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Team suspended, not available for this team, or the team's subdomain of the shared domain, which is read-only */
+      /** @description Team suspended, not available for this team, or the team's subdomain of the shared domain, which is read-only; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10554,7 +10914,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Catch-all receiving or an own tracking / unsubscribe subdomain needs a paid plan, or the team's subdomain of the shared domain, which is read-only */
+      /** @description Catch-all receiving or an own tracking / unsubscribe subdomain needs a paid plan, or the team's subdomain of the shared domain, which is read-only; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10639,7 +10999,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description The team's subdomain of the shared domain, which is read-only */
+      /** @description The team's subdomain of the shared domain, which is read-only; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10706,7 +11066,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Plan domain limit reached, an own tracking subdomain needs a paid plan, or the key is held to one domain */
+      /** @description Plan domain limit reached, an own tracking subdomain needs a paid plan, or the key is held to one domain; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -10781,6 +11141,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found, or a domain other than the one the calling key is held to */
       404: {
         headers: {
@@ -10828,6 +11198,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -10896,6 +11276,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -10953,7 +11343,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key: a sending_access key, an inbox-scoped key, or a domain_id outside the calling key's domain */
+      /** @description Restricted API key: a sending_access key, an inbox-scoped key, or a domain_id outside the calling key's domain; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11018,6 +11408,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -11069,6 +11469,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11147,6 +11557,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -11204,7 +11624,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Plan webhook endpoint limit reached */
+      /** @description Plan webhook endpoint limit reached; refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -11269,6 +11689,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -11316,6 +11746,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11375,6 +11815,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11462,6 +11912,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -11526,6 +11986,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11602,6 +12072,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -11652,6 +12132,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11735,6 +12225,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -11802,6 +12302,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -11851,6 +12361,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -11921,6 +12441,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -11970,6 +12500,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12033,6 +12573,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -12088,7 +12638,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description A bounce or complaint entry, which is permanent */
+      /** @description A bounce or complaint entry, which is permanent; refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12160,7 +12710,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description A key held to one domain asked for another domain's opt-outs */
+      /** @description A key held to one domain asked for another domain's opt-outs; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12227,7 +12777,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description A key held to one domain recorded an opt-out for another domain or for the whole team */
+      /** @description A key held to one domain recorded an opt-out for another domain or for the whole team; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12297,6 +12847,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -12346,6 +12906,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12420,6 +12990,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -12468,6 +13048,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12528,6 +13118,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12612,6 +13212,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -12660,6 +13270,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12728,6 +13348,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -12777,6 +13407,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -12865,6 +13505,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description No such contact */
       404: {
         headers: {
@@ -12941,6 +13591,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -12989,6 +13649,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -13049,6 +13719,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -13128,6 +13808,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -13185,7 +13875,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description An agent key tried to enable */
+      /** @description An agent key tried to enable; refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -13251,6 +13941,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -13299,6 +13999,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -13367,7 +14077,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description An agent key tried to enable */
+      /** @description An agent key tried to enable; refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -13453,6 +14163,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -13519,6 +14239,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -13576,6 +14306,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -13652,6 +14392,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -13701,6 +14451,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -13761,6 +14521,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -13837,6 +14607,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -13900,6 +14680,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -13981,6 +14771,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
@@ -14020,6 +14820,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -14098,6 +14908,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Validation error */
       422: {
         headers: {
@@ -14155,7 +14975,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description The team is on the Free plan (plan_limit_reached) */
+      /** @description The team is on the Free plan (plan_limit_reached); refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -14240,6 +15060,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -14303,7 +15133,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -14363,7 +15193,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -14428,7 +15258,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -14498,7 +15328,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -14563,7 +15393,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description The caller may not revoke this grant */
+      /** @description The caller may not revoke this grant; refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -14631,7 +15461,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description A key held to one domain or one inbox, or an agent naming an event about held mail */
+      /** @description A key held to one domain or one inbox, or an agent naming an event about held mail; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -14702,7 +15532,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description An agent naming an event about held mail */
+      /** @description An agent naming an event about held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -14784,6 +15614,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Pagination cursor not found */
       404: {
         headers: {
@@ -14851,7 +15691,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description The plan's inbox limit, or a restricted API key */
+      /** @description The plan's inbox limit, or a restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -14937,6 +15777,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -15003,7 +15853,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key or role */
+      /** @description Restricted API key or role; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -15065,6 +15915,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key, a key held to one inbox (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -15149,6 +16009,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -15209,7 +16079,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -15285,6 +16155,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -15345,7 +16225,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key or role */
+      /** @description Restricted API key or role; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -15421,6 +16301,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -15473,6 +16363,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -15549,6 +16449,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -15603,6 +16513,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -15708,7 +16628,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description include_quarantined from an inbox-scoped key */
+      /** @description include_quarantined from an inbox-scoped key; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -15809,7 +16729,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description include_quarantined from an inbox-scoped key */
+      /** @description include_quarantined from an inbox-scoped key; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -15887,6 +16807,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -15937,6 +16867,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -15999,6 +16939,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -16079,6 +17029,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Inbox, thread or label not found */
       404: {
         headers: {
@@ -16143,6 +17103,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -16221,6 +17191,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Inbox, thread or label not found */
       404: {
         headers: {
@@ -16288,7 +17268,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description include_quarantined from an inbox-scoped key */
+      /** @description include_quarantined from an inbox-scoped key; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -16371,7 +17351,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Quarantined, or include_quarantined from an inbox-scoped key */
+      /** @description Quarantined, or include_quarantined from an inbox-scoped key; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -16444,7 +17424,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -16526,7 +17506,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, trust_sender refused, or an MCP connection releasing mail held for its content */
+      /** @description Restricted API key, trust_sender refused, or an MCP connection releasing mail held for its content; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -16631,6 +17611,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -16716,7 +17706,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -16821,7 +17811,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -16924,7 +17914,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -17017,7 +18007,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -17117,7 +18107,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -17204,7 +18194,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -17291,7 +18281,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -17382,7 +18372,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -17496,7 +18486,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -17583,7 +18573,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -17685,7 +18675,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -17787,7 +18777,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail */
+      /** @description Restricted API key, the inbox's or the shared domain's rules, or held mail; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -17935,6 +18925,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Over the rate limit (rate_limit_exceeded, with Retry-After) */
       429: {
         headers: {
@@ -17970,6 +18970,16 @@ export interface operations {
       };
       /** @description Missing, malformed, unknown or revoked API key */
       401: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Restricted API key: refused to a sending-only key (restricted_api_key) */
+      403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
           [name: string]: unknown;
@@ -18038,7 +19048,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -18305,6 +19315,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -18370,7 +19390,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -18435,7 +19455,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -18504,6 +19524,16 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
+      /** @description Restricted API key: refused to a key held to one inbox (restricted_api_key) */
+      403: {
+        headers: {
+          "X-Request-Id": components["headers"]["RequestId"];
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
       /** @description Not found */
       404: {
         headers: {
@@ -18551,7 +19581,7 @@ export interface operations {
         wait?: number;
         /** @description BillionSend extension: only mail received after this instant; with wait it means mail that became visible after it (delivered, or released from screening), and with no cursor it defaults to one minute before the request */
         since?: string;
-        /** @description BillionSend extension: only mail delivered into this inbox */
+        /** @description BillionSend extension: only mail delivered into this inbox, by inbox ID or email address (as in the /inboxes/{inbox_id} paths) */
         inbox_id?: string;
         /** @description BillionSend extension: only mail with this address in received_for */
         to?: string;
@@ -18592,7 +19622,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -18670,7 +19700,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key, or the email is quarantined */
+      /** @description Restricted API key, or the email is quarantined; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -18745,7 +19775,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -18817,7 +19847,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -18893,7 +19923,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -18959,7 +19989,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -19041,7 +20071,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -19117,7 +20147,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -19186,7 +20216,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -19261,7 +20291,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -19326,7 +20356,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -19389,7 +20419,7 @@ export interface operations {
           "application/json": components["schemas"]["ErrorResponse"];
         };
       };
-      /** @description Restricted API key */
+      /** @description Restricted API key; refused to a sending-only key, a key held to one domain, a key held to one inbox (restricted_api_key) */
       403: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 (2026-11-19)
+
+The OpenAPI snapshot follows the document the API now publishes.
+
+- Every operation a restricted key can be refused on declares a `403` (`restricted_api_key`, an `ErrorResponse`): 103 operations gained it and 74 had their description extended; only `POST /agent/signup` has none. A restricted key is refused as `PermissionDeniedError`, as before.
+- `emails.receiving.list({ inbox_id })` takes an inbox ID or its email address (the same as the `/inboxes/{inbox_id}` paths); the parameter is a plain string, no longer a UUID. An unknown inbox, or one of another team, answers 404, a malformed value 422.
+- A path ending in `/` now answers `404 not_found` instead of `401 missing_api_key` (server-side; the SDK still refuses an empty path parameter before sending).
+
 ## 0.2.0 (2026-11-19)
 
 The OpenAPI snapshot is now the document the API publishes (it had fallen behind), and the SDK follows it. `usage.get()` answers the new report (`emails.daily`, `emails.monthly`, `contacts`, `domains`, …) instead of `limits.emails_per_day`.

@@ -117,6 +117,13 @@ describe("emails.receiving", () => {
     });
   });
 
+  it("filters by an inbox address as well as an inbox id", async () => {
+    await bs().emails.receiving.list({ inbox_id: "support@acme.dev" });
+    expect(Object.fromEntries(last("GET /emails/receiving").url.searchParams)).toEqual({
+      inbox_id: "support@acme.dev",
+    });
+  });
+
   it("replies and forwards server-side", async () => {
     await bs().emails.receiving.reply(ID, { text: "Thanks!", reply_all: true }, { idempotencyKey: "rr-1" });
     expect(last("POST /emails/receiving/{id}/reply").body).toEqual({ text: "Thanks!", reply_all: true });
