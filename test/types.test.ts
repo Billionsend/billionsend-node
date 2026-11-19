@@ -3,6 +3,7 @@ import { describe, expectTypeOf, it } from "vitest";
 import type {
   BillionSend,
   BillionSendError,
+  DomainDeliverability,
   EventStream,
   GetDomainResponse,
   Inbox,
@@ -40,6 +41,39 @@ describe("types", () => {
     expectTypeOf<Data<ReturnType<BillionSend["inboxes"]["send"]>>>().toEqualTypeOf<
       InboxSentEmail | InboxDraft
     >();
+  });
+
+  it("types a suppression as an address or a domain", () => {
+    type Entry = Data<ReturnType<BillionSend["suppressions"]["get"]>>;
+    expectTypeOf<Entry["email"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<Entry["domain"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<Entry["kind"]>().toEqualTypeOf<"email" | "domain">();
+    expectTypeOf<Entry["removable"]>().toEqualTypeOf<boolean>();
+    type Listed = BillionSend["suppressions"]["listAll"] extends (...args: never[]) => AsyncGenerator<infer I>
+      ? I
+      : never;
+    expectTypeOf<Listed["email"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<Listed["removable"]>().toEqualTypeOf<boolean>();
+    type Create = Parameters<BillionSend["suppressions"]["create"]>[0];
+    expectTypeOf<Create["email"]>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<Create["domain"]>().toEqualTypeOf<string | undefined>();
+    type Batch = Parameters<BillionSend["suppressions"]["batch"]["add"]>[0];
+    expectTypeOf<Batch["emails"]>().toEqualTypeOf<string[] | undefined>();
+    expectTypeOf<Batch["domains"]>().toEqualTypeOf<string[] | undefined>();
+    type Query = NonNullable<Parameters<BillionSend["suppressions"]["list"]>[0]>;
+    expectTypeOf<Query["kind"]>().toEqualTypeOf<"email" | "domain" | "all" | undefined>();
+  });
+
+  it("types the deliverability report with one standing per sending domain", () => {
+    type Report = Data<ReturnType<BillionSend["deliverability"]["get"]>>;
+    expectTypeOf<Report["domains"]>().toEqualTypeOf<DomainDeliverability[]>();
+    expectTypeOf<DomainDeliverability["domain_id"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<DomainDeliverability["status"]>().toEqualTypeOf<"ok" | "warning" | "paused">();
+    expectTypeOf<DomainDeliverability["tier"]>().toEqualTypeOf<
+      "ok" | "warning" | "paused" | "insufficient"
+    >();
+    expectTypeOf<DomainDeliverability["paused_by"]>().toEqualTypeOf<"domain" | "team" | "both" | null>();
+    expectTypeOf<DomainDeliverability["pause_margin"]>().toEqualTypeOf<number>();
   });
 
   it("follows the webhook event enum for inbox stream events", () => {

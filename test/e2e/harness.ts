@@ -228,6 +228,13 @@ export class Live {
       key === "POST /suppressions/batch/add" ||
       key === "POST /contacts/batch"
     ) {
+      // A domain entry blocks every address at that domain, not one this run made: never in a live run.
+      if (key.startsWith("POST /suppressions")) {
+        const d = body as { domain?: unknown; domains?: unknown };
+        if (d.domain !== undefined || d.domains !== undefined) {
+          this.#refuse(`${key}: a domain suppression blocks addresses this run did not make`);
+        }
+      }
       const emails =
         key === "POST /suppressions"
           ? [(body as { email: string }).email]

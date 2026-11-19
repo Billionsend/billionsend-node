@@ -27,6 +27,32 @@ describe("listAll", () => {
     expect(queries).toEqual([{ limit: "2" }, { limit: "2", after: ids[1] }]);
   });
 
+  it("walks suppressions of every kind, a domain entry's email being null", async () => {
+    const page = listPage("GET /suppressions", [ids[0] as string, ids[1] as string], false) as {
+      data: Record<string, unknown>[];
+    };
+    page.data[0] = { ...page.data[0], email: null, kind: "domain", domain: "spam.example", removable: true };
+    page.data[1] = {
+      ...page.data[1],
+      email: "ana@example.com",
+      kind: "email",
+      domain: null,
+      removable: false,
+    };
+    mock.reply("GET /suppressions", { status: 200, body: page as never });
+    const seen: [string | null, string | null][] = [];
+    for await (const entry of client().suppressions.listAll({ kind: "all" })) {
+      seen.push([entry.email, entry.domain]);
+    }
+    expect(seen).toEqual([
+      [null, "spam.example"],
+      ["ana@example.com", null],
+    ]);
+    expect(mock.hitsFor("GET /suppressions").map((hit) => Object.fromEntries(hit.url.searchParams))).toEqual([
+      { kind: "all" },
+    ]);
+  });
+
   it("walks backward with before = the first id when started with before", async () => {
     mock.reply("GET /domains", {
       status: 200,

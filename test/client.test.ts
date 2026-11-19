@@ -169,6 +169,24 @@ describe("errors", () => {
     }
   });
 
+  it("returns a paused sending domain and a paused team as the same kind of error", async () => {
+    for (const name of ["domain_sending_paused", "sending_paused"]) {
+      mock.reply("POST /emails", {
+        status: 403,
+        body: { statusCode: 403, name, message: "Sending is paused" },
+      });
+      const result = await client().emails.send({
+        from: "hello@example.com",
+        to: "ana@example.com",
+        subject: "Hi",
+        text: "Hi",
+      });
+      expect(result.data, name).toBeNull();
+      expect(result.error, name).toBeInstanceOf(PermissionDeniedError);
+      expect(result.error, name).toMatchObject({ statusCode: 403, name });
+    }
+  });
+
   it("carries retry-after on a RateLimitError", async () => {
     mock.reply("GET /usage", {
       status: 429,

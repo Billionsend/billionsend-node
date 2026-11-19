@@ -1,7 +1,7 @@
 // Typical calls per resource: how arguments land in the path, the query and the body.
 // Every request also passes the contract mock's checks (see helpers.ts).
 import { describe, expect, it } from "vitest";
-import { ID, ID2, useContractMock } from "./helpers.js";
+import { ID, ID2, okBody, useContractMock } from "./helpers.js";
 
 const { mock, client } = useContractMock();
 const bs = () => client();
@@ -157,6 +157,25 @@ describe("domains and API keys", () => {
     expect(last("POST /domains/{id}/verify").url.pathname).toBe(`/domains/${ID}/verify`);
   });
 
+  it("sends a return-path only when creating a domain, and relays the 422 that refuses changing it", async () => {
+    await bs().domains.create({ name: "mail.example.com", custom_return_path: "bounce" });
+    expect(last("POST /domains").body).toEqual({ name: "mail.example.com", custom_return_path: "bounce" });
+    await bs().domains.create({ name: "plain.example.com" });
+    expect(last("POST /domains").body).toEqual({ name: "plain.example.com" });
+    mock.reply("PATCH /domains/{id}", {
+      status: 422,
+      body: {
+        statusCode: 422,
+        name: "validation_error",
+        message: "custom_return_path cannot be changed; delete and re-add the domain",
+      },
+    });
+    const { data, error } = await bs().domains.update(ID, { custom_return_path: "mail" });
+    expect(last("PATCH /domains/{id}").body).toEqual({ custom_return_path: "mail" });
+    expect(data).toBeNull();
+    expect(error).toMatchObject({ statusCode: 422, name: "validation_error" });
+  });
+
   it("creates a key held to one domain and revokes it", async () => {
     await bs().apiKeys.create({ name: "ci", permission: "sending_access", domain_id: ID });
     expect(last("POST /api-keys").body).toEqual({ name: "ci", permission: "sending_access", domain_id: ID });
@@ -285,6 +304,81 @@ describe("webhooks, suppressions, unsubscribes, verifications, usage, deliverabi
     });
   });
 
+  it("blocks whole domains and lists the entries by kind", async () => {
+    await bs().suppressions.create({ domain: "spam.example" });
+    expect(last("POST /suppressions").body).toEqual({ domain: "spam.example" });
+    await bs().suppressions.batch.add({ domains: ["a.example", "b.example"] });
+    expect(last("POST /suppressions/batch/add").body).toEqual({ domains: ["a.example", "b.example"] });
+    await bs().suppressions.batch.add({
+      emails: ["x@example.com"],
+      domains: ["a.example"],
+      origin: "manual",
+    });
+    expect(last("POST /suppressions/batch/add").body).toEqual({
+      emails: ["x@example.com"],
+      domains: ["a.example"],
+      origin: "manual",
+    });
+    for (const kind of ["email", "domain", "all"] as const) {
+      await bs().suppressions.list({ kind });
+      expect(last("GET /suppressions").url.searchParams.get("kind")).toBe(kind);
+    }
+  });
+
+  it("reads a domain entry, whose email is null and which cannot be removed when permanent", async () => {
+    mock.reply("GET /suppressions/{id}", {
+      status: 200,
+      body: {
+        id: ID,
+        email: null,
+        kind: "domain",
+        domain: "spam.example",
+        removable: true,
+        origin: "manual",
+        source_id: null,
+        created_at: "2026-11-19T00:00:00Z",
+        object: "suppression",
+      },
+    });
+    const { data, error } = await bs().suppressions.get(ID);
+    expect(error).toBeNull();
+    expect(data).toMatchObject({ email: null, kind: "domain", domain: "spam.example", removable: true });
+    mock.reply("GET /suppressions", {
+      status: 200,
+      body: {
+        object: "list",
+        has_more: false,
+        data: [
+          {
+            id: ID,
+            email: null,
+            kind: "domain",
+            domain: "spam.example",
+            removable: true,
+            origin: "manual",
+            source_id: null,
+            created_at: "2026-11-19T00:00:00Z",
+          },
+          {
+            id: ID2,
+            email: "ana@example.com",
+            kind: "email",
+            domain: null,
+            removable: false,
+            origin: "bounce",
+            source_id: null,
+            created_at: "2026-11-19T00:00:00Z",
+          },
+        ],
+      },
+    });
+    const page = await bs().suppressions.list({ kind: "all" });
+    expect(page.data?.data.map((entry) => [entry.kind, entry.email, entry.domain, entry.removable])).toEqual([
+      ["domain", null, "spam.example", true],
+      ["email", "ana@example.com", null, false],
+    ]);
+  });
+
   it("records an opt-out for one domain", async () => {
     await bs().unsubscribes.create({ email: "ana@example.com", domain_id: ID });
     expect(last("POST /unsubscribes").body).toEqual({ email: "ana@example.com", domain_id: ID });
@@ -305,6 +399,40 @@ describe("webhooks, suppressions, unsubscribes, verifications, usage, deliverabi
   it("reads usage and deliverability", async () => {
     expect((await bs().usage.get()).error).toBeNull();
     expect((await bs().deliverability.get()).error).toBeNull();
+  });
+
+  it("reads each sending domain's standing in the deliverability report", async () => {
+    const report = okBody("GET /deliverability") as Record<string, unknown>;
+    const domain = {
+      domain_id: ID,
+      domain: "mail.example.com",
+      status: "paused",
+      tier: "paused",
+      paused_by: "domain",
+      emails_sent: 400,
+      hard_bounce_rate: 0.03,
+      complaint_rate: 0,
+      recent_hard_bounce_rate: 0.06,
+      recent_complaint_rate: 0,
+      pause_margin: -0.2,
+      hard_bounces: 12,
+      complaints: 0,
+      delivered: 380,
+      window_days: 7,
+    };
+    mock.reply("GET /deliverability", {
+      status: 200,
+      body: {
+        ...report,
+        domains: [domain, { ...domain, domain_id: null, domain: null, status: "ok", paused_by: null }],
+      },
+    });
+    const { data, error } = await bs().deliverability.get();
+    expect(error).toBeNull();
+    expect(data?.domains.map((d) => [d.domain, d.status, d.tier, d.paused_by])).toEqual([
+      ["mail.example.com", "paused", "paused", "domain"],
+      [null, "ok", "paused", null],
+    ]);
   });
 });
 

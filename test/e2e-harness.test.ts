@@ -176,4 +176,17 @@ describe("live suite: an address in a suppression list is never mailed", () => {
       await refused(live, post(live, path, body), sent, /not a simulator address/);
     }
   });
+
+  it("refuses a domain suppression, which would block addresses this run did not make", async () => {
+    for (const [path, body] of [
+      ["/suppressions", { domain: "example.com" }],
+      ["/suppressions/batch/add", { domains: ["example.com"] }],
+      ["/suppressions/batch/add", { emails: ["success@simulator.amazonses.com"], domains: ["example.com"] }],
+    ] as const) {
+      const sent = stubNetwork();
+      const live = new Live();
+      live.own("success@simulator.amazonses.com");
+      await refused(live, post(live, path, body), sent, /domain suppression/);
+    }
+  });
 });

@@ -3486,7 +3486,10 @@ export interface components {
        * @enum {string}
        */
       region?: "us-east-1" | "eu-west-1" | "sa-east-1" | "ap-northeast-1";
-      /** @default send */
+      /**
+       * @description The MAIL FROM (return-path) subdomain, fixed when the domain is added: it cannot be changed later (delete and re-add the domain). Defaults to `bounce`, not `send`, so a domain that still sends through another provider whose return path is `send` keeps its bounces working while both send.
+       * @default bounce
+       */
       custom_return_path?: string;
       /** @description Inject a tracking pixel served from the tracking host and record email.opened events. Off by default. */
       open_tracking?: boolean;
@@ -3702,6 +3705,8 @@ export interface components {
         logo_radius?: "square" | "gentle" | "rounded" | "circle" | null;
       };
       tls?: unknown;
+      /** @description Not changeable: the return-path subdomain is fixed when the domain is added. Sending it answers 422; delete and re-add the domain to use another. */
+      custom_return_path?: unknown;
       /** @description What the domain is used for (sending, receiving); omitted fields keep their value. */
       capabilities?: {
         /**
@@ -3781,7 +3786,10 @@ export interface components {
        * @enum {string}
        */
       region?: "us-east-1" | "eu-west-1" | "sa-east-1" | "ap-northeast-1";
-      /** @default send */
+      /**
+       * @description The MAIL FROM (return-path) subdomain, fixed when the domain is added: it cannot be changed later (delete and re-add the domain). Defaults to `bounce`, not `send`, so a domain that still sends through another provider whose return path is `send` keeps its bounces working while both send.
+       * @default bounce
+       */
       custom_return_path?: string;
       /** @description Inject a tracking pixel served from the tracking host and record email.opened events. Off by default. */
       open_tracking?: boolean;
@@ -4094,7 +4102,9 @@ export interface components {
     };
     BatchAddSuppressionsRequest: {
       /** @description Addresses to block, up to 1000; duplicates collapse */
-      emails: string[];
+      emails?: string[];
+      /** @description BillionSend extension: domains to block entirely (every address at that exact domain, subdomains not covered), up to 1000; recorded as manual entries, consumer mailbox providers such as gmail.com are refused. Their entries follow the emails' in the response */
+      domains?: string[];
       /**
        * @description Origin recorded on rows this request creates (default manual): bounce, complaint or manual; an address already suppressed keeps its origin
        * @enum {string}
@@ -4137,7 +4147,9 @@ export interface components {
        * Format: email
        * @description Bare email address to block; stored normalized (lowercase)
        */
-      email: string;
+      email?: string;
+      /** @description BillionSend extension: block every address at this exact domain (subdomains are not covered), instead of one email. Recorded as a manual entry; consumer mailbox providers such as gmail.com are refused */
+      domain?: string;
       /**
        * @description Origin recorded on rows this request creates (default manual): bounce, complaint or manual; an address already suppressed keeps its origin
        * @enum {string}
@@ -4150,7 +4162,17 @@ export interface components {
       data: {
         /** Format: uuid */
         id: string;
-        email: string;
+        /** @description The blocked address; null on a domain entry */
+        email: string | null;
+        /**
+         * @description BillionSend extension: an entry for one address, or for every address at one domain
+         * @enum {string}
+         */
+        kind: "email" | "domain";
+        /** @description The blocked domain; null on an email entry */
+        domain: string | null;
+        /** @description BillionSend extension: false for a permanent entry (a bounce or a complaint) */
+        removable: boolean;
         /** @enum {string} */
         origin: "bounce" | "complaint" | "manual";
         /**
@@ -4165,7 +4187,17 @@ export interface components {
     GetSuppressionResponse: {
       /** Format: uuid */
       id: string;
-      email: string;
+      /** @description The blocked address; null on a domain entry */
+      email: string | null;
+      /**
+       * @description BillionSend extension: an entry for one address, or for every address at one domain
+       * @enum {string}
+       */
+      kind: "email" | "domain";
+      /** @description The blocked domain; null on an email entry */
+      domain: string | null;
+      /** @description BillionSend extension: false for a permanent entry (a bounce or a complaint) */
+      removable: boolean;
       /** @enum {string} */
       origin: "bounce" | "complaint" | "manual";
       /**
@@ -6496,6 +6528,46 @@ export interface components {
       /** @enum {string} */
       guardrail_status: "ok" | "warning" | "paused";
       score_version: number;
+      /** @description Each sending domain's own standing over the trailing 7 days (BillionSend extension). guardrail_status is the team as a whole */
+      domains: components["schemas"]["DomainDeliverability"][];
+    };
+    DomainDeliverability: {
+      /**
+       * Format: uuid
+       * @description The sending domain's id; null for the team's shared-domain addresses
+       */
+      domain_id: string | null;
+      /** @description The sending domain's name; null for the shared-domain addresses */
+      domain: string | null;
+      /**
+       * @description The domain's own standing, judged on its own mail with the team's windows and lines. paused refuses new sends from this domain (403 domain_sending_paused) while the team's other domains keep sending
+       * @enum {string}
+       */
+      status: "ok" | "warning" | "paused";
+      /** @description Emails sent from the domain in the window */
+      emails_sent: number;
+      hard_bounce_rate: number;
+      complaint_rate: number;
+      hard_bounces: number;
+      complaints: number;
+      delivered: number;
+      window_days: number;
+      /**
+       * @description status, or insufficient while the window holds fewer than 100 sends and no line has fired
+       * @enum {string}
+       */
+      tier: "ok" | "warning" | "paused" | "insufficient";
+      /**
+       * @description Whether the domain's mail is paused by its own rates, by the team's as a whole, or both; null when not paused
+       * @enum {string|null}
+       */
+      paused_by: "domain" | "team" | "both" | null;
+      /** @description Hard-bounce rate over today and yesterday (UTC), the window the pause line judges */
+      recent_hard_bounce_rate: number;
+      /** @description Complaint rate over today and yesterday (UTC) */
+      recent_complaint_rate: number;
+      /** @description 1 minus the rate over its pause line, on the metric nearer to its line (recent rates): 1 with no events, 0 at the line, negative past it */
+      pause_margin: number;
     };
     ListEmailsResponse: {
       /** @enum {string} */
@@ -6746,6 +6818,7 @@ export type UnshareEmailResponse = components["schemas"]["UnshareEmailResponse"]
 export type GetEmailResponse = components["schemas"]["GetEmailResponse"];
 export type EmailInsightsResponse = components["schemas"]["EmailInsightsResponse"];
 export type DeliverabilityResponse = components["schemas"]["DeliverabilityResponse"];
+export type DomainDeliverability = components["schemas"]["DomainDeliverability"];
 export type ListEmailsResponse = components["schemas"]["ListEmailsResponse"];
 export type RemoveEmailResponse = components["schemas"]["RemoveEmailResponse"];
 export type HeaderRequestId = components["headers"]["RequestId"];
@@ -12414,6 +12487,8 @@ export interface operations {
         before?: string;
         /** @description Only suppressions of this origin: bounce, complaint or manual */
         origin?: "bounce" | "complaint" | "manual";
+        /** @description BillionSend extension. email (default): entries for single addresses; domain: entries for a whole domain; all: both */
+        kind?: "email" | "domain" | "all";
       };
       header?: never;
       path?: never;
@@ -12421,7 +12496,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description Suppressions, optionally filtered by origin (bounce, complaint or manual). Rows whose address was erased (GDPR/LGPD) keep blocking sends but are hidden from the list and from lookups by email; they are reachable by id only. */
+      /** @description Suppressions, optionally filtered by origin (bounce, complaint or manual). Entries for single addresses by default; `kind=domain` lists the domain entries, `kind=all` both. Rows whose address was erased (GDPR/LGPD) keep blocking sends but are hidden from the list and from lookups by email; they are reachable by id only. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];
@@ -12488,7 +12563,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Address blocked with the given origin (bounce, complaint or manual; default manual). Idempotent: an address already suppressed keeps its entry and origin and its existing id is returned. */
+      /** @description Address blocked with the given origin (bounce, complaint or manual; default manual), or, with `domain`, every address at that exact domain (a manual entry). Idempotent: an address or domain already suppressed keeps its entry and origin and its existing id is returned. */
       200: {
         headers: {
           "X-Request-Id": components["headers"]["RequestId"];

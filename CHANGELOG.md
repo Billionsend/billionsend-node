@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.2 (2026-11-19)
+
+The OpenAPI snapshot follows the document the API now publishes (180 operations, as before).
+
+- Suppressions can block a whole domain: `suppressions.create({ domain })` and `suppressions.batch.add({ domains })` (`emails` and `email` are optional now, and a request names either or both); `suppressions.list` and `listAll` take `kind` (`email` by default, `domain` or `all`). Every entry carries `kind` (`email` or `domain`), `domain` and `removable` (`false` for a bounce or a complaint, which cannot be removed), and `email` is `null` on a domain entry, so `string | null` in the types. A consumer mailbox provider such as `gmail.com` is refused as a domain.
+- `deliverability.get()` answers a `domains` array (`DomainDeliverability`: `domain_id`, `domain`, `status`, `tier`, `paused_by`, `emails_sent`, the rates and the counts, `recent_hard_bounce_rate`, `recent_complaint_rate`, `pause_margin`, `window_days`), each sending domain's own standing.
+- A send from a paused domain answers `403 domain_sending_paused` (a paused team is still `sending_paused`); both come back as a `PermissionDeniedError`.
+- `domains.create` defaults `custom_return_path` to `bounce` (server-side); `domains.update` with `custom_return_path` is refused with 422, since the return path cannot change after the domain is added.
+- The `deliverability.warning` and `deliverability.paused` webhook payloads carry `scope` (`team` or `domain`) and `domain` (`{ id, name }`, `null` for the team). Deliveries now carry the user agent `BillionSend-Webhooks/1.0 (+https://billionsend.com/docs/concepts/webhooks)` from `51.161.117.92`, which a receiving end behind a WAF should allow.
+- The live suite refuses a domain suppression, which would block addresses the run did not make.
+
 ## 0.2.1 (2026-11-19)
 
 The OpenAPI snapshot follows the document the API now publishes.

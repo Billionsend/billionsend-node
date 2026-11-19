@@ -194,6 +194,8 @@ app.post("/webhooks/billionsend", express.raw({ type: "application/json" }), asy
 
 With the Fetch API (Next.js route handlers, Hono, Bun, Deno, workers) it is `await verifyWebhook(await request.text(), request.headers, secret)`. During a secret rotation a delivery carries a signature for each live secret, and either secret verifies it.
 
+Deliveries come from `51.161.117.92` with the user agent `BillionSend-Webhooks/1.0 (+https://billionsend.com/docs/concepts/webhooks)`; when the receiving end sits behind a WAF or Cloudflare, allow them as the [webhooks guide](https://billionsend.com/docs/concepts/webhooks) describes.
+
 ## Import contacts from a CSV
 
 `contacts.imports.create` uploads a CSV (a string, a `Blob` or a `File`) and imports it in the background; poll the import for its `status` and `counts`. `column_map`, `segments` and `topics` are objects here; the SDK sends them as the JSON text the endpoint expects.
@@ -256,7 +258,7 @@ Every method takes a last `options` argument with `signal`, `headers`, `timeoutM
 | `broadcasts` | create, list, get, update, delete, send, duplicate, cancel, recipients, clickedLinks |
 | `templates` | create, list, get, update, delete, publish, duplicate |
 | `webhooks` | create, list, get, update, delete, rotateSigningSecret, `events` (list, get, replay, `attempts.list`) |
-| `suppressions` | create, list, get, delete, `batch` add / remove |
+| `suppressions` | create, list, get, delete, `batch` add / remove; an entry is one address or a whole domain (`kind`, `domain`, `removable`; `email` is `null` on a domain entry) |
 | `unsubscribes` | create, list |
 | `verifications` | availability, estimate, create, list, get |
 | `usage`, `deliverability` | get |
