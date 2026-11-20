@@ -15,7 +15,7 @@ import {
   ValidationError,
 } from "../src/index.js";
 import { OPERATION_KEYS, operation, pointerOf, schemaErrors, successStatus } from "./contract/spec.js";
-import { API_KEY, ID, ID2, ID3, sampleBody, useContractMock } from "./helpers.js";
+import { API_KEY, ID, ID2, ID3, LOGO_PNG, sampleBody, useContractMock } from "./helpers.js";
 
 type Call = (bs: BillionSend) => Promise<Result<unknown>>;
 
@@ -65,6 +65,13 @@ const CALLS: Record<string, Call> = {
   "PATCH /domains/{id}": (bs) => bs.domains.update(ID, sampleBody("PATCH /domains/{id}")),
   "DELETE /domains/{id}": (bs) => bs.domains.delete(ID),
   "POST /domains/{id}/verify": (bs) => bs.domains.verify(ID),
+  "PUT /domains/{id}/unsubscribe-page/logo": (bs) =>
+    bs.domains.unsubscribePage.logo.upload(ID, { file: LOGO_PNG }),
+  "DELETE /domains/{id}/unsubscribe-page/logo": (bs) => bs.domains.unsubscribePage.logo.delete(ID),
+  "GET /brand": (bs) => bs.brand.get(),
+  "PATCH /brand": (bs) => bs.brand.update(sampleBody("PATCH /brand")),
+  "PUT /brand/logo": (bs) => bs.brand.logo.upload({ file: LOGO_PNG }),
+  "DELETE /brand/logo": (bs) => bs.brand.logo.delete(),
   "POST /domains/claim": (bs) => bs.domains.claims.create(sampleBody("POST /domains/claim")),
   "GET /domains/{id}/claim": (bs) => bs.domains.claims.get(ID),
   "POST /domains/{id}/claim/verify": (bs) => bs.domains.claims.verify(ID),

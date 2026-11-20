@@ -26,6 +26,7 @@ export {
 export type * from "./generated/openapi.js";
 export { type Cursor, type CursorPage, paginate } from "./pagination.js";
 export type { BatchRequestOptions, BatchSendOptions, BatchValidation } from "./resource.js";
+export type { UploadLogoParams } from "./resources/brand.js";
 export type { CreateContactImportParams } from "./resources/contacts.js";
 export type { EmailMetrics, SendEmailParams } from "./resources/emails.js";
 export {

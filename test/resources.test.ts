@@ -1,7 +1,7 @@
 // Typical calls per resource: how arguments land in the path, the query and the body.
 // Every request also passes the contract mock's checks (see helpers.ts).
 import { describe, expect, it } from "vitest";
-import { ID, ID2, okBody, useContractMock } from "./helpers.js";
+import { ID, ID2, LOGO_PNG, okBody, useContractMock } from "./helpers.js";
 
 const { mock, client } = useContractMock();
 const bs = () => client();
@@ -143,6 +143,134 @@ describe("emails.receiving", () => {
   });
 });
 
+describe("brand and the unsubscribe page", () => {
+  it("reads the team brand, typed with its read-only locks", async () => {
+    const brand = {
+      object: "brand",
+      logo_url: null,
+      accent_color: "#2B44FF",
+      font: "geist",
+      company_address: "1 Main St, Springfield",
+      powered_by: true,
+      show_topics: false,
+      powered_by_locked: true,
+      branding_locked: false,
+    };
+    mock.reply("GET /brand", { status: 200, body: brand });
+    const { data, error } = await bs().brand.get();
+    expect(error).toBeNull();
+    expect(last("GET /brand").url.pathname).toBe("/brand");
+    expect(data).toEqual(brand);
+    expect(data?.logo_url).toBeNull();
+    expect(data?.powered_by_locked).toBe(true);
+  });
+
+  it("updates only the fields it is given", async () => {
+    await bs().brand.update({ accent_color: "#112233", font: "serif", show_topics: true });
+    expect(last("PATCH /brand").body).toEqual({ accent_color: "#112233", font: "serif", show_topics: true });
+    await bs().brand.update({ company_address: "2 Side St", powered_by: false });
+    expect(last("PATCH /brand").body).toEqual({ company_address: "2 Side St", powered_by: false });
+  });
+
+  it("uploads and deletes a logo, parsing both answers", async () => {
+    mock.reply("PUT /brand/logo", {
+      status: 200,
+      body: { object: "logo", logo_url: "https://cdn.example.com/logos/team.png" },
+    });
+    const up = await bs().brand.logo.upload({ file: LOGO_PNG });
+    expect(up.error).toBeNull();
+    expect(up.data).toEqual({ object: "logo", logo_url: "https://cdn.example.com/logos/team.png" });
+    const hit = last("PUT /brand/logo");
+    expect(String(hit.headers["content-type"])).toMatch(/^multipart\/form-data; boundary=/);
+    expect(hit.body).toEqual({ file: `file:logo.png:${LOGO_PNG.length}` });
+
+    mock.reply("DELETE /brand/logo", { status: 200, body: { object: "logo", deleted: true } });
+    const gone = await bs().brand.logo.delete();
+    expect(gone.data).toEqual({ object: "logo", deleted: true });
+    expect(last("DELETE /brand/logo").url.pathname).toBe("/brand/logo");
+  });
+
+  it("relays a refused upload: no logo storage is a 404, a bad file a 422", async () => {
+    mock.reply("PUT /brand/logo", {
+      status: 404,
+      body: { statusCode: 404, name: "not_found", message: "Logo storage is not configured" },
+    });
+    expect((await bs().brand.logo.upload({ file: LOGO_PNG })).error).toMatchObject({ statusCode: 404 });
+    mock.reply("PUT /brand/logo", {
+      status: 422,
+      body: {
+        statusCode: 422,
+        name: "validation_error",
+        message: "The logo must be a PNG, JPEG or WebP image",
+      },
+    });
+    expect((await bs().brand.logo.upload({ file: new Uint8Array([1, 2, 3]) })).error).toMatchObject({
+      statusCode: 422,
+      name: "validation_error",
+    });
+  });
+
+  it("sets the unsubscribe page's support link and Powered by choice, and clears them with null", async () => {
+    await bs().domains.update(ID, {
+      unsubscribe_page: { support_url: "https://example.com/help", powered_by: false },
+    });
+    expect(last("PATCH /domains/{id}").body).toEqual({
+      unsubscribe_page: { support_url: "https://example.com/help", powered_by: false },
+    });
+    await bs().domains.update(ID, { unsubscribe_page: { support_url: null, powered_by: null } });
+    expect(last("PATCH /domains/{id}").body).toEqual({
+      unsubscribe_page: { support_url: null, powered_by: null },
+    });
+  });
+
+  it("reads the page with its new fields, a null logo and the read-only effective Powered by", async () => {
+    const page = {
+      brand_name: "Acme",
+      message: null,
+      success_message: null,
+      redirect_url: null,
+      support_url: "https://example.com/help",
+      powered_by: null,
+      powered_by_effective: true,
+      background_color: null,
+      text_color: null,
+      accent_color: "#2B44FF",
+      logo_radius: null,
+      logo_url: null,
+    };
+    mock.reply("GET /domains/{id}", {
+      status: 200,
+      body: { ...(okBody("GET /domains/{id}") as object), unsubscribe_page: page },
+    });
+    const { data } = await bs().domains.get(ID);
+    expect(data?.unsubscribe_page).toEqual(page);
+    expect(data?.unsubscribe_page.powered_by_effective).toBe(true);
+    expect(data?.unsubscribe_page.logo_url).toBeNull();
+  });
+
+  it("uploads and deletes one domain's logo", async () => {
+    mock.reply("PUT /domains/{id}/unsubscribe-page/logo", {
+      status: 200,
+      body: { object: "logo", logo_url: "https://cdn.example.com/logos/domain.png" },
+    });
+    const up = await bs().domains.unsubscribePage.logo.upload(ID, { file: LOGO_PNG, filename: "mark.png" });
+    expect(up.data?.logo_url).toBe("https://cdn.example.com/logos/domain.png");
+    const hit = last("PUT /domains/{id}/unsubscribe-page/logo");
+    expect(hit.url.pathname).toBe(`/domains/${ID}/unsubscribe-page/logo`);
+    expect(hit.body).toEqual({ file: `file:mark.png:${LOGO_PNG.length}` });
+
+    mock.reply("DELETE /domains/{id}/unsubscribe-page/logo", {
+      status: 200,
+      body: { object: "logo", deleted: true },
+    });
+    const gone = await bs().domains.unsubscribePage.logo.delete(ID);
+    expect(gone.data).toEqual({ object: "logo", deleted: true });
+    expect(last("DELETE /domains/{id}/unsubscribe-page/logo").url.pathname).toBe(
+      `/domains/${ID}/unsubscribe-page/logo`,
+    );
+  });
+});
+
 describe("domains and API keys", () => {
   it("creates, updates and verifies a domain", async () => {
     await bs().domains.create({ name: "mail.example.com", open_tracking: true, tracking_subdomain: "links" });
@@ -267,6 +395,27 @@ describe("broadcasts and templates", () => {
       "POST /broadcasts/{id}/duplicate",
       "POST /broadcasts/{id}/cancel",
     ]);
+  });
+
+  it("passes the dormant-contact switches on create and update, and reads them back", async () => {
+    await bs().broadcasts.create({
+      from: "news@example.com",
+      subject: "November",
+      segment_id: ID,
+      html: "<p>News</p>",
+      dormant_check: false,
+      include_dormant: true,
+    });
+    expect(last("POST /broadcasts").body).toMatchObject({ dormant_check: false, include_dormant: true });
+    await bs().broadcasts.update(ID, { include_dormant: false });
+    expect(last("PATCH /broadcasts/{id}").body).toEqual({ include_dormant: false });
+    mock.reply("GET /broadcasts/{id}", {
+      status: 200,
+      body: { ...(okBody("GET /broadcasts/{id}") as object), dormant_check: true, include_dormant: false },
+    });
+    const { data } = await bs().broadcasts.get(ID);
+    expect(data?.dormant_check).toBe(true);
+    expect(data?.include_dormant).toBe(false);
   });
 
   it("reaches a template by alias and publishes it", async () => {

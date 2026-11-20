@@ -34,7 +34,7 @@ CommonJS works the same way: `const { BillionSend } = require("@billionsend/node
 ```ts
 const { data, error } = await bs.emails.send({
   from: "Acme <hello@acme.dev>",
-  to: ["ana@example.com"],
+  to: ["success@simulator.amazonses.com"],
   subject: "Welcome to Acme",
   html: "<p>Glad you are here.</p>",
 });
@@ -52,7 +52,7 @@ if (error) {
 await bs.emails.send(message, { idempotencyKey: `welcome/${user.id}` });
 ```
 
-**Retries.** Failures worth retrying are retried up to `maxRetries` times (default 2): `429`, `5xx`, timeouts and network errors, and the `409 concurrent_idempotent_requests` the API answers while the first attempt with the same key is still running. A `429` is retried for every request, because the API answers it before it writes anything; the other failures (`5xx`, timeouts, network errors, the `409`) only for requests safe to repeat: `GET`, `PUT`, `DELETE` and the sending operations above. The client waits as `retry-after` asks, or backs off exponentially (0.5 s, 1 s, 2 s … up to 8 s, with jitter); a `retry-after` over a minute is not waited for, and the error comes back instead.
+**Retries.** Failures worth retrying are retried up to `maxRetries` times (default 2): `429`, `5xx`, timeouts and network errors, and the `409 concurrent_idempotent_requests` the API answers while the first attempt with the same key is still running. A `429` is retried for every request, because the API answers it before it writes anything; the other failures (`5xx`, timeouts, network errors, the `409`) only for requests safe to repeat: `GET`, `PUT`, `DELETE` and the sending operations above (a logo upload, although a `PUT`, is not repeated after them). The client waits as `retry-after` asks, or backs off exponentially (0.5 s, 1 s, 2 s … up to 8 s, with jitter); a `retry-after` over a minute is not waited for, and the error comes back instead.
 
 ```ts
 const bs = new BillionSend({ apiKey: "bs_...", maxRetries: 4 });
@@ -211,6 +211,21 @@ if (started.error) throw started.error;
 const done = await bs.contacts.imports.get(started.data.id); // status: queued, in_progress, completed or failed
 ```
 
+## Brand and logos
+
+`brand` is the team's default look for the pages recipients see (`get`, `update`, `logo`); a domain can set its own on `domains.update({ unsubscribe_page })` and `domains.unsubscribePage.logo`. A logo is a PNG, JPEG or WebP of at most 2 MiB: pass a `Blob` / `File` or its bytes (the file name and content type come from the `File` or the bytes, or from `filename` / `contentType`). `logo_url` is `null` while none is uploaded; `powered_by_effective` tells whether recipients really see "Powered by" (a Free plan always does).
+
+```ts
+const logo = new Blob([await readFile("logo.png")], { type: "image/png" });
+await bs.brand.logo.upload({ file: logo });
+await bs.brand.update({ accent_color: "#2B44FF", font: "serif", show_topics: true });
+
+await bs.domains.unsubscribePage.logo.upload(domainId, { file: logo });
+await bs.domains.update(domainId, {
+  unsubscribe_page: { support_url: "https://acme.dev/help", powered_by: null }, // null follows the team's brand
+});
+```
+
 ## Agent sign-up
 
 An agent can create its own account with no API key; the answer carries the new key and inbox.
@@ -250,7 +265,8 @@ Every method takes a last `options` argument with `signal`, `headers`, `timeoutM
 | --- | --- |
 | `emails` | send, batch, list, get, update, cancel, delete, insights, share, unshare, `metrics` (the time series; `metrics.links`, `metrics.countries`, `metrics.clients`), `attachments` (list, get) |
 | `emails.receiving` | received mail: list, get, delete, reply, forward, `attachments` (list, get, text) |
-| `domains` | create, list, get, update, delete, verify, `claims` (create, get, verify) |
+| `domains` | create, list, get, update, delete, verify, `claims` (create, get, verify), `unsubscribePage.logo` (upload, delete) |
+| `brand` | get, update, `logo` (upload, delete) |
 | `apiKeys` | create, list, update, delete |
 | `contacts` | create, list, get, update, delete, preferences link, `batch`, `imports` (create, list, get), `topics`, `segments` (list, add, remove) |
 | `audiences.contacts` | contacts addressed through an audience |

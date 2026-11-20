@@ -16,6 +16,12 @@ export const ID2 = "0d5b0a52-8c1f-4a3e-b0f4-7d8e9a1b2c3d";
 export const ID3 = "9a7e41c3-52bd-4f06-8a1e-3c4d5e6f7a80";
 export const API_KEY = "bs_test_0123456789";
 
+/** A real 1x1 PNG: what a logo upload carries. */
+export const LOGO_PNG = Uint8Array.from(
+  atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="),
+  (c) => c.charCodeAt(0),
+);
+
 /** Starts one contract mock for the file and checks after each test that nothing broke the contract. */
 export function useContractMock(): {
   mock: ContractMock;

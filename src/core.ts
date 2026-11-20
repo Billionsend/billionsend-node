@@ -99,6 +99,8 @@ export interface CallInit<P extends ApiPath, M extends HttpMethod> {
   /** The operation honours `Idempotency-Key`: one is always sent, `idempotencyKey` or a new one. */
   idempotent?: boolean;
   idempotencyKey?: string;
+  /** Not repeated after a 5xx or a dropped connection even though its method is repeatable (a 429 still is). */
+  noRepeat?: boolean;
   options?: RequestOptions;
   /** `false` for the few operations that take no API key. */
   auth?: boolean;
@@ -304,7 +306,7 @@ export class Core {
     }
 
     const keyed = headers["idempotency-key"] !== undefined;
-    const safeToRepeat = IDEMPOTENT_METHODS.has(method) || keyed;
+    const safeToRepeat = (IDEMPOTENT_METHODS.has(method) && init.noRepeat !== true) || keyed;
     const maxRetries = options.maxRetries ?? this.maxRetries;
     const timeoutMs = options.timeoutMs ?? this.timeoutMs;
 

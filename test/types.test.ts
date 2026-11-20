@@ -3,6 +3,7 @@ import { describe, expectTypeOf, it } from "vitest";
 import type {
   BillionSend,
   BillionSendError,
+  Brand,
   DomainDeliverability,
   EventStream,
   GetDomainResponse,
@@ -11,15 +12,58 @@ import type {
   InboxEventType,
   InboxSentEmail,
   InboxStreamItem,
+  LogoResponse,
+  RemoveLogoResponse,
   Result,
   SendEmailRequest,
   SendEmailResponse,
+  UpdateBrandRequest,
+  UploadLogoParams,
   UsageResponse,
 } from "../src/index.js";
 
 type Data<T> = T extends Promise<Result<infer D>> ? D : never;
 
 describe("types", () => {
+  it("types the brand, the logo answers and the unsubscribe page's new fields", () => {
+    type BrandData = Data<ReturnType<BillionSend["brand"]["get"]>>;
+    expectTypeOf<BrandData>().toEqualTypeOf<Brand>();
+    expectTypeOf<BrandData["logo_url"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<BrandData["font"]>().toEqualTypeOf<"geist" | "system" | "serif" | "mono" | null>();
+    expectTypeOf<BrandData["accent_color"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<BrandData["powered_by"]>().toEqualTypeOf<boolean>();
+    expectTypeOf<BrandData["powered_by_locked"]>().toEqualTypeOf<boolean>();
+    expectTypeOf<Parameters<BillionSend["brand"]["update"]>[0]>().toEqualTypeOf<UpdateBrandRequest>();
+    expectTypeOf<Parameters<BillionSend["brand"]["update"]>[0]>().not.toHaveProperty("powered_by_locked");
+    expectTypeOf<Data<ReturnType<BillionSend["brand"]["logo"]["upload"]>>>().toEqualTypeOf<LogoResponse>();
+    expectTypeOf<
+      Data<ReturnType<BillionSend["brand"]["logo"]["delete"]>>
+    >().toEqualTypeOf<RemoveLogoResponse>();
+    expectTypeOf<
+      Parameters<BillionSend["domains"]["unsubscribePage"]["logo"]["upload"]>[1]
+    >().toEqualTypeOf<UploadLogoParams>();
+    type Page = Data<ReturnType<BillionSend["domains"]["get"]>>["unsubscribe_page"];
+    expectTypeOf<Page["logo_url"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<Page["support_url"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<Page["powered_by"]>().toEqualTypeOf<boolean | null>();
+    expectTypeOf<Page["powered_by_effective"]>().toEqualTypeOf<boolean>();
+    type Patch = NonNullable<Parameters<BillionSend["domains"]["update"]>[1]["unsubscribe_page"]>;
+    expectTypeOf<Patch["support_url"]>().toEqualTypeOf<string | null | undefined>();
+    expectTypeOf<Patch["powered_by"]>().toEqualTypeOf<boolean | null | undefined>();
+    expectTypeOf<Patch>().not.toHaveProperty("powered_by_effective");
+  });
+
+  it("types the dormant-contact switches: optional to write, required to read", () => {
+    type Create = Parameters<BillionSend["broadcasts"]["create"]>[0];
+    expectTypeOf<Create["dormant_check"]>().toEqualTypeOf<boolean | undefined>();
+    expectTypeOf<Create["include_dormant"]>().toEqualTypeOf<boolean | undefined>();
+    type Update = Parameters<BillionSend["broadcasts"]["update"]>[1];
+    expectTypeOf<Update["include_dormant"]>().toEqualTypeOf<boolean | undefined>();
+    type Got = Data<ReturnType<BillionSend["broadcasts"]["get"]>>;
+    expectTypeOf<Got["dormant_check"]>().toEqualTypeOf<boolean>();
+    expectTypeOf<Got["include_dormant"]>().toEqualTypeOf<boolean>();
+  });
+
   it("binds requests and answers to the schema types", () => {
     expectTypeOf<Parameters<BillionSend["emails"]["send"]>[0]>().toEqualTypeOf<SendEmailRequest>();
     expectTypeOf<Data<ReturnType<BillionSend["emails"]["send"]>>>().toEqualTypeOf<SendEmailResponse>();

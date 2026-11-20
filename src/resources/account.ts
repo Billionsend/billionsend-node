@@ -2,6 +2,7 @@ import type { RequestOptions } from "../core.js";
 import { paginate } from "../pagination.js";
 import { Resource } from "../resource.js";
 import type { ListItem, QueryParams, RequestBody } from "../types.js";
+import { DomainUnsubscribePage } from "./brand.js";
 
 export class DomainClaims extends Resource {
   /** `POST /domains/claim`: starts a claim on a domain another team already holds. */
@@ -22,6 +23,7 @@ export class DomainClaims extends Resource {
 
 export class Domains extends Resource {
   readonly claims: DomainClaims = new DomainClaims(this.core);
+  readonly unsubscribePage: DomainUnsubscribePage = new DomainUnsubscribePage(this.core);
 
   /** `POST /domains` */
   create(payload: RequestBody<"/domains", "post">, options?: RequestOptions) {

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 (2026-11-20)
+
+The OpenAPI snapshot follows the document the API now publishes (186 operations, up from 180).
+
+- New `brand` resource for the team's default look of the recipient-facing pages: `brand.get()`, `brand.update({ accent_color, font, company_address, powered_by, show_topics })`, `brand.logo.upload({ file })` and `brand.logo.delete()`. `Brand` is typed with `logo_url`, `accent_color`, `font` and `company_address` nullable and the read-only `powered_by_locked` and `branding_locked`. A write needs the manage permission; a domain-scoped key is refused on `/brand` with 403 `restricted_api_key`.
+- New `domains.unsubscribePage.logo.upload(id, { file })` and `.delete(id)` for one domain's own unsubscribe-page logo. An upload is `multipart/form-data` with one `file` part: a `Blob` or `File`, or its bytes (`Uint8Array`, `ArrayBuffer`), PNG, JPEG or WebP, at most 2 MiB (`UploadLogoParams`, exported). A `File` keeps its name and type; otherwise the name (`logo.png`, `logo.jpg`, `logo.webp`) and content type are judged from the bytes, and `filename` / `contentType` override them. It answers `{ object: "logo", logo_url }`; a delete answers `{ object: "logo", deleted: true }`. No logo storage is a 404, a wrong format, a too large file or a missing file a 422.
+- An upload is not repeated after a 5xx, a timeout or a dropped connection (it is a `PUT`, but not safe to repeat blindly); a 429 is still retried.
+- `domains.update({ unsubscribe_page })` takes `support_url` (http(s) only, `null` clears it) and `powered_by` (`true`, `false`, or `null` to follow the team's brand). The page in a domain's answer carries `support_url`, `powered_by` and the read-only `powered_by_effective` (whether recipients really see "Powered by"; always `true` on Free, the saved value is kept). `logo_url` is `null` when no logo is uploaded or the deployment has no logo storage.
+- `broadcasts.create` and `broadcasts.update` take `dormant_check` and `include_dormant` (booleans, optional): by default a contact who got 8 or more broadcasts and automation emails with no tracked open or click for 120 days gets a "still want these?" email instead of the broadcast, and `include_dormant: true` also sends to contacts already marked dormant. `broadcasts.get` answers both (always present).
+
 ## 0.2.2 (2026-11-19)
 
 The OpenAPI snapshot follows the document the API now publishes (180 operations, as before).

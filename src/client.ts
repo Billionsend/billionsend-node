@@ -10,6 +10,7 @@ import {
   Webhooks,
 } from "./resources/account.js";
 import { Automations, Events } from "./resources/automations.js";
+import { Brand } from "./resources/brand.js";
 import { Broadcasts, Templates } from "./resources/broadcasts.js";
 import { Audiences, ContactProperties, Contacts, Segments, Topics } from "./resources/contacts.js";
 import { Emails } from "./resources/emails.js";
@@ -49,6 +50,7 @@ export class BillionSend {
   readonly events: Events;
   readonly logs: Logs;
   readonly oauthGrants: OauthGrants;
+  readonly brand: Brand;
 
   readonly #core: Core;
 
@@ -83,6 +85,7 @@ export class BillionSend {
     this.events = new Events(core);
     this.logs = new Logs(core);
     this.oauthGrants = new OauthGrants(core);
+    this.brand = new Brand(core);
   }
 
   /** The API base URL this client calls. */

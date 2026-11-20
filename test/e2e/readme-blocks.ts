@@ -77,6 +77,11 @@ export const README_BLOCKS: ReadmeBlock[] = [
     test: "imports a CSV and polls the import",
   },
   {
+    start: 'const logo = new Blob([await readFile("logo.png")], { type: "image/png" });',
+    status: "not-run",
+    why: "changes the company account's real brand and its domains' unsubscribe pages; only offline (test/resources.test.ts, test/runtime.test.ts, test/readme-examples.ts)",
+  },
+  {
     start: "const signup = await new BillionSend().agent.signup({",
     status: "not-run",
     why: "creates a real account and a real inbox and mails a human; only offline",

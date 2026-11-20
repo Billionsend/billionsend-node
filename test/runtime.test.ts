@@ -21,7 +21,7 @@ import {
   VERSION,
 } from "../src/index.js";
 import { newIdempotencyKey } from "../src/retry.js";
-import { okBody } from "./helpers.js";
+import { LOGO_PNG, okBody } from "./helpers.js";
 
 // The originals, taken before any test replaces them.
 const REAL_SET_TIMEOUT = globalThis.setTimeout;
@@ -768,6 +768,166 @@ describe("uploads", () => {
         .digest("hex"),
     ).toBe(createHash("sha256").update(big).digest("hex"));
     expect(got.headers.authorization).toBe(`Bearer ${KEY}`);
+  });
+});
+
+describe("logo uploads", () => {
+  let server: Server | undefined;
+  afterEach(async () => {
+    if (server) {
+      server.closeAllConnections();
+      await new Promise((done) => server?.close(done));
+      server = undefined;
+    }
+  });
+
+  /** Receives one PUT, parsing its multipart body, and answers with the operation's sample answer. */
+  async function putTo(key: string, send: (bs: BillionSend) => Promise<unknown>) {
+    let seen: { method: string; path: string; form: FormData; auth: string } | undefined;
+    server = createServer((req, res) => {
+      const chunks: Buffer[] = [];
+      req.on("data", (chunk: Buffer) => chunks.push(chunk));
+      req.on("end", async () => {
+        const form = await new Response(Buffer.concat(chunks), {
+          headers: { "content-type": String(req.headers["content-type"]) },
+        }).formData();
+        seen = {
+          method: req.method ?? "",
+          path: req.url ?? "",
+          form,
+          auth: String(req.headers.authorization),
+        };
+        res.writeHead(200, { "content-type": "application/json" });
+        res.end(JSON.stringify(okBody(key as never)));
+      });
+    });
+    await new Promise<void>((done) => server?.listen(0, "127.0.0.1", done));
+    const bs = new BillionSend({ apiKey: KEY, baseUrl: `http://127.0.0.1:${portOf(server)}` });
+    await send(bs);
+    if (!seen) throw new Error("nothing arrived");
+    return seen;
+  }
+
+  const bytesOf = async (part: FormDataEntryValue | null) =>
+    new Uint8Array(await (part as File).arrayBuffer());
+  const JPEG = Uint8Array.from([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0, 1]);
+  const WEBP = Uint8Array.from([
+    ...[0x52, 0x49, 0x46, 0x46, 0x1a, 0, 0, 0, 0x57, 0x45, 0x42, 0x50],
+    ...[0x56, 0x50, 0x38, 0x4c, 0x0d, 0, 0, 0, 0x2f, 0, 0, 0, 0x10],
+  ]);
+
+  it("sends the team logo as PUT /brand/logo with one file part, named and typed from its bytes", async () => {
+    const got = await putTo("PUT /brand/logo", (bs) => bs.brand.logo.upload({ file: LOGO_PNG }));
+    expect([got.method, got.path, got.auth]).toEqual(["PUT", "/brand/logo", `Bearer ${KEY}`]);
+    expect([...got.form.keys()]).toEqual(["file"]);
+    const file = got.form.get("file") as File;
+    expect([file.name, file.type]).toEqual(["logo.png", "image/png"]);
+    expect(await bytesOf(file)).toEqual(LOGO_PNG);
+  });
+
+  it("sends a domain's logo to its own path, and names JPEG and WebP bytes by their format", async () => {
+    const jpeg = await putTo("PUT /domains/{id}/unsubscribe-page/logo", (bs) =>
+      bs.domains.unsubscribePage.logo.upload("0d5b0a52-8c1f-4a3e-b0f4-7d8e9a1b2c3d", { file: JPEG }),
+    );
+    expect([jpeg.method, jpeg.path]).toEqual([
+      "PUT",
+      "/domains/0d5b0a52-8c1f-4a3e-b0f4-7d8e9a1b2c3d/unsubscribe-page/logo",
+    ]);
+    expect([(jpeg.form.get("file") as File).name, (jpeg.form.get("file") as File).type]).toEqual([
+      "logo.jpg",
+      "image/jpeg",
+    ]);
+    await server?.close();
+    const webp = await putTo("PUT /brand/logo", (bs) =>
+      bs.brand.logo.upload({ file: WEBP.buffer as ArrayBuffer }),
+    );
+    expect([(webp.form.get("file") as File).name, (webp.form.get("file") as File).type]).toEqual([
+      "logo.webp",
+      "image/webp",
+    ]);
+    expect(await bytesOf(webp.form.get("file"))).toEqual(WEBP);
+  });
+
+  it("keeps a File's own name and type, lets `filename` and `contentType` win, and keeps a typed Blob's type", async () => {
+    const file = new File([LOGO_PNG], "acme-mark.png", { type: "image/png" });
+    const own = await putTo("PUT /brand/logo", (bs) => bs.brand.logo.upload({ file }));
+    expect([(own.form.get("file") as File).name, (own.form.get("file") as File).type]).toEqual([
+      "acme-mark.png",
+      "image/png",
+    ]);
+    await server?.close();
+    const renamed = await putTo("PUT /brand/logo", (bs) =>
+      bs.brand.logo.upload({ file, filename: "标志.png", contentType: "image/webp" }),
+    );
+    expect([(renamed.form.get("file") as File).name, (renamed.form.get("file") as File).type]).toEqual([
+      "标志.png",
+      "image/webp",
+    ]);
+    await server?.close();
+    const typed = await putTo("PUT /brand/logo", (bs) =>
+      bs.brand.logo.upload({ file: new Blob([JPEG], { type: "image/jpeg" }) }),
+    );
+    expect([(typed.form.get("file") as File).name, (typed.form.get("file") as File).type]).toEqual([
+      "logo.jpg",
+      "image/jpeg",
+    ]);
+    await server?.close();
+    // An untyped Blob is judged from its bytes too.
+    const untyped = await putTo("PUT /brand/logo", (bs) =>
+      bs.brand.logo.upload({ file: new Blob([LOGO_PNG]) }),
+    );
+    expect([(untyped.form.get("file") as File).name, (untyped.form.get("file") as File).type]).toEqual([
+      "logo.png",
+      "image/png",
+    ]);
+  });
+
+  /** A scripted client: `answers` in order, every call recorded. */
+  function counted(answers: Response[]) {
+    const methods: string[] = [];
+    let at = 0;
+    const fetchImpl = (async (_url: RequestInfo | URL, init?: RequestInit) => {
+      methods.push(init?.method ?? "GET");
+      return (answers[at++] ?? answers.at(-1)) as Response;
+    }) as typeof fetch;
+    return { methods, bs: new BillionSend({ apiKey: KEY, baseUrl: BASE, fetch: fetchImpl, maxRetries: 2 }) };
+  }
+  const unavailable = () => json(503, refused(503, "unavailable", "Try later"), { "retry-after": "0" });
+
+  it("does not repeat an upload after a 5xx or a dropped connection, but repeats it after a 429; a delete still repeats", async () => {
+    for (const upload of [
+      (bs: BillionSend) => bs.brand.logo.upload({ file: LOGO_PNG }),
+      (bs: BillionSend) => bs.domains.unsubscribePage.logo.upload("d", { file: LOGO_PNG }),
+    ]) {
+      const failed = counted([unavailable(), json(200, okBody("PUT /brand/logo"))]);
+      expect(((await upload(failed.bs)) as { error: BillionSendError }).error.statusCode).toBe(503);
+      expect(failed.methods).toEqual(["PUT"]);
+
+      const limited = counted([
+        json(429, refused(429, "rate_limit_exceeded"), { "retry-after": "0" }),
+        json(200, okBody("PUT /brand/logo")),
+      ]);
+      expect(((await upload(limited.bs)) as { error: BillionSendError | null }).error).toBeNull();
+      expect(limited.methods).toEqual(["PUT", "PUT"]);
+    }
+    const down = counted([unavailable(), json(200, okBody("DELETE /brand/logo"))]);
+    expect((await down.bs.brand.logo.delete()).error).toBeNull();
+    expect(down.methods).toEqual(["DELETE", "DELETE"]);
+
+    const dropped = {
+      methods: [] as string[],
+    };
+    const bs = new BillionSend({
+      apiKey: KEY,
+      baseUrl: BASE,
+      maxRetries: 2,
+      fetch: (async (_url: RequestInfo | URL, init?: RequestInit) => {
+        dropped.methods.push(init?.method ?? "GET");
+        throw new TypeError("fetch failed");
+      }) as typeof fetch,
+    });
+    expect((await bs.brand.logo.upload({ file: LOGO_PNG })).error).toBeInstanceOf(APIConnectionError);
+    expect(dropped.methods).toEqual(["PUT"]);
   });
 });
 

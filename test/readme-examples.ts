@@ -1,5 +1,6 @@
 // The README's examples, kept here so `pnpm typecheck` fails when they drift from the SDK.
 // Never executed.
+import { readFile } from "node:fs/promises";
 import {
   BillionSend,
   NotFoundError,
@@ -18,6 +19,7 @@ export async function readmeExamples(
   request: Request,
   saved: string | undefined,
   csvText: string,
+  domainId: string,
 ) {
   const bs = new BillionSend("bs_...");
 
@@ -95,6 +97,15 @@ export async function readmeExamples(
   if (started.error) throw started.error;
   const done = await bs.contacts.imports.get(started.data.id);
   console.log(done.data?.status);
+
+  const logo = new Blob([await readFile("logo.png")], { type: "image/png" });
+  await bs.brand.logo.upload({ file: logo });
+  await bs.brand.update({ accent_color: "#2B44FF", font: "serif", show_topics: true });
+
+  await bs.domains.unsubscribePage.logo.upload(domainId, { file: logo });
+  await bs.domains.update(domainId, {
+    unsubscribe_page: { support_url: "https://acme.dev/help", powered_by: null },
+  });
 
   const signup = await new BillionSend().agent.signup({
     human_email: "owner@acme.dev",
