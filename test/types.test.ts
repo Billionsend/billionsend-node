@@ -106,6 +106,22 @@ describe("types", () => {
     expectTypeOf<Batch["domains"]>().toEqualTypeOf<string[] | undefined>();
     type Query = NonNullable<Parameters<BillionSend["suppressions"]["list"]>[0]>;
     expectTypeOf<Query["kind"]>().toEqualTypeOf<"email" | "domain" | "all" | undefined>();
+    expectTypeOf<Entry["note"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<Listed["note"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<Create["note"]>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<Batch["note"]>().toEqualTypeOf<string | undefined>();
+  });
+
+  it("types the broadcast limit on a domain's answer", () => {
+    type Limits = NonNullable<GetDomainResponse["sending_limits"]>;
+    expectTypeOf<Limits["mode"]>().toEqualTypeOf<
+      "warming" | "limited" | "unlimited" | "exempt" | "trusted"
+    >();
+    expectTypeOf<Limits["cap"]>().toEqualTypeOf<number | null>();
+    expectTypeOf<Limits["g_reasons"]>().toEqualTypeOf<
+      ("delivery_warning" | "provider_backoff" | "content_suspicious")[]
+    >();
+    expectTypeOf<Limits["hard_indicators"]["content_review"]>().toEqualTypeOf<"clear" | "held">();
   });
 
   it("types the deliverability report with one standing per sending domain", () => {

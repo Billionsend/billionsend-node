@@ -2728,7 +2728,7 @@ export interface components {
         created_at: string;
         /** @description Opt-out from every marketing send of the team, whichever domain sends. A recipient's own unsubscribe never sets it: that is recorded for the domain whose email carried the link (see unsubscribed_domains). */
         unsubscribed: boolean;
-        /** @description BillionSend extension: the domains this contact unsubscribed from through a link in their email. Marketing sends from those domains skip the contact; other domains still reach them. The team-wide opt-out is `unsubscribed`, not an entry here. Remove an entry with DELETE /unsubscribes/{id}. */
+        /** @description BillionSend extension: the domains this contact unsubscribed from through a link in their email. Mail from those domains skips the contact, transactional mail too unless the domain turned on `send_transactional_to_unsubscribed`; other domains still reach them. The team-wide switch is `unsubscribed`, not an entry here. An opt-out is permanent: only the recipient can undo it, from the hosted unsubscribe page. */
         unsubscribed_domains: {
           /**
            * Format: uuid
@@ -2865,7 +2865,7 @@ export interface components {
         created_at: string;
         /** @description Opt-out from every marketing send of the team, whichever domain sends. A recipient's own unsubscribe never sets it: that is recorded for the domain whose email carried the link (see unsubscribed_domains). */
         unsubscribed: boolean;
-        /** @description BillionSend extension: the domains this contact unsubscribed from through a link in their email. Marketing sends from those domains skip the contact; other domains still reach them. The team-wide opt-out is `unsubscribed`, not an entry here. Remove an entry with DELETE /unsubscribes/{id}. */
+        /** @description BillionSend extension: the domains this contact unsubscribed from through a link in their email. Mail from those domains skips the contact, transactional mail too unless the domain turned on `send_transactional_to_unsubscribed`; other domains still reach them. The team-wide switch is `unsubscribed`, not an entry here. An opt-out is permanent: only the recipient can undo it, from the hosted unsubscribe page. */
         unsubscribed_domains: {
           /**
            * Format: uuid
@@ -2928,7 +2928,7 @@ export interface components {
       created_at: string;
       /** @description Opt-out from every marketing send of the team, whichever domain sends. A recipient's own unsubscribe never sets it: that is recorded for the domain whose email carried the link (see unsubscribed_domains). */
       unsubscribed: boolean;
-      /** @description BillionSend extension: the domains this contact unsubscribed from through a link in their email. Marketing sends from those domains skip the contact; other domains still reach them. The team-wide opt-out is `unsubscribed`, not an entry here. Remove an entry with DELETE /unsubscribes/{id}. */
+      /** @description BillionSend extension: the domains this contact unsubscribed from through a link in their email. Mail from those domains skips the contact, transactional mail too unless the domain turned on `send_transactional_to_unsubscribed`; other domains still reach them. The team-wide switch is `unsubscribed`, not an entry here. An opt-out is permanent: only the recipient can undo it, from the hosted unsubscribe page. */
       unsubscribed_domains: {
         /**
          * Format: uuid
@@ -3772,6 +3772,43 @@ export interface components {
          */
         policy?: "none" | "quarantine" | "reject";
       }[];
+      /** @description BillionSend extension, on GET /domains/{id} only: the broadcast limit this domain's registrable name is under (only broadcasts are limited; API, SMTP and automation mail never are). Read-only. */
+      sending_limits?: {
+        /**
+         * @description warming: inside the 30-day broadcast warm-up (it starts at the domain's first successful delivery here); limited: past it, but a warning holds g at 1; unlimited: broadcasts are not limited; exempt or trusted: the team is outside the limit
+         * @enum {string}
+         */
+        mode: "warming" | "limited" | "unlimited" | "exempt" | "trusted";
+        /** @description The day of the 30-day warm-up (1 on the first day); 0 before the first delivery */
+        warmup_day: number;
+        /** @description When the warm-up ends; null before the first delivery */
+        warmup_ends_on: string | null;
+        /** @description When the running 24-hour window opened; null while none runs (the next broadcast recipient opens one) */
+        window_started_at: string | null;
+        /** @description Broadcast recipients the window admits: max(200, g x (t + b)); of the window that would open now while none runs; null when unlimited */
+        cap: number | null;
+        /** @description What the running window has used; null when unlimited */
+        used: number | null;
+        /** @description The growth multiplier: 2 while every signal is normal, 1 while a warning holds it */
+        g: number;
+        /** @description The warnings holding g at 1 */
+        g_reasons: ("delivery_warning" | "provider_backoff" | "content_suspicious")[];
+        /** @description Transactional deliveries in the 24 hours before the window opened */
+        t: number | null;
+        /** @description Broadcast deliveries in the previous window */
+        b: number | null;
+        /** @description Broadcast recipients waiting for the next window */
+        parked: number;
+        /** @description When the next window can open; null with nothing waiting */
+        next_window_at: string | null;
+        hard_indicators: {
+          /** @enum {string} */
+          delivery: "ok" | "warning" | "paused";
+          /** @enum {string} */
+          content_review: "clear" | "held";
+          providers_in_backoff: number;
+        };
+      };
     };
     UpdateDomainRequest: {
       /** @description Rewrite links to redirect through the tracking host and record email.clicked events. Off by default. */
@@ -4235,6 +4272,8 @@ export interface components {
        * @enum {string}
        */
       origin?: "bounce" | "complaint" | "manual";
+      /** @description BillionSend extension: why the entry is blocked, up to 500 characters; shown as its detail in the dashboard and returned as `note`. Stored on the rows this request creates; an entry that already exists keeps its own */
+      note?: string;
     };
     BatchRemoveSuppressionsResponse: {
       data: components["schemas"]["RemoveSuppressionResponse"][];
@@ -4280,6 +4319,8 @@ export interface components {
        * @enum {string}
        */
       origin?: "bounce" | "complaint" | "manual";
+      /** @description BillionSend extension: why the entry is blocked, up to 500 characters; shown as its detail in the dashboard and returned as `note`. Stored on the rows this request creates; an entry that already exists keeps its own */
+      note?: string;
     };
     ListSuppressionsResponse: {
       /** @enum {string} */
@@ -4305,6 +4346,8 @@ export interface components {
          * @description Email id whose bounce/complaint created the entry
          */
         source_id: string | null;
+        /** @description BillionSend extension: why the entry was added; null on an entry SES wrote */
+        note: string | null;
         created_at: string;
       }[];
       has_more: boolean;
@@ -4330,6 +4373,8 @@ export interface components {
        * @description Email id whose bounce/complaint created the entry
        */
       source_id: string | null;
+      /** @description BillionSend extension: why the entry was added; null on an entry SES wrote */
+      note: string | null;
       created_at: string;
       /** @enum {string} */
       object: "suppression";

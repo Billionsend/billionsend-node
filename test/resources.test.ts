@@ -248,6 +248,31 @@ describe("brand and the unsubscribe page", () => {
     expect(data?.unsubscribe_page.logo_url).toBeNull();
   });
 
+  it("reads the broadcast limit a domain is under", async () => {
+    const limits = {
+      mode: "warming",
+      warmup_day: 3,
+      warmup_ends_on: "2026-12-23",
+      window_started_at: "2026-11-26T08:00:00Z",
+      cap: 400,
+      used: 150,
+      g: 1,
+      g_reasons: ["provider_backoff"],
+      t: 120,
+      b: 80,
+      parked: 25,
+      next_window_at: "2026-11-27T08:00:00Z",
+      hard_indicators: { delivery: "ok", content_review: "clear", providers_in_backoff: 1 },
+    };
+    mock.reply("GET /domains/{id}", {
+      status: 200,
+      body: { ...(okBody("GET /domains/{id}") as object), sending_limits: limits },
+    });
+    const { data, error } = await bs().domains.get(ID);
+    expect(error).toBeNull();
+    expect(data?.sending_limits).toEqual(limits);
+  });
+
   it("uploads and deletes one domain's logo", async () => {
     mock.reply("PUT /domains/{id}/unsubscribe-page/logo", {
       status: 200,
@@ -468,6 +493,13 @@ describe("webhooks, suppressions, unsubscribes, verifications, usage, deliverabi
       domains: ["a.example"],
       origin: "manual",
     });
+    await bs().suppressions.create({ email: "trap@example.com", note: "Spam trap" });
+    expect(last("POST /suppressions").body).toEqual({ email: "trap@example.com", note: "Spam trap" });
+    await bs().suppressions.batch.add({ domains: ["c.example"], note: "Reported by the customer" });
+    expect(last("POST /suppressions/batch/add").body).toEqual({
+      domains: ["c.example"],
+      note: "Reported by the customer",
+    });
     for (const kind of ["email", "domain", "all"] as const) {
       await bs().suppressions.list({ kind });
       expect(last("GET /suppressions").url.searchParams.get("kind")).toBe(kind);
@@ -485,13 +517,20 @@ describe("webhooks, suppressions, unsubscribes, verifications, usage, deliverabi
         removable: true,
         origin: "manual",
         source_id: null,
+        note: "Spam trap domain",
         created_at: "2026-11-19T00:00:00Z",
         object: "suppression",
       },
     });
     const { data, error } = await bs().suppressions.get(ID);
     expect(error).toBeNull();
-    expect(data).toMatchObject({ email: null, kind: "domain", domain: "spam.example", removable: true });
+    expect(data).toMatchObject({
+      email: null,
+      kind: "domain",
+      domain: "spam.example",
+      removable: true,
+      note: "Spam trap domain",
+    });
     mock.reply("GET /suppressions", {
       status: 200,
       body: {
@@ -506,6 +545,7 @@ describe("webhooks, suppressions, unsubscribes, verifications, usage, deliverabi
             removable: true,
             origin: "manual",
             source_id: null,
+            note: "Spam trap domain",
             created_at: "2026-11-19T00:00:00Z",
           },
           {
@@ -516,15 +556,18 @@ describe("webhooks, suppressions, unsubscribes, verifications, usage, deliverabi
             removable: false,
             origin: "bounce",
             source_id: null,
+            note: null,
             created_at: "2026-11-19T00:00:00Z",
           },
         ],
       },
     });
     const page = await bs().suppressions.list({ kind: "all" });
-    expect(page.data?.data.map((entry) => [entry.kind, entry.email, entry.domain, entry.removable])).toEqual([
-      ["domain", null, "spam.example", true],
-      ["email", "ana@example.com", null, false],
+    expect(
+      page.data?.data.map((entry) => [entry.kind, entry.email, entry.domain, entry.removable, entry.note]),
+    ).toEqual([
+      ["domain", null, "spam.example", true, "Spam trap domain"],
+      ["email", "ana@example.com", null, false, null],
     ]);
   });
 

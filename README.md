@@ -2,11 +2,11 @@
 
 The official Node.js and TypeScript client for the [BillionSend](https://billionsend.com) email API: send email, run inboxes for people and agents, stream inbox events, verify webhooks, and manage domains, contacts and broadcasts.
 
-- Every API operation, typed from the BillionSend OpenAPI document.
+- A method for each of the 186 operations of the BillionSend API, typed from a snapshot of its OpenAPI document (see [API coverage](#api-coverage)).
 - Results as `{ data, error, headers }`: methods never throw. Errors are classes you can tell apart with `instanceof`.
 - Safe sends: every send carries an `Idempotency-Key`, so retries after a timeout never send twice.
 - Async iterators for every list and for live inbox events, with automatic resume.
-- ES modules and CommonJS, with types for both. No runtime dependencies. Node.js 18 or later (any runtime with `fetch` works).
+- ES modules and CommonJS, with types for both. No runtime dependencies. Node.js 18 or later (any runtime with `fetch` works); the CI runs the tests on Node.js 22 and 24 and the built package on 18, 20, 22 and 24.
 
 Documentation: [billionsend.com/docs](https://billionsend.com/docs) · SDK guide: [billionsend.com/docs/sdks/node](https://billionsend.com/docs/sdks/node) · Source: [github.com/billionsend/billionsend-node](https://github.com/billionsend/billionsend-node)
 
@@ -78,9 +78,11 @@ Every method resolves to one of:
 | `NotFoundError` | `404` |
 | `ConflictError` | `409`, such as an idempotency key reused with a different payload |
 | `RateLimitError` | `429`; `retryAfter` holds the server's hint in seconds |
-| `APIError` | `5xx` |
+| `APIError` | `5xx`; `retryAfter` holds the server's hint in seconds, `null` without one |
 | `APIConnectionError` | no answer: DNS, connection or TLS failure (`statusCode` is `null`) |
 | `APITimeoutError` | the request timed out (a subclass of `APIConnectionError`) |
+
+Any other status (such as `402` or `413`) comes back as a plain `BillionSendError` with its `statusCode`, and so does a call that could not be sent at all, with no request made and no retry: `name: "invalid_header"` for a header value HTTP cannot carry (only printable ASCII; the message names the header, never its value), and `application_error` for a path parameter that is empty, `.` or `..`, or for a call aborted through its `signal`. `WebhookVerificationError` (below) is a `BillionSendError` too.
 
 Each carries `statusCode`, `name` (the API's error name, such as `validation_error`; `application_error` when the API sent none), `message` and `requestId`, the answer's `x-request-id`: the same id the request has on the dashboard's Logs page, so quote it when you ask about a request.
 
@@ -105,7 +107,7 @@ for await (const contact of bs.contacts.listAll({ limit: 100 })) {
 }
 ```
 
-Thread search has `searchAll`. Starting with `before` walks backward. `paginate(fetchPage)` builds the same iterator over any page fetcher.
+Thread search has `searchAll`, and the two broadcast lists `broadcasts.recipientsAll` and `broadcasts.clickedLinksAll`. Starting with `before` walks backward. `paginate(fetchPage)` builds the same iterator over any page fetcher.
 
 ## An agent's inbox: wait, read, reply
 
@@ -155,7 +157,7 @@ const { data: code } = await bs.inboxes.codes.latest("support@acme.dev", { from:
 - `InboxStreamEvent`: `{ id, event, data }`, where `event` is the webhook event name (`inbox.email.received`, `inbox.thread.created`, `inbox.draft.sent`, `email.received`, …) and `data` is `{ type, created_at, inbox_id, data }`, the webhook payload's metadata with the ids to read next (`thread_id`, `email_id`, `draft_id`).
 - `StreamGapEvent`: `{ id: null, event: "stream.gap", data: { reason } }` when the stream resumed from further back than the server keeps (24 hours): events may be missing, so read the lists again. One stream hands it out once per position.
 
-When the connection drops (the server also closes every stream about every ten minutes), the stream reconnects with `Last-Event-ID` and replays what it missed before the live events. A connection that delivers nothing, not even the server's keep-alive comment (sent every 15 seconds), for `idleTimeoutMs` (default 45 seconds, `0` turns it off) counts as dropped, so a connection that died silently cannot hang the loop. `maxReconnects` (default 5) bounds the reconnects that fail in a row; one that opens the stream resets the count. A reconnect the API refuses with a `Retry-After` waits that long (longer than 60 seconds: that error is thrown at once). When the reconnects run out, the last one's error is thrown: the API's answer as its own class (`RateLimitError`, `APIError`), or an `APIConnectionError` when the API could not be reached; a refusal a retry cannot fix (a revoked key) is thrown at once. One inbox's stream ends after that inbox's `inbox.deleted` or `inbox.expired`.
+When the connection drops (the server also closes every stream about every ten minutes), the stream reconnects with `Last-Event-ID` and replays what it missed before the live events. A connection that delivers nothing, not even the server's keep-alive comment (sent every 15 seconds), for `idleTimeoutMs` (default 45 seconds, `0` turns it off) counts as dropped, so a connection that died silently cannot hang the loop. `maxReconnects` (default 5) bounds the reconnects that fail in a row; one that opens the stream resets the count. A reconnect the API refuses with a `Retry-After` waits that long (longer than 60 seconds: that error is thrown at once). When the reconnects run out, the last one's error is thrown: the API's answer as its own class (`RateLimitError`, `APIError`), or an `APIConnectionError` when the API could not be reached; a refusal a retry cannot fix (a revoked key) is thrown at once. One inbox's stream ends after that inbox's `inbox.deleted` or `inbox.expired`. Streams are capped per key and per team: one opened over the cap resolves to a `RateLimitError` (`too_many_streams`).
 
 ```ts
 const opened = await bs.inboxes.events.stream({ types: "inbox.email.received,inbox.thread.created" }, {
@@ -192,7 +194,7 @@ app.post("/webhooks/billionsend", express.raw({ type: "application/json" }), asy
 });
 ```
 
-With the Fetch API (Next.js route handlers, Hono, Bun, Deno, workers) it is `await verifyWebhook(await request.text(), request.headers, secret)`. During a secret rotation a delivery carries a signature for each live secret, and either secret verifies it.
+With the Fetch API (Next.js route handlers, Hono, Bun, Deno, workers) it is `await verifyWebhook(await request.text(), request.headers, secret)`. During a secret rotation a delivery carries a signature for each live secret, and either secret verifies it. The fourth argument takes `{ tolerance }` (seconds, default 300) to change how far the timestamp may be from now.
 
 Deliveries come from `51.161.117.92` with the user agent `BillionSend-Webhooks/1.0 (+https://billionsend.com/docs/concepts/webhooks)`; when the receiving end sits behind a WAF or Cloudflare, allow them as the [webhooks guide](https://billionsend.com/docs/concepts/webhooks) describes.
 
@@ -268,8 +270,8 @@ Every method takes a last `options` argument with `signal`, `headers`, `timeoutM
 | `domains` | create, list, get, update, delete, verify, `claims` (create, get, verify), `unsubscribePage.logo` (upload, delete) |
 | `brand` | get, update, `logo` (upload, delete) |
 | `apiKeys` | create, list, update, delete |
-| `contacts` | create, list, get, update, delete, preferences link, `batch`, `imports` (create, list, get), `topics`, `segments` (list, add, remove) |
-| `audiences.contacts` | contacts addressed through an audience |
+| `contacts` | create, list, get, update, delete, preferences link, `batch` (create, get, remove), `imports` (create, list, get), `topics` (list, update), `segments` (list, add, remove) |
+| `audiences.contacts` | contacts addressed through an audience: create, get, update, delete |
 | `contactProperties`, `segments`, `topics` | create, list, get, update, delete (segment contacts under `segments.contacts`) |
 | `broadcasts` | create, list, get, update, delete, send, duplicate, cancel, recipients, clickedLinks |
 | `templates` | create, list, get, update, delete, publish, duplicate |
@@ -282,16 +284,25 @@ Every method takes a last `options` argument with `signal`, `headers`, `timeoutM
 | `automations` | create, list, get, update, remove, validate, duplicate, simulate, stop, metrics, `runs` (list, get, cancel) |
 | `logs` | list, get |
 | `oauthGrants` | list, revoke |
-| `inboxes` | create, list, get, update, delete, send, `agent` (get, update), `safety`, `labels`, `threads` (search, labels, emails, reply, forward), `quarantine`, `codes`, `drafts`, `events` |
+| `inboxes` | create, list, get, update, delete, send, `agent` (get, update), `safety`, `labels`, `threads` (list, get, update, delete, search, `labels`, `emails`: list, get, reply, forward), `quarantine` (list, release), `codes` (latest), `drafts` (create, list, get, update, delete, send, reject), `events` (stream, streamInbox) |
 | `agent` | signup, status, claimEmail |
 
 Method names are camelCase; request and response fields keep the API's snake_case names. All request and response types are exported, named after the API's schemas (`SendEmailRequest`, `Inbox`, …).
+
+## API coverage
+
+Every operation of the API's OpenAPI document has its method: the 186 `operationId`s are the methods' dotted paths (`emails.send`, `inboxes.threads.emails.reply`). The types are generated from `openapi/api.openapi.json`, the snapshot taken for version 0.3.0, so they follow that snapshot and not the API's later schema changes. Two additions are missing from the types, though the API takes and returns them:
+
+- `suppressions.create` and `suppressions.batch.add` accept `note` (up to 500 characters, why the entry is blocked), and the entries `suppressions.list` and `suppressions.get` return carry `note`.
+- `domains.get` returns `sending_limits` (the domain's broadcast warm-up and sending window: `mode`, `warmup_day`, `warmup_ends_on`, `window_started_at`, `cap`, `used`, `g`, `g_reasons`, `t`, `b`, `parked`, `next_window_at`, `hard_indicators`).
+
+The SDK sends a request body as given and returns the answer as the API wrote it, so both work at runtime; only the compiler does not know them. An object literal with `note` fails the type check as an unknown property (build the object in a variable first), and reading `note` or `sending_limits` needs a cast.
 
 ## Development
 
 ```bash
 pnpm install
-pnpm typecheck && pnpm lint && pnpm test:coverage   # fails below 95% lines and branches of the hand-written code
+pnpm typecheck && pnpm lint && pnpm test:coverage   # fails below 95% lines, branches, functions and statements of the hand-written code
 pnpm build && pnpm test:smoke
 ```
 
@@ -310,10 +321,8 @@ pnpm openapi:check              # fails when the snapshot differs from the publi
 
 Publishing is manual; nothing is published on push.
 
-1. Set `version` in `package.json`, turn the changelog's `Unreleased` heading into that version, commit, then tag and push: `git tag v0.1.0 && git push origin main v0.1.0`.
-2. The first version only: a member of the `@billionsend` npm organization publishes from a clean checkout of the tag, with two-factor authentication: `pnpm install --frozen-lockfile && pnpm typecheck && pnpm lint && pnpm test && pnpm test:smoke && npm publish` (`prepublishOnly` builds; `publishConfig.access` is `public`).
-3. Once the package exists: on npmjs.com, `@billionsend/node` → Settings → Trusted Publisher → GitHub Actions, repository `billionsend/billionsend-node`, workflow `release.yml`.
-4. Every later version: Actions → `release` → Run workflow, on the version tag. The workflow refuses a branch or a tag that differs from `package.json`, runs every check, and publishes with npm Trusted Publishing (no token stored).
+1. Set `version` in `package.json` and `src/version.ts`, add the version's section to the changelog, commit, then tag and push: `git tag v<version> && git push origin main v<version>`.
+2. Actions → `release` → Run workflow, on the version tag. The workflow refuses a branch or a tag that differs from `package.json`, runs every check, and publishes with npm Trusted Publishing (no token stored). That needs `@billionsend/node` on npmjs.com → Settings → Trusted Publisher → GitHub Actions to name repository `billionsend/billionsend-node` and workflow `release.yml`.
 
 ## License
 
