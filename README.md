@@ -2,7 +2,7 @@
 
 The official Node.js and TypeScript client for the [BillionSend](https://billionsend.com) email API: send email, run inboxes for people and agents, stream inbox events, verify webhooks, and manage domains, contacts and broadcasts.
 
-- A method for each of the 186 operations of the BillionSend API, typed from a snapshot of its OpenAPI document (see [API coverage](#api-coverage)).
+- A method for each of the 193 operations of the BillionSend API, typed from a snapshot of its OpenAPI document (see [API coverage](#api-coverage)).
 - Results as `{ data, error, headers }`: methods never throw. Errors are classes you can tell apart with `instanceof`.
 - Safe sends: every send carries an `Idempotency-Key`, so retries after a timeout never send twice.
 - Async iterators for every list and for live inbox events, with automatic resume.
@@ -274,6 +274,7 @@ Every method takes a last `options` argument with `signal`, `headers`, `timeoutM
 | `audiences.contacts` | contacts addressed through an audience: create, get, update, delete |
 | `contactProperties`, `segments`, `topics` | create, list, get, update, delete (segment contacts under `segments.contacts`) |
 | `broadcasts` | create, list, get, update, delete, send, duplicate, cancel, recipients, clickedLinks |
+| `broadcastGroups` | create, list, get, update, remove, send, cancel (one message from several sending domains) |
 | `templates` | create, list, get, update, delete, publish, duplicate |
 | `webhooks` | create, list, get, update, delete, rotateSigningSecret, `events` (list, get, replay, `attempts.list`) |
 | `suppressions` | create, list, get, delete, `batch` add / remove; an entry is one address or a whole domain (`kind`, `domain`, `removable`; `email` is `null` on a domain entry) |
@@ -291,12 +292,7 @@ Method names are camelCase; request and response fields keep the API's snake_cas
 
 ## API coverage
 
-Every operation of the API's OpenAPI document has its method: the 186 `operationId`s are the methods' dotted paths (`emails.send`, `inboxes.threads.emails.reply`). The types are generated from `openapi/api.openapi.json`, the snapshot taken for version 0.3.0, so they follow that snapshot and not the API's later schema changes. Two additions are missing from the types, though the API takes and returns them:
-
-- `suppressions.create` and `suppressions.batch.add` accept `note` (up to 500 characters, why the entry is blocked), and the entries `suppressions.list` and `suppressions.get` return carry `note`.
-- `domains.get` returns `sending_limits` (the domain's broadcast warm-up and sending window: `mode`, `warmup_day`, `warmup_ends_on`, `window_started_at`, `cap`, `used`, `g`, `g_reasons`, `t`, `b`, `parked`, `next_window_at`, `hard_indicators`).
-
-The SDK sends a request body as given and returns the answer as the API wrote it, so both work at runtime; only the compiler does not know them. An object literal with `note` fails the type check as an unknown property (build the object in a variable first), and reading `note` or `sending_limits` needs a cast.
+Every operation of the API's OpenAPI document has its method: the 193 `operationId`s are the methods' dotted paths (`emails.send`, `inboxes.threads.emails.reply`). The types are generated from `openapi/api.openapi.json`, the snapshot taken for version 0.4.0, so they follow that snapshot and not the API's later schema changes.
 
 ## Development
 

@@ -86,9 +86,9 @@ export class Automations extends Resource {
     return this.core.request("post", "/automations/{id}/simulate", { path: { id }, body: payload, options });
   }
 
-  /** `POST /automations/{id}/stop` */
-  stop(id: string, options?: RequestOptions) {
-    return this.core.request("post", "/automations/{id}/stop", { path: { id }, options });
+  /** `POST /automations/{id}/stop` (the body is optional: `{ cancel_runs: true }` also cancels the runs already going) */
+  stop(id: string, payload?: RequestBody<"/automations/{id}/stop", "post">, options?: RequestOptions) {
+    return this.core.request("post", "/automations/{id}/stop", { path: { id }, body: payload, options });
   }
 
   /** `GET /automations/{id}/metrics` */

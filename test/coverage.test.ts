@@ -160,6 +160,15 @@ const CALLS: Record<string, Call> = {
   "POST /broadcasts/{id}/send": (bs) => bs.broadcasts.send(ID, sampleBody("POST /broadcasts/{id}/send")),
   "POST /broadcasts/{id}/duplicate": (bs) => bs.broadcasts.duplicate(ID),
   "POST /broadcasts/{id}/cancel": (bs) => bs.broadcasts.cancel(ID),
+  "POST /broadcast-groups": (bs) => bs.broadcastGroups.create(sampleBody("POST /broadcast-groups")),
+  "GET /broadcast-groups": (bs) => bs.broadcastGroups.list({ limit: 5 }),
+  "GET /broadcast-groups/{id}": (bs) => bs.broadcastGroups.get(ID),
+  "PATCH /broadcast-groups/{id}": (bs) =>
+    bs.broadcastGroups.update(ID, sampleBody("PATCH /broadcast-groups/{id}")),
+  "DELETE /broadcast-groups/{id}": (bs) => bs.broadcastGroups.remove(ID),
+  "POST /broadcast-groups/{id}/send": (bs) =>
+    bs.broadcastGroups.send(ID, sampleBody("POST /broadcast-groups/{id}/send")),
+  "POST /broadcast-groups/{id}/cancel": (bs) => bs.broadcastGroups.cancel(ID),
   "POST /templates": (bs) => bs.templates.create(sampleBody("POST /templates")),
   "GET /templates": (bs) => bs.templates.list(),
   "GET /templates/{id}": (bs) => bs.templates.get("welcome-email"),
@@ -310,6 +319,7 @@ const EXPECT: Record<string, Expectation> = {
   "GET /contacts/{id}/segments": { query: { limit: "5" } },
   "DELETE /contacts/{id}": { query: { erase: "true" } },
   "GET /segments/{id}/contacts": { query: { limit: "50" } },
+  "GET /broadcast-groups": { query: { limit: "5" } },
   "GET /broadcasts/{id}/recipients": { query: { type: "bounced" } },
   "GET /broadcasts/{id}/clicked-links": { query: { limit: "5" } },
   "POST /events/send": { idempotencyKey: "ev-1" },

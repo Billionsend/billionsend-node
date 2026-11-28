@@ -369,6 +369,16 @@ describe("contacts, audiences, properties, segments, topics", () => {
     expect(last("POST /contacts/batch/remove").body).toEqual({ emails: ["a@example.com"], erase: true });
   });
 
+  it("pages through topics and a contact's topic settings with a cursor", async () => {
+    await bs().topics.list({ limit: 5, after: ID });
+    expect(Object.fromEntries(last("GET /topics").url.searchParams)).toEqual({ limit: "5", after: ID });
+    await bs().contacts.topics.list(ID, { limit: 2, before: ID2 });
+    expect(Object.fromEntries(last("GET /contacts/{id}/topics").url.searchParams)).toEqual({
+      limit: "2",
+      before: ID2,
+    });
+  });
+
   it("manages topic subscriptions and segment membership", async () => {
     await bs().contacts.topics.update(ID, [{ id: ID2, subscription: "opt_out" }]);
     expect(last("PATCH /contacts/{id}/topics").body).toEqual([{ id: ID2, subscription: "opt_out" }]);
@@ -420,6 +430,49 @@ describe("broadcasts and templates", () => {
       "POST /broadcasts/{id}/duplicate",
       "POST /broadcasts/{id}/cancel",
     ]);
+  });
+
+  it("sends one message from several domains as a broadcast group", async () => {
+    const [domainA, domainB] = [ID, ID2];
+    await bs().broadcastGroups.create({
+      name: "November",
+      domain_ids: [domainA, domainB],
+      from_local_part: "news",
+      subject: "November",
+      html: "<p>News</p>",
+      send: true,
+    });
+    expect(last("POST /broadcast-groups").body).toMatchObject({
+      domain_ids: [domainA, domainB],
+      from_local_part: "news",
+      send: true,
+    });
+    await bs().broadcastGroups.update(ID, { subject: "Changed" });
+    expect(last("PATCH /broadcast-groups/{id}").body).toEqual({ subject: "Changed" });
+    await bs().broadcastGroups.send(ID, { scheduled_at: "in 1 hour" });
+    expect(last("POST /broadcast-groups/{id}/send").body).toEqual({ scheduled_at: "in 1 hour" });
+    await bs().broadcastGroups.send(ID);
+    expect(last("POST /broadcast-groups/{id}/send").body).toBeUndefined();
+    await bs().broadcastGroups.cancel(ID);
+    await bs().broadcastGroups.remove(ID);
+    expect(mock.hits.map((hit) => hit.key).slice(-2)).toEqual([
+      "POST /broadcast-groups/{id}/cancel",
+      "DELETE /broadcast-groups/{id}",
+    ]);
+    await bs().broadcastGroups.get(ID);
+    expect(last("GET /broadcast-groups/{id}").url.pathname).toBe(`/broadcast-groups/${ID}`);
+  });
+
+  it("accepts audience_id as the older name of segment_id on a broadcast", async () => {
+    await bs().broadcasts.create({
+      from: "news@example.com",
+      subject: "November",
+      audience_id: ID,
+      html: "<p>News</p>",
+    });
+    expect(last("POST /broadcasts").body).toMatchObject({ audience_id: ID });
+    await bs().broadcasts.update(ID, { audience_id: ID2 });
+    expect(last("PATCH /broadcasts/{id}").body).toEqual({ audience_id: ID2 });
   });
 
   it("passes the dormant-contact switches on create and update, and reads them back", async () => {
@@ -870,6 +923,8 @@ describe("events and automations", () => {
   it("runs the automation lifecycle: stop, simulate, runs and metrics", async () => {
     await bs().automations.stop(ID);
     expect(last("POST /automations/{id}/stop").url.pathname).toBe(`/automations/${ID}/stop`);
+    await bs().automations.stop(ID, { cancel_runs: true });
+    expect(last("POST /automations/{id}/stop").body).toEqual({ cancel_runs: true });
     await bs().automations.runs.get(ID, ID2);
     expect(last("GET /automations/{id}/runs/{run_id}").url.pathname).toBe(`/automations/${ID}/runs/${ID2}`);
     await bs().automations.runs.cancel(ID, ID2);

@@ -11,7 +11,7 @@ import {
 } from "./resources/account.js";
 import { Automations, Events } from "./resources/automations.js";
 import { Brand } from "./resources/brand.js";
-import { Broadcasts, Templates } from "./resources/broadcasts.js";
+import { BroadcastGroups, Broadcasts, Templates } from "./resources/broadcasts.js";
 import { Audiences, ContactProperties, Contacts, Segments, Topics } from "./resources/contacts.js";
 import { Emails } from "./resources/emails.js";
 import { Inboxes } from "./resources/inboxes.js";
@@ -37,6 +37,7 @@ export class BillionSend {
   readonly segments: Segments;
   readonly topics: Topics;
   readonly broadcasts: Broadcasts;
+  readonly broadcastGroups: BroadcastGroups;
   readonly templates: Templates;
   readonly webhooks: Webhooks;
   readonly suppressions: Suppressions;
@@ -72,6 +73,7 @@ export class BillionSend {
     this.segments = new Segments(core);
     this.topics = new Topics(core);
     this.broadcasts = new Broadcasts(core);
+    this.broadcastGroups = new BroadcastGroups(core);
     this.templates = new Templates(core);
     this.webhooks = new Webhooks(core);
     this.suppressions = new Suppressions(core);

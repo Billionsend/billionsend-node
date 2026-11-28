@@ -32,8 +32,21 @@ export class ContactBatch extends Resource {
 
 export class ContactTopics extends Resource {
   /** `GET /contacts/{id}/topics` */
-  list(contactId: string, options?: RequestOptions) {
-    return this.core.request("get", "/contacts/{id}/topics", { path: { id: contactId }, options });
+  list(contactId: string, params?: QueryParams<"/contacts/{id}/topics", "get">, options?: RequestOptions) {
+    return this.core.request("get", "/contacts/{id}/topics", {
+      path: { id: contactId },
+      query: params,
+      options,
+    });
+  }
+
+  /** Every topic setting of a contact, fetched page by page. */
+  listAll(
+    contactId: string,
+    params?: QueryParams<"/contacts/{id}/topics", "get">,
+    options?: RequestOptions,
+  ): AsyncGenerator<ListItem<"/contacts/{id}/topics">, void, undefined> {
+    return paginate((cursor) => this.list(contactId, { ...params, ...cursor }, options), params);
   }
 
   /** `PATCH /contacts/{id}/topics` */
@@ -343,9 +356,17 @@ export class Topics extends Resource {
     return this.core.request("post", "/topics", { body: payload, options });
   }
 
-  /** `GET /topics` (not paginated) */
-  list(options?: RequestOptions) {
-    return this.core.request("get", "/topics", { options });
+  /** `GET /topics` */
+  list(params?: QueryParams<"/topics", "get">, options?: RequestOptions) {
+    return this.core.request("get", "/topics", { query: params, options });
+  }
+
+  /** Every topic, fetched page by page. */
+  listAll(
+    params?: QueryParams<"/topics", "get">,
+    options?: RequestOptions,
+  ): AsyncGenerator<ListItem<"/topics">, void, undefined> {
+    return paginate((cursor) => this.list({ ...params, ...cursor }, options), params);
   }
 
   /** `GET /topics/{id}` */

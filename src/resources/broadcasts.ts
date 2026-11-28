@@ -97,6 +97,51 @@ export class Broadcasts extends Resource {
   }
 }
 
+export class BroadcastGroups extends Resource {
+  /** `POST /broadcast-groups`: one broadcast per sending domain, sent as one group. */
+  create(payload: RequestBody<"/broadcast-groups", "post">, options?: RequestOptions) {
+    return this.core.request("post", "/broadcast-groups", { body: payload, options });
+  }
+
+  /** `GET /broadcast-groups` */
+  list(params?: QueryParams<"/broadcast-groups", "get">, options?: RequestOptions) {
+    return this.core.request("get", "/broadcast-groups", { query: params, options });
+  }
+
+  /** Every broadcast group, fetched page by page. */
+  listAll(
+    params?: QueryParams<"/broadcast-groups", "get">,
+    options?: RequestOptions,
+  ): AsyncGenerator<ListItem<"/broadcast-groups">, void, undefined> {
+    return paginate((cursor) => this.list({ ...params, ...cursor }, options), params);
+  }
+
+  /** `GET /broadcast-groups/{id}` */
+  get(id: string, options?: RequestOptions) {
+    return this.core.request("get", "/broadcast-groups/{id}", { path: { id }, options });
+  }
+
+  /** `PATCH /broadcast-groups/{id}` */
+  update(id: string, payload: RequestBody<"/broadcast-groups/{id}", "patch">, options?: RequestOptions) {
+    return this.core.request("patch", "/broadcast-groups/{id}", { path: { id }, body: payload, options });
+  }
+
+  /** `DELETE /broadcast-groups/{id}` */
+  remove(id: string, options?: RequestOptions) {
+    return this.core.request("delete", "/broadcast-groups/{id}", { path: { id }, options });
+  }
+
+  /** `POST /broadcast-groups/{id}/send` (the body is optional) */
+  send(id: string, payload?: RequestBody<"/broadcast-groups/{id}/send", "post">, options?: RequestOptions) {
+    return this.core.request("post", "/broadcast-groups/{id}/send", { path: { id }, body: payload, options });
+  }
+
+  /** `POST /broadcast-groups/{id}/cancel` */
+  cancel(id: string, options?: RequestOptions) {
+    return this.core.request("post", "/broadcast-groups/{id}/cancel", { path: { id }, options });
+  }
+}
+
 export class Templates extends Resource {
   /** `POST /templates` */
   create(payload: RequestBody<"/templates", "post">, options?: RequestOptions) {
